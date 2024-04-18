@@ -10,12 +10,10 @@ namespace OALProgramControl
     {
         private static EXEInstanceIDSeed Instance;
         private int Seed;
-        private readonly Object Lock;
         private EXEInstanceIDSeed()
         {
             EXEInstanceIDSeed.Instance = null;
-            this.Seed = 0;
-            this.Lock = new Object();
+            this.Seed = 1;
         }
 
         public static EXEInstanceIDSeed GetInstance()
@@ -30,18 +28,9 @@ namespace OALProgramControl
 
         public int GenerateID()
         {
-            int Result;
-            lock (EXEInstanceIDSeed.Instance.Lock) {
-                Result = ++this.Seed;
-            }
+            int Result = this.Seed;
+            this.Seed++;
             return Result;
-        }
-        public void ResetID()
-        {
-            lock (EXEInstanceIDSeed.Instance.Lock)
-            {
-                this.Seed = 0;
-            }
         }
     }
 }

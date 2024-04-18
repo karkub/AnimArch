@@ -30,6 +30,20 @@ namespace OALProgramControl
 
             return Result; 
         }
+        public CDClassInstance GetClassInstanceById(long Id)
+        {
+            CDClassInstance Result = null;
+            foreach (CDClass Class in this.Classes)
+            {
+                Result = Class.GetInstanceByID(Id);
+                if (Result != null)
+                {
+                    break;
+                }
+            }
+
+            return Result;
+        }
         public CDClass SpawnClass(String Name)
         {
             CDClass NewClass = null;

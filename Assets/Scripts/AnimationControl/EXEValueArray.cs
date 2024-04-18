@@ -21,7 +21,7 @@ namespace OALProgramControl
             this.ElementTypeName = type.Substring(0, type.Length - 2);
             this.Elements = null;
         }
-        private EXEValueArray(string type, List<EXEValueBase> elements) : this(type)
+        public EXEValueArray(string type, List<EXEValueBase> elements) : this(type)
         {
             this.Elements = elements;
         }
@@ -52,7 +52,7 @@ namespace OALProgramControl
         {
             return new EXEValueArray(this.TypeName, this.Elements.Select(element => element.DeepClone()).ToList());
         }
-        public override void Accept(Visitor v) {
+        public override void Accept(IValueVisitor v) {
             v.VisitExeValueArray(this);
         }
         public override EXEExecutionResult GetValueAt(UInt32 index)

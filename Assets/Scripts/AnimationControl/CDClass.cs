@@ -276,17 +276,6 @@ namespace OALProgramControl
             return false;
         }
 
-        private int PowerOf(int x, int power)
-        {
-            int result = 1;
-            for (int i = 0; i < power; i++)
-            {
-                result *= x;
-            }
-
-            return result;
-        }
-
         public List<long> GetAllInstanceIDs()
         {
             return this.Instances.Select(x => x.UniqueID).ToList();

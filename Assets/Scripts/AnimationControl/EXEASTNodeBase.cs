@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OALProgramControl
 {
-    public abstract class EXEASTNodeBase : IVisitable
+    public abstract class EXEASTNodeBase
     {
         public EEvaluationState EvaluationState { get; protected set; }
         public virtual EXEExecutionResult EvaluationResult { get; set; }

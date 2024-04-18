@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace OALProgramControl
 {
-    public abstract class EXEValueBase : IVisitable
+    public abstract class EXEValueBase
     {
         public abstract string TypeName { get; }
         public virtual bool CanHaveAttributes { get { return false; } }
@@ -138,7 +138,7 @@ namespace OALProgramControl
             return string.Format("EXEValueType: '{0}', TypeName: '{1}'", this.GetType().Name, this.TypeName ?? string.Empty);
         }
 
-        public abstract void Accept(Visitor v);
+        public abstract void Accept(IValueVisitor v);
 
         public virtual EXEExecutionResult GetValueAt(UInt32 index)
         {

@@ -25,6 +25,7 @@ namespace OALProgramControl
                 throw new ArgumentException(string.Format("\"{0}\" is not a valid real value.", value));
             }
 
+            // this.Value = decimal.Parse(value.Replace(".", ","));
             this.Value = decimal.Parse(value);
         }
         public EXEValueReal(decimal value)
@@ -36,7 +37,7 @@ namespace OALProgramControl
             return new EXEValueReal(this);
         }
 
-        public override void Accept(Visitor v)
+        public override void Accept(IValueVisitor v)
         {
             v.VisitExeValueReal(this);
         }

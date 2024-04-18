@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using OALProgramControl;
 using UnityEngine;
 
-public interface IVisitable {
-    void Accept(Visitor v);
-}
-
-public abstract class Visitor
+public abstract class Visitor : IValueVisitor
 {
     public abstract void VisitExeCommandCall(EXECommandCall command);
     public abstract void VisitExeCommandBreak(EXECommandBreak command);
@@ -19,6 +15,7 @@ public abstract class Visitor
     public abstract void VisitExeCommandFileExists(EXECommandFileExists command);
     public abstract void VisitExeCommandFileRead(EXECommandFileRead command);
     public abstract void VisitExeCommandFileWrite(EXECommandFileWrite command);
+    public virtual void VisitExeCommandPragma(EXECommandPragma command) { }
     public abstract void VisitExeCommandQueryCreate(EXECommandQueryCreate command);
     public abstract void VisitExeCommandQueryDelete(EXECommandQueryDelete command);
     public abstract void VisitExeCommandRead(EXECommandRead command);

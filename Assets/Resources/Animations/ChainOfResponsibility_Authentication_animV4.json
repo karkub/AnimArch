@@ -1,0 +1,231 @@
+{
+    "AnimationName": "ChainOfResponsibility_Authentication_animV4",
+    "MethodsCodes": [
+        {
+            "Name": "RequestAuthenticationHandler",
+            "SuperClass": "",
+            "Attributes": [],
+            "Methods": [
+                {
+                    "Name": "HandleRequest",
+                    "Parameters": [
+                        "request"
+                    ],
+                    "Code": ""
+                }
+            ]
+        },
+        {
+            "Name": "Request",
+            "SuperClass": "",
+            "Attributes": [
+                "Token",
+                "Password",
+                "UserName",
+                "IpAddress",
+                "BiometricData"
+            ],
+            "Methods": [
+                {
+                    "Name": "Initialize",
+                    "Parameters": [],
+                    "Code": "Token = 0;\nPassword = \"\";\nUserName = \"\";\nIpAddress = \"\";\ncreate object instance BiometricData of BiometricData;\nBiometricData.Data=\"\";"
+                },
+                {
+                    "Name": "GetToken",
+                    "Parameters": [],
+                    "Code": "return Token;"
+                },
+                {
+                    "Name": "GetPassword",
+                    "Parameters": [],
+                    "Code": "return Password;"
+                },
+                {
+                    "Name": "GetUserName",
+                    "Parameters": [],
+                    "Code": "return UserName;"
+                },
+                {
+                    "Name": "GetIpAddress",
+                    "Parameters": [],
+                    "Code": "return IpAddress;"
+                },
+                {
+                    "Name": "GetBiometricData",
+                    "Parameters": [],
+                    "Code": "return BiometricData;"
+                }
+            ]
+        },
+        {
+            "Name": "DefaultAuthenticationHandler",
+            "SuperClass": "RequestAuthenticationHandler",
+            "Attributes": [
+                "NextHandler"
+            ],
+            "Methods": [
+                {
+                    "Name": "HandleRequest",
+                    "Parameters": [
+                        "request"
+                    ],
+                    "Code": "create object instance error_auth_response of Response;\nerror_auth_response.SetSuccess(FALSE);\nerror_auth_response.SetErrorMessage(\"No valid data provided\");\nreturn error_auth_response;"
+                }
+            ]
+        },
+        {
+            "Name": "Response",
+            "SuperClass": "",
+            "Attributes": [
+                "Success",
+                "ErrorMessage"
+            ],
+            "Methods": [
+                {
+                    "Name": "SetSuccess",
+                    "Parameters": [
+                        "success"
+                    ],
+                    "Code": "Success = success;"
+                },
+                {
+                    "Name": "SetErrorMessage",
+                    "Parameters": [
+                        "message"
+                    ],
+                    "Code": "ErrorMessage = message;"
+                }
+            ]
+        },
+        {
+            "Name": "ConcreteAuthenticationHandler",
+            "SuperClass": "RequestAuthenticationHandler",
+            "Attributes": [
+                "NextHandler"
+            ],
+            "Methods": []
+        },
+        {
+            "Name": "PasswordAuthenticationHandler",
+            "SuperClass": "ConcreteAuthenticationHandler",
+            "Attributes": [],
+            "Methods": [
+                {
+                    "Name": "HandleRequest",
+                    "Parameters": [
+                        "request"
+                    ],
+                    "Code": "if (request.GetUserName() == \"Ivan\" AND request.GetPassword() == \"Password123\")\n\tcreate object instance password_auth_response of Response;\n\tpassword_auth_response.SetSuccess(TRUE);\n\treturn password_auth_response;\nend if;\n\nreturn NextHandler.HandleRequest(request);"
+                }
+            ]
+        },
+        {
+            "Name": "TokenAuthenticationHandler",
+            "SuperClass": "ConcreteAuthenticationHandler",
+            "Attributes": [],
+            "Methods": [
+                {
+                    "Name": "HandleRequest",
+                    "Parameters": [
+                        "request"
+                    ],
+                    "Code": "if (request.GetToken() == 514)\n\tcreate object instance token_auth_response of Response;\n\ttoken_auth_response.SetSuccess(TRUE);\n\treturn token_auth_response;\nend if;\n\nreturn NextHandler.HandleRequest(request);"
+                }
+            ]
+        },
+        {
+            "Name": "IpAddressAuthenticationHandler",
+            "SuperClass": "ConcreteAuthenticationHandler",
+            "Attributes": [],
+            "Methods": [
+                {
+                    "Name": "HandleRequest",
+                    "Parameters": [
+                        "request"
+                    ],
+                    "Code": "if (request.GetIpAddress() == \"192.168.1.1\")\n\tcreate object instance ip_auth_response of Response;\n\tip_auth_response.SetSuccess(TRUE);\n\treturn ip_auth_response;\nend if;\n\nreturn NextHandler.HandleRequest(request);"
+                }
+            ]
+        },
+        {
+            "Name": "BiometricAuthenticationHandler",
+            "SuperClass": "ConcreteAuthenticationHandler",
+            "Attributes": [],
+            "Methods": [
+                {
+                    "Name": "HandleRequest",
+                    "Parameters": [
+                        "request"
+                    ],
+                    "Code": "if (request.GetBiometricData().GetData() == \"abcdefgh\")\n\tcreate object instance bio_auth_response of Response;\n\tbio_auth_response.SetSuccess(TRUE);\n\treturn bio_auth_response;\nend if;\n\nreturn NextHandler.HandleRequest(request);"
+                }
+            ]
+        },
+        {
+            "Name": "BiometricData",
+            "SuperClass": "",
+            "Attributes": [
+                "Data"
+            ],
+            "Methods": [
+                {
+                    "Name": "GetData",
+                    "Parameters": [],
+                    "Code": "return Data;"
+                }
+            ]
+        },
+        {
+            "Name": "AuthenticationHandlerPipelineBuilder",
+            "SuperClass": "",
+            "Attributes": [],
+            "Methods": [
+                {
+                    "Name": "BuildPipeline",
+                    "Parameters": [],
+                    "Code": "create object instance ipAddressAuthenticator of IpAddressAuthenticationHandler;\ncreate object instance passwordAuthenticator of PasswordAuthenticationHandler;\ncreate object instance tokenAuthenticator of TokenAuthenticationHandler;\ncreate object instance biometricAuthenticator of BiometricAuthenticationHandler;\ncreate object instance defaultAuthenticator of DefaultAuthenticationHandler;\nipAddressAuthenticator.NextHandler = passwordAuthenticator;\npasswordAuthenticator.NextHandler = tokenAuthenticator;\ntokenAuthenticator.NextHandler = biometricAuthenticator;\nbiometricAuthenticator.NextHandler = defaultAuthenticator;\nreturn ipAddressAuthenticator;"
+                }
+            ]
+        },
+        {
+            "Name": "Client",
+            "SuperClass": "",
+            "Attributes": [
+                "RequestProcessingPipeline"
+            ],
+            "Methods": [
+                {
+                    "Name": "StartScenario",
+                    "Parameters": [],
+                    "Code": "create object instance builder of AuthenticationHandlerPipelineBuilder;\nRequestProcessingPipeline = builder.BuildPipeline();\nStartPasswordRequest();\nStartBiometricRequest();\nStartIpRequest();\nStartTokenRequest();\nStartInvalidRequest();"
+                },
+                {
+                    "Name": "StartPasswordRequest",
+                    "Parameters": [],
+                    "Code": "create object instance password_request of Request;\npassword_request.Initialize();\npassword_request.UserName = \"Ivan\";\npassword_request.Password = \"Password123\";\nRequestProcessingPipeline.HandleRequest(password_request);"
+                },
+                {
+                    "Name": "StartBiometricRequest",
+                    "Parameters": [],
+                    "Code": "create object instance biometric_request of Request;\nbiometric_request.Initialize();\nbiometric_request.BiometricData.Data = \"abcdefgh\";\nRequestProcessingPipeline.HandleRequest(biometric_request);"
+                },
+                {
+                    "Name": "StartIpRequest",
+                    "Parameters": [],
+                    "Code": "create object instance ip_request of Request;\nip_request.Initialize();\nip_request.IpAddress = \"192.168.1.1\";\nRequestProcessingPipeline.HandleRequest(ip_request);"
+                },
+                {
+                    "Name": "StartTokenRequest",
+                    "Parameters": [],
+                    "Code": "create object instance token_request of Request;\ntoken_request.Initialize();\ntoken_request.Token = 514;\nRequestProcessingPipeline.HandleRequest(token_request);"
+                },
+                {
+                    "Name": "StartInvalidRequest",
+                    "Parameters": [],
+                    "Code": "create object instance invalid_request of Request;\ninvalid_request.Initialize();\nRequestProcessingPipeline.HandleRequest(invalid_request);"
+                }
+            ]
+        }
+    ]
+}

@@ -217,7 +217,7 @@ namespace Visualization.ClassDiagram.Editors
 
             var relationInDiagram = new RelationInDiagram
                 { ParsedRelation = relation, RelationInfo = cdRelation, VisualObject = relationGo };
-            DiagramPool.Instance.ClassDiagram.Relations.Add(relationInDiagram);
+            DiagramPool.Instance.ClassDiagram.AddRelation(relationInDiagram);
             DiagramPool.Instance.ClassDiagram.graph.UpdateGraph();
         }
 

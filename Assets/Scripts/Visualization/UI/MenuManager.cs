@@ -15,6 +15,7 @@ using UnityEngine.Localization.Settings;
 using AnimArch.Extensions;
 using UnityEditor;
 using Visualization.ClassDiagram.Editors;
+using System.Text.RegularExpressions;
 
 namespace Visualization.UI
 {
@@ -66,6 +67,8 @@ namespace Visualization.UI
         [SerializeField] public GameObject notSelectedClassText;
         [SerializeField] public GameObject notSelectedMethodText;
         [SerializeField] public Button HideNotSelectedPanelBtn;
+        [SerializeField] public GameObject MethodParameterPrefab;
+        [SerializeField] public GameObject EnterParameterPopUp;
 
         // [SerializeField] public TMP_Text MaskingFileLabel;
         // [SerializeField] public Button RemoveMaskingBtn;
@@ -462,6 +465,178 @@ namespace Visualization.UI
 
             playIntroTexts.SetActive(true);
             Animation.Animation.Instance.HighlightClass(startClassName, false);
+        }
+        private void ApplyPlayMethodSelection(string startMethodName)
+        {
+            Animation.Animation a = Animation.Animation.Instance;
+            string startClassName = a.startClassName;
+            a.startMethodName = startMethodName;
+
+            playIntroTexts.SetActive(true);
+            Debug.Log("Selected class: " + startClassName + " Selected Method: " + a.startMethodName);
+            a.HighlightClass(startClassName, false);
+        }
+
+        private EXEValueBase ParseParameterValue(string value, string type)
+        {
+            if (!EXETypes.IsPrimitive(EXETypes.ConvertEATypeName(type)))
+            {
+                return EXETypes.DefaultValue(type, Animation.Animation.Instance.CurrentProgramInstance.ExecutionSpace);
+            }
+            try {
+                EXEValueBase result = null;
+                if ("string".Equals(EXETypes.ConvertEATypeName(type)))
+                {
+                    result = new EXEValueString("\"" + value + "\"");
+                }
+                else
+                {
+                    result = EXETypes.DeterminePrimitiveValue(value);
+                    if (result == null || !EXETypes.ConvertEATypeName(type).Equals(result.TypeName))
+                    {
+                        return null;
+                    }
+                }
+                return result;
+            } catch (ArgumentException e) {
+                Debug.LogError(e.ToString());
+                return null;
+            } catch (FormatException e) {
+                Debug.LogError(e.ToString());
+                return null;
+            }
+        }
+
+        private EXEValueBase ParseUserInput(string value, string type)
+        {
+            if (EXETypes.IsValidArrayType(type))
+            {
+                List<EXEValueBase> exeList = new List<EXEValueBase>();
+                string listType = type.Substring(0, type.Length-2);
+                if (value.Length > 0)
+                {
+                    foreach (string listItem in value.Split(','))
+                    {
+                        EXEValueBase newValue = ParseParameterValue(listItem.Trim(), listType);
+                        if (newValue == null)
+                        {
+                            return null;
+                        }
+                        exeList.Add(newValue);
+                    }
+                }
+                return new EXEValueArray(type, exeList);
+            }
+
+            return ParseParameterValue(value, type);
+        }
+
+        private Transform parameterHolder
+        { 
+            get 
+            {
+                MediatorEnterParameterPopUp mediator = EnterParameterPopUp.GetComponent<MediatorEnterParameterPopUp>();
+                return mediator.Content.transform;
+            } 
+        }
+
+        public void SaveParametersForInitialMethod()
+        {
+            MediatorEnterParameterPopUp mediator = EnterParameterPopUp.GetComponent<MediatorEnterParameterPopUp>();
+            Animation.Animation a = Animation.Animation.Instance;
+            string startMethodName = mediator.GetMethodLabelText();
+            bool inputCorrect = true;
+
+            List<EXEVariable> newParameters = new List<EXEVariable>();
+
+            foreach (Transform parameter in parameterHolder)
+            {
+                string parameterName  = parameter.gameObject.GetComponent<MethodParameterManager>().ParameterName.GetComponent<TMP_Text>().text;
+                string parameterValue = parameter.gameObject.GetComponent<MethodParameterManager>().ParameterValueText.GetComponent<TMP_Text>().text;
+                if (Regex.Replace(parameterValue, @"[^\w:/ \.,]", string.Empty).Length == 0)
+                {
+                    parameterValue = parameter.gameObject.GetComponent<MethodParameterManager>().PlaceholderText.GetComponent<TMP_Text>().text;
+                }
+                string parameterType = parameter.gameObject.GetComponent<MethodParameterManager>().ParameterType.GetComponent<TMP_Text>().text;
+                GameObject errorLabel = parameter.gameObject.GetComponent<MethodParameterManager>().ErrorLabel.gameObject;
+                errorLabel.SetActive(false);
+
+                EXEValueBase parameterExeValue = ParseUserInput(Regex.Replace(parameterValue, @"[^\w:/ \.,]", string.Empty), parameterType);
+                if (parameterExeValue == null)
+                {
+                    parameter.gameObject.GetComponent<MethodParameterManager>().SetErrorLabelText(parameterType);
+                    errorLabel.SetActive(true);
+                    inputCorrect = false;
+                }
+                else
+                {
+                    newParameters.Add(new EXEVariable(parameterName, parameterExeValue));
+                }
+            }
+
+            if (inputCorrect)
+            {
+                a.startMethodParameters[startMethodName] = newParameters;
+                mediator.SetActiveEnterParameterPopUp(false);
+                ApplyPlayMethodSelection(startMethodName);
+            }
+        }
+
+        public void SelectPlayMethod(int id)
+        {
+            Animation.Animation a = Animation.Animation.Instance;
+            string startMethodName = StartingMethodPagination.GetSelectedItem(id);
+            string startClassName = a.startClassName;
+            List<CDParameter> parameters = a.CurrentProgramInstance.ExecutionSpace.getClassByName(startClassName).GetMethodByName(startMethodName).Parameters;
+
+            if (parameters.Count == 0)
+            {
+                ApplyPlayMethodSelection(startMethodName);
+                return;
+            }
+
+            MediatorEnterParameterPopUp mediator = EnterParameterPopUp.GetComponent<MediatorEnterParameterPopUp>();
+
+            foreach (Transform child in mediator.Content.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            for (int i = 0; i < parameters.Count; i++)
+            {
+                CDParameter parameter = parameters[i];
+                GameObject parameterGo = Instantiate(MethodParameterPrefab, mediator.Content.transform);
+                parameterGo.GetComponent<MethodParameterManager>().ParameterName.GetComponent<TMP_Text>().text = parameter.Name;
+                parameterGo.GetComponent<MethodParameterManager>().ParameterType.GetComponent<TMP_Text>().text = parameter.Type;
+                string parameterValue;
+
+                if (!EXETypes.IsPrimitive(EXETypes.ConvertEATypeName(parameter.Type.Replace("[]", ""))))
+                {
+                    parameterGo.GetComponent<MethodParameterManager>().ParameterValue.GetComponent<TMP_InputField>().interactable = false;
+                    parameterGo.GetComponent<MethodParameterManager>().WarningLabel.gameObject.SetActive(true);
+                    parameterValue = " ";
+                }
+                else
+                {
+                    VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+
+                    if (a.startMethodParameters.ContainsKey(startMethodName))
+                    {
+                        a.startMethodParameters[startMethodName][i].Value.Accept(visitor);
+                    }
+                    else
+                    {
+                        EXETypes.DefaultValue(parameter.Type, a.CurrentProgramInstance.ExecutionSpace).Accept(visitor);
+                    }
+                    
+                    parameterValue = visitor.GetCommandStringAndResetStateNow();
+                }
+
+                parameterGo.GetComponent<MethodParameterManager>().SetPlaceholderText(parameterValue);
+            }
+
+            mediator.SetMethodLabelText(startMethodName);
+            mediator.SetActiveEnterParameterPopUp(true);
         }
 
         public void UnshowAnimation()

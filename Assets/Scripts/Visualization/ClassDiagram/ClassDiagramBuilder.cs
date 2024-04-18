@@ -66,9 +66,10 @@ namespace Visualization.ClassDiagram
 
             DiagramPool.Instance.ClassDiagram.graph = graphGo.GetComponent<Graph>();
             DiagramPool.Instance.ClassDiagram.graph.nodePrefab = DiagramPool.Instance.classPrefab;
-            GameObject.Find("EditBtn").GetComponentInChildren<Button>().interactable = true;
-            GameObject.Find("Create").GetComponentInChildren<Button>().interactable = true;
-            GameObject.Find("Edit (1)").GetComponentInChildren<Button>().interactable = true;
+            GameObject.Find("DiagramPanel/Buttons/Edit").GetComponentInChildren<Button>().interactable = true;
+            GameObject.Find("AnimationPanel/Buttons/Load").GetComponentInChildren<Button>().interactable = true;
+            GameObject.Find("AnimationPanel/Buttons/Create").GetComponentInChildren<Button>().interactable = true;
+            GameObject.Find("MaskingPanel/Buttons/Load").GetComponentInChildren<Button>().interactable = true;
         }
 
         //Auto arrange objects in space

@@ -21,12 +21,10 @@ public class ClassHighlightObserver : HighlightObserver
             if (s.HighlightInt == 1)
             {
                 a.HighlightClass(s.ClassName,true);
-                a.edgeHighlighter.Highligt(s.InvocationInfo);
             }
             else if (s.HighlightInt == 0)
             {
                 a.HighlightClass(s.ClassName, false);
-                a.HighlightEdge(s.InvocationInfo.Relation?.RelationshipName, false, s.InvocationInfo);
             }
             
         }

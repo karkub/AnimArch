@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace OALProgramControl
 {
-    public abstract class EXECommand : IVisitable
+    public abstract class EXECommand
     {
         public bool IsActive { get; set; } = false;
         protected EXEScope SuperScope { get; private set; } = null;

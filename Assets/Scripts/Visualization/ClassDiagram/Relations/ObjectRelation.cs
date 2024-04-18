@@ -29,12 +29,6 @@ namespace Visualization.ClassDiagram.Relations
         public void Generate()
         {
             GameObject = InitEdge();
-            var uEdge = GameObject.GetComponent<UEdge>();
-            uEdge.Points = new Vector2[]
-            {
-                _start.VisualObject.transform.position,
-                _end.VisualObject.transform.position
-            };
         }
 
         private GameObject InitEdge()

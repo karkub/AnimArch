@@ -34,6 +34,8 @@ namespace OALProgramControl
             this.OwningClass = owningClass;
 
             this.ReferencingValues = new List<EXEValueReference>();
+
+            UnityEngine.Debug.LogErrorFormat("Created object instance with id {0}", UniqueID);
         }
         public EXEValueBase GetAttributeValue(String name)
         {
@@ -51,10 +53,6 @@ namespace OALProgramControl
             {
                 referencingValue.Dereference();
             }
-        }
-        public string AttributeValuesForClassDiagram()
-        {
-            return string.Join("\n", this.State.Keys.Select(key => key + " = " + this.State[key].ToObjectDiagramText()));
         }
     }
 }
