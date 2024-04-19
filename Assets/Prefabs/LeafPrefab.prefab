@@ -138,6 +138,7 @@ MonoBehaviour:
   ComponentName: 
   parent: {fileID: 0}
   LeafName: 
+  Label: {fileID: 6398849187033255833}
 --- !u!1 &6398849187033255833
 GameObject:
   m_ObjectHideFlags: 0

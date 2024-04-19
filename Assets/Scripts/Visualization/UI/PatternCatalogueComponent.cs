@@ -37,6 +37,18 @@ namespace Visualization.UI
         {
             return null;
         }
-        //TODO pridaj label atribut a drag and dropni ho v editore z prefabu
+        public virtual GameObject GetLabel()
+        {
+            return null;
+        }
+        public virtual GameObject GetArrow()
+        {
+            return null;
+        }
+        public virtual GameObject GetPanel()
+        {
+            return null;
+        }
+        
     }
 }

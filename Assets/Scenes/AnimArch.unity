@@ -5780,13 +5780,13 @@ MonoBehaviour:
   PanelSourceCodeAnimation: {fileID: 1792605010}
   ShowErrorBtn: {fileID: 874806523}
   ErrorPanel: {fileID: 376187649}
-  MethodParameterPrefab: {fileID: 1226358218867430, guid: 927e4a314eda1b04a864e3072aef0b4c,
-    type: 3}
-  EnterParameterPopUp: {fileID: 431992932}
   NotSelectedToAnimatePanel: {fileID: 377535309}
   notSelectedClassText: {fileID: 1123259380}
   notSelectedMethodText: {fileID: 1605024133}
   HideNotSelectedPanelBtn: {fileID: 674895961}
+  MethodParameterPrefab: {fileID: 1226358218867430, guid: 927e4a314eda1b04a864e3072aef0b4c,
+    type: 3}
+  EnterParameterPopUp: {fileID: 431992932}
   createdAnim:
     AnimationName: 
     MethodsCodes: []
@@ -15159,7 +15159,7 @@ RectTransform:
   - {fileID: 1123259381}
   - {fileID: 1605024134}
   m_Father: {fileID: 868537376}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -47547,6 +47547,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1262829238}
   - component: {fileID: 1262829239}
+  - component: {fileID: 1262829240}
   m_Layer: 5
   m_Name: PatternCataloguePanel
   m_TagString: Untagged
@@ -47597,11 +47598,23 @@ MonoBehaviour:
   UpperSeparator: {fileID: 1804000478}
   PatternCatalogueLabel: {fileID: 315080532}
   PrefabCanvas: {fileID: 650752373}
+  MediatorMainPanel: {fileID: 1739363764}
+--- !u!114 &1262829240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262829237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e60139ae7323c47880af5c0d7bad2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   PrefabPattern: {fileID: 9147520873521795905, guid: 62f1d8450967fdf47b451aef9e42d0ea,
     type: 3}
   PrefabLeaf: {fileID: 3741087322950803797, guid: 11e771dad1ee3654498374fa347420bc,
     type: 3}
-  MediatorMainPanel: {fileID: 1739363764}
 --- !u!1 &1272554773
 GameObject:
   m_ObjectHideFlags: 0

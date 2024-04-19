@@ -6,6 +6,7 @@ namespace Visualization.UI
     {
         public string LeafName;
         public string LeafPath{get; set;}
+        public GameObject Label;
         public PatternCatalogueLeaf(string path, string name) : base(path,name)
         {
             LeafName = name;
@@ -23,6 +24,10 @@ namespace Visualization.UI
         public override string GetName()
         {
             return LeafName;
+        }
+        public GameObject GetLabel()
+        {
+            return Label;
         }
         //TODO pridaj leaf masking a diagram
         //TODO pridaj sipka atribut a drag and dropni ho v editore z prefabu

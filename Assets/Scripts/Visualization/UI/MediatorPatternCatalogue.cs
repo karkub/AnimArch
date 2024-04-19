@@ -7,6 +7,7 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.IO;
+using Visualisation.UI;
 
 namespace Visualization.UI
 {
@@ -18,11 +19,11 @@ namespace Visualization.UI
         [SerializeField] private GameObject UpperSeparator;
         [SerializeField] private GameObject PatternCatalogueLabel;
         [SerializeField] private GameObject PrefabCanvas;
-        [SerializeField] private GameObject PrefabPattern;
-        [SerializeField] private GameObject PrefabLeaf;
-        private List<(PatternCatalogueComponent, GameObject)> PatternNodes = new List<(PatternCatalogueComponent, GameObject)>();
+        private List<PatternCatalogueComponent> PatternNodes = new List<PatternCatalogueComponent>();
+        private List<GameObject> PatternPrefabs = new List<GameObject>();
         private PatternCatalogueCompositeLoader patternCatalogueLoader = new PatternCatalogueCompositeLoader();
         public MediatorMainPanel MediatorMainPanel;
+        private PatternCatalogueBuilder patternBuilder = new PatternCatalogueBuilder(); 
         PatternCatalogueComponent patternCatalogueComponentRoot = new PatternCatalogueComposite("null","PatternCatalogue");
         public override void OnClicked(GameObject Button)
         {
@@ -69,9 +70,9 @@ namespace Visualization.UI
 
             foreach (var node in PatternNodes)
             {
-                if (leafNode.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text == node.Item1.GetName()){
-                    AnimationData.Instance.SetDiagramPath(node.Item1.GetComponent().ComponentPath);
-                    MenuManager.Instance.SetDiagramPath(node.Item1.GetComponent().ComponentPath);
+                if (leafNode.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text == node.GetName()){
+                    AnimationData.Instance.SetDiagramPath(node.ComponentPath);
+                    MenuManager.Instance.SetDiagramPath(node.ComponentPath);
                     FileLoader.Instance.OpenDiagram();
                     //TODO> nacitaj diagram a animaciu
                 }
@@ -81,6 +82,7 @@ namespace Visualization.UI
         private void OnButtonExitClicked()
         {
             DestroyAllNodes();
+            DestroyAllChildren(PrefabCanvas);
             MediatorMainPanel.UnshowPatternCatalogue();
             ButtonExit.SetActive(false);
         }
@@ -94,7 +96,7 @@ namespace Visualization.UI
             ButtonExit.SetActive(active);
             patternCatalogueComponentRoot =  new PatternCatalogueComposite("null","PatternCatalogue");
             patternCatalogueLoader.Browse(patternCatalogueComponentRoot);
-            RecursiveCreatePatternPrefabs(PrefabCanvas,patternCatalogueComponentRoot,0.0f);
+            RecursiveCreatePatternPrefabs(PrefabCanvas,patternCatalogueComponentRoot);
             //CreatePatternPrefabsIteratively(PrefabCanvas, patternCatalogueComponent);
         }
 
@@ -106,44 +108,47 @@ namespace Visualization.UI
         // method pagination = inšpirácia na priradovanie parenta
         // priradit parent do atribútu
         // schoval vytvaranie strruktuy za builder
-        private void RecursiveCreatePatternPrefabs(GameObject parent, PatternCatalogueComponent patternCatalogueComponent, float rightOffset)
+        private void RecursiveCreatePatternPrefabs(GameObject parent, PatternCatalogueComponent patternCatalogueComponent)
         {
-            float currentRigthOffset = rightOffset;
             foreach(PatternCatalogueComponent child in patternCatalogueComponent.GetComponent().GetChildren())
             {
                 if(child is PatternCatalogueComposite)
                 {
-                    GameObject newParent = Instantiate(PrefabPattern);
-                    PatternNodes.Add((child.GetComponent(), newParent));
-                    
-                    //newParent.transform.position += new Vector3(rightOffset, 0, 0);
+                    if(child == null)
+                    {
+                        Debug.Log("Child is null");
+                    }
+                    GameObject newParent = patternBuilder.GetCompositeBuilder().Build(child, parent);
+                    PatternPrefabs.Add(newParent);
                     GameObject panel = newParent.transform.Find("Panel").gameObject;
-                    newParent.transform.SetParent(parent.transform, false);
-                    panel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = child.GetName();
-
                     panel.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => OnPatternClicked(newParent));
-                  
-                    RecursiveCreatePatternPrefabs(newParent, child.GetComponent(), currentRigthOffset+1);
+                    RecursiveCreatePatternPrefabs(newParent, child.GetComponent());
                 }
                 else if(child is PatternCatalogueLeaf)
                 {
-                    GameObject newPattern = Instantiate(PrefabLeaf);
-                    PatternNodes.Add((child.GetComponent(), newPattern));
-                    newPattern.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = child.GetName();
-                    newPattern.transform.SetParent(parent.transform, false);
+                    GameObject newPattern = patternBuilder.GetLeafBuilder().Build(child, parent);
                     newPattern.transform.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => OnLeafClicked(newPattern));
-                    newPattern.SetActive(false);
+                    PatternPrefabs.Add(newPattern);
                 }
             }
         }
 
         private void DestroyAllNodes()
         {
-            foreach(var node in PatternNodes)
+            foreach(GameObject node in PatternPrefabs)
             {
-                Destroy(node.Item2);
+                Destroy(node);
             }
-            PatternNodes = new List<(PatternCatalogueComponent, GameObject)>();
+            PatternPrefabs.Clear();
+            Debug.Log(PatternPrefabs.Count);
+        }
+
+        void DestroyAllChildren(GameObject parent)
+        {
+            foreach (Transform child in parent.transform)
+            {
+                Destroy(child.gameObject);
+            }
         }
 
     }
