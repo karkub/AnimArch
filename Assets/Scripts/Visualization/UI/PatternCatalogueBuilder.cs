@@ -6,7 +6,7 @@ using TMPro;
 
 namespace Visualisation.UI
 {
-    public class PatternCatalogueBuilder
+    public class PatternCatalogueBuilder : MonoBehaviour
     {        
      
         public GameObject PrefabPattern;

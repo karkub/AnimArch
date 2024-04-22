@@ -47548,6 +47548,7 @@ GameObject:
   - component: {fileID: 1262829238}
   - component: {fileID: 1262829239}
   - component: {fileID: 1262829240}
+  - component: {fileID: 1262829241}
   m_Layer: 5
   m_Name: PatternCataloguePanel
   m_TagString: Untagged
@@ -47598,6 +47599,7 @@ MonoBehaviour:
   UpperSeparator: {fileID: 1804000478}
   PatternCatalogueLabel: {fileID: 315080532}
   PrefabCanvas: {fileID: 650752373}
+  patternCatalogueComponentRoot: {fileID: 1262829237}
   MediatorMainPanel: {fileID: 1739363764}
 --- !u!114 &1262829240
 MonoBehaviour:
@@ -47615,6 +47617,24 @@ MonoBehaviour:
     type: 3}
   PrefabLeaf: {fileID: 3741087322950803797, guid: 11e771dad1ee3654498374fa347420bc,
     type: 3}
+--- !u!114 &1262829241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262829237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db4cabdf88719c0428b160b72f2413f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ComponentName: 
+  parent: {fileID: 0}
+  CompositeName: 
+  Label: {fileID: 0}
+  Arrow: {fileID: 0}
+  Panel: {fileID: 0}
 --- !u!1 &1272554773
 GameObject:
   m_ObjectHideFlags: 0

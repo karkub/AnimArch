@@ -4,6 +4,8 @@ using System.IO;
 namespace Visualization.UI{
     public class PatternCatalogueCompositeLoader : MonoBehaviour
     {
+        [SerializeField] private GameObject leafPrefab;
+        [SerializeField] private GameObject compositePrefab;
         public void Browse(PatternCatalogueComponent patternCatalogueComponent)
         {
             string folderPath = "Assets/Resources/PatternCatalogue";
@@ -20,15 +22,18 @@ namespace Visualization.UI{
             string[] files = Directory.GetFiles(folderPath);
             foreach (string file in files){
                 if(!file.Contains(".meta")){
-                    patternCatalogueComponent.Add(new PatternCatalogueLeaf(Path.GetDirectoryName(file), Path.GetFileName(file)));
+                    GameObject leaf = Instantiate(leafPrefab);
+                    // patternCatalogueComponent.Add(leaf.GetComponent());
                 }
             }
 
             string[] subFolders = Directory.GetDirectories(folderPath);
             foreach (string subFolder in subFolders){
-                PatternCatalogueComponent newParent = new PatternCatalogueComposite(folderPath + Path.GetFileName(subFolder) ,Path.GetFileName(subFolder));
-                patternCatalogueComponent.Add(newParent);
-                RecursivelyListFiles(subFolder, newParent);
+                // PatternCatalogueComponent newParent = new PatternCatalogueComposite(folderPath + Path.GetFileName(subFolder) ,Path.GetFileName(subFolder));
+                // patternCatalogueComponent.Add(newParent);
+                GameObject composite = Instantiate(compositePrefab);
+                // patternCatalogueComponent.Add(composite.GetComponent());
+                // RecursivelyListFiles(subFolder, composite.GetComponent());
                 
             }
         }
