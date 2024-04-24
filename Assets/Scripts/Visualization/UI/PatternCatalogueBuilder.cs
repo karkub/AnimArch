@@ -35,11 +35,12 @@ namespace Visualisation.UI
             }
             public GameObject Build(PatternCatalogueComponent patternComposite, GameObject parent)
             {
-                GameObject newParent = UnityEngine.Object.Instantiate(PatternPrefab);
+                GameObject newParent = Instantiate(PatternPrefab);
                 newParent.transform.SetParent(parent.transform, false);
 
                 GameObject panel = newParent.transform.Find("Panel").gameObject;
                 panel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = patternComposite.GetName();
+                parent.GetComponent<PatternCatalogueComposite>().Add(patternComposite);
 
                 return newParent;
             }
@@ -56,8 +57,9 @@ namespace Visualisation.UI
 
             public GameObject Build(PatternCatalogueComponent patternComposite, GameObject parent)
             {
-                GameObject newPattern = UnityEngine.Object.Instantiate(LeafPrefab);
+                GameObject newPattern = Instantiate(LeafPrefab);
                 newPattern.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = patternComposite.GetName();
+                parent.GetComponent<PatternCatalogueComposite>().Add(patternComposite);
                 newPattern.transform.SetParent(parent.transform, false);
                 newPattern.SetActive(false);
 

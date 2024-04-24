@@ -20,7 +20,7 @@ namespace Visualization.UI
         [SerializeField] private GameObject PatternCatalogueLabel;
         [SerializeField] private GameObject PrefabCanvas;
         [SerializeField] private GameObject patternCatalogueComponentRoot;
-        private List<PatternCatalogueComponent> PatternNodes = new List<PatternCatalogueComponent>();
+        private List<PatternCatalogueComponent> PatternNodes = new();
         private List<GameObject> PatternPrefabs = new List<GameObject>();
         private PatternCatalogueCompositeLoader patternCatalogueLoader = new PatternCatalogueCompositeLoader();
         public MediatorMainPanel MediatorMainPanel;
@@ -94,16 +94,11 @@ namespace Visualization.UI
             UpperSeparator.SetActive(active);
             PatternCatalogueLabel.SetActive(active);
             ButtonExit.SetActive(active);
-            var componenttt = this.gameObject.GetComponent(typeof(PatternCatalogueComposite));
-            // vytvorenie rootu 
-            // Component[] cccomponent = patternCatalogueComponentRoot.components;
-            // PatternCatalogueComponent component = patternCatalogueComponentRoot.GetComponent('PatternCatalogueComposite');
-            // patternCatalogueLoader.Browse(patternCatalogueComponentRoot.GetComponent('PatternCatalogueComposite'));
-            // RecursiveCreatePatternPrefabs(PrefabCanvas,patternCatalogueComponentRoot.GetComponent('PatternCatalogueComposite'));
-            // patternCatalogueComponentRoot =  new PatternCatalogueComposite("null","PatternCatalogue");
-            // patternCatalogueLoader.Browse(patternCatalogueComponentRoot);
-            // RecursiveCreatePatternPrefabs(PrefabCanvas,patternCatalogueComponentRoot);
-            //CreatePatternPrefabsIteratively(PrefabCanvas, patternCatalogueComponent);
+            PatternCatalogueComponent patternCatalogueComponentRoot = PatternCataloguePanel.GetComponent<PatternCatalogueComposite>();
+            //var components = PatternCataloguePanel.GetComponents<MonoBehaviour>();
+
+            patternCatalogueLoader.Browse(patternCatalogueComponentRoot);
+            RecursiveCreatePatternPrefabs(PrefabCanvas,patternCatalogueComponentRoot);
         }
 
         //TODO Not assigning the children in the scene correctly
