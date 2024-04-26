@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace OALProgramControl
 {
     public abstract class EXECommand
     {
         public bool IsActive { get; set; } = false;
-        protected EXEScope SuperScope { get; private set; } = null;
+        public static EXEScopeNull NullScope = EXEScopeNull.GetInstance();
+        public EXEScopeBase SuperScope { get; set; } = NullScope; 
         public EXEExecutionStack CommandStack { get; set; } = null;
-        public virtual IEnumerable<EXEScope> ScopesToTop()
+        
+        public virtual IEnumerable<EXEScopeBase> ScopesToTop()
         {
-            EXEScope currentScope = this.SuperScope;
+            EXEScopeBase currentScope = this.SuperScope;
+            yield return currentScope;
 
-            while (currentScope != null)
+            foreach (EXEScopeBase scope in currentScope.ScopesToTop())
             {
-                yield return currentScope;
-                currentScope = currentScope.SuperScope;
+                yield return scope;
             }
         }
         public EXEScopeMethod GetCurrentMethodScope()
@@ -50,11 +53,11 @@ namespace OALProgramControl
         {
             return EXEExecutionResult.Error(errorCode, errorMessage, this);
         }
-        public EXEScope GetSuperScope()
+        public EXEScopeBase GetSuperScope()
         {
             return this.SuperScope;
         }
-        public virtual void SetSuperScope(EXEScope SuperScope)
+        public virtual void SetSuperScope(EXEScopeBase SuperScope)
         {
             if (this == SuperScope)
             {
@@ -68,21 +71,16 @@ namespace OALProgramControl
                 this.CommandStack = SuperScope?.CommandStack;
             }
         }
-        public EXEScope GetTopLevelScope()
+        public EXEScopeBase GetTopLevelScope()
         {
-            EXEScope CurrentScope = this.SuperScope;
+            EXEScopeBase CurrentScope = this.SuperScope;
 
-            if (CurrentScope == null && this is EXEScope)
+            if (CurrentScope is EXEScopeNull)
             {
-                return this as EXEScope;
+                return this as EXEScopeBase;
             }
 
-            while (CurrentScope.SuperScope != null)
-            {
-                CurrentScope = CurrentScope.SuperScope;
-            }
-
-            return CurrentScope;
+            return CurrentScope.GetTopLevelScope();
         }
         public virtual Boolean IsComposite()
         {
@@ -93,14 +91,10 @@ namespace OALProgramControl
             v.VisitExeCommand(this);
         }
 
-        public void ToggleActiveRecursiveBottomUp(bool active)
+        public virtual void ToggleActiveRecursiveBottomUp(bool active)
         {
             this.IsActive = active;
-
-            if (this.SuperScope != null)
-            {
-                this.SuperScope.ToggleActiveRecursiveBottomUp(active);
-            }
+            this.SuperScope.ToggleActiveRecursiveBottomUp(active);
         }
         /**Use this when evaluating AST nodes and Execute might need to be called again.**/
         protected bool HandleRepeatableASTEvaluation(EXEExecutionResult executionResult)

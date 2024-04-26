@@ -16,7 +16,7 @@
             this.EvaluationResult = null;
         }
 
-        public EXEExecutionResult Evaluate(EXEScope currentScope, OALProgram currentProgramInstance, EXEASTNodeAccessChainContext valueContext)
+        public EXEExecutionResult Evaluate(EXEScopeBase currentScope, OALProgram currentProgramInstance, EXEASTNodeAccessChainContext valueContext)
         {
             VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
             this.NodeValue.Accept(visitor);

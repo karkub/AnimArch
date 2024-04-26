@@ -42,7 +42,7 @@ namespace OALProgramControl
             return Method;
         }
 
-        public override EXEExecutionResult Evaluate(EXEScope currentScope, OALProgram currentProgramInstance, EXEASTNodeAccessChainContext valueContext = null)
+        public override EXEExecutionResult Evaluate(EXEScopeBase currentScope, OALProgram currentProgramInstance, EXEASTNodeAccessChainContext valueContext = null)
         {
             // Prevent infinite loop if there is no return in method that is supposed to return something
             if (this.ExpectingReturn && !this.ReturnCollected)

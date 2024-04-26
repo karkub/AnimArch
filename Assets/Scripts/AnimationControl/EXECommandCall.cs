@@ -83,7 +83,7 @@ namespace OALProgramControl
 
             EXEScopeMethod MethodCode = this.MethodCall.Method.ExecutableCode;
             MethodCode.OwningObject = this.CalledObject;
-            MethodCode.SetSuperScope(null);
+            MethodCode.SetSuperScope(EXECommand.NullScope);
             MethodCode.CommandStack = this.CommandStack;
             MethodCode.MethodCallOrigin = this.MethodCall;
 

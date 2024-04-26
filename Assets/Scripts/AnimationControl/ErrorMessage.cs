@@ -50,7 +50,7 @@ namespace OALProgramControl
                         AttributeNameList(classInstance)
                     );
         }
-        public static string VariableNotFound(string variableName, EXEScope currentScope)
+        public static string VariableNotFound(string variableName, EXEScopeBase currentScope)
         {
             return string
                     .Format
@@ -430,7 +430,7 @@ namespace OALProgramControl
         {
             return s ?? "NULL";
         }
-        private static string VariableNameList(EXEScope currentScope)
+        private static string VariableNameList(EXEScopeBase currentScope)
         {
             return string.Join
                 (

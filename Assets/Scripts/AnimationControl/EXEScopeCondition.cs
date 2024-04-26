@@ -32,7 +32,7 @@ namespace OALProgramControl
             this.ElseScope = ElseScope;
         }
 
-        public override void SetSuperScope(EXEScope SuperScope)
+        public override void SetSuperScope(EXEScopeBase SuperScope)
         {
             base.SetSuperScope(SuperScope);
 

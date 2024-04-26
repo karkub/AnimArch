@@ -8,11 +8,11 @@ using Visualization.UI;
 
 namespace Visualization.Animation
 {
-    public class HighlightingTerminateRequest : HighlightingRequest
+    public class AnimationTerminateRequest : AnimationRequest
     {
         private Func<bool> terminateThread;
 
-        public HighlightingTerminateRequest(MethodInvocationInfo call, int threadId, Func<bool> terminateThread) : base(call, threadId)
+        public AnimationTerminateRequest(EXECommand command, AnimationThread thread, bool animate, bool animateObjects, Func<bool> terminateThread) : base(command, thread, animate, animateObjects)
         {
             this.terminateThread = terminateThread;
         }
