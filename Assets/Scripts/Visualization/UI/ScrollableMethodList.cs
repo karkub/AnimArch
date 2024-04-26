@@ -9,62 +9,108 @@ namespace Visualization.UI
     {
         public GameObject MethodPrefabButton;
         public Transform ButtonParent;
-        private List<GameObject> Buttons = new List<GameObject>();
-        private List<string> Items = new List<string>();
-        
-        private bool EditMode = true;
+        private readonly List<GameObject> Buttons = new();
+        private List<string> Items = new();
+        public ScrollableListState CurrentState { get; set; }
         private void Start()
         {   
-            this.Items = new();
+            Items = new();
         }
 
-        public void FillItems(List<string> items, bool editMode = true)
+        public void FillItems(List<string> items)
         {
-            this.EditMode = editMode;
-            this.Items = new List<string>(items);
+            Items = new List<string>(items);
             Refresh();
         }
 
         public void Refresh()
         {
-            foreach (GameObject button in this.Buttons)
+            foreach (GameObject button in Buttons)
             {
                 Destroy(button); 
             }
-            this.Buttons.Clear();
+            Buttons.Clear();
 
             ConstructButtons();
         }
 
         public void ClearItems()
         {
-            foreach (GameObject button in this.Buttons)
+            foreach (GameObject button in Buttons)
             {
                 Destroy(button); 
             }
-            this.Buttons.Clear();
-            this.Items.Clear();
+            Buttons.Clear();
+            Items.Clear();
         }
 
         private void ConstructButtons()
         {
-            if (this.Items == null)
+            if (Items == null)
             {
                 return;
             }
-            foreach (string item in this.Items)
+            foreach (string item in Items)
             {
                 GameObject button = Instantiate(MethodPrefabButton, ButtonParent);
                 button.GetComponentInChildren<TextMeshProUGUI>().text = item;
                 
-                if(this.EditMode){
-                    button.GetComponent<Button>().onClick.AddListener(() => MenuManager.Instance.SelectMethod(item));
-                }else{
-                    button.GetComponent<Button>().onClick.AddListener(() => MenuManager.Instance.SelectPlayMethod(item));
-                }
+                CurrentState.HandleButtonClick(item, button.GetComponent<Button>());
+  
                 button.SetActive(true);
-                this.Buttons.Add(button);
+                Buttons.Add(button);
             }
+        }
+    }
+
+    public abstract class ScrollableListState
+    {
+        public void HandleButtonClick(string item, Button button){
+            button.onClick.AddListener(() => HandleButtonClickAction(item));
+        }
+
+        protected abstract void HandleButtonClickAction(string item);
+    }
+
+    public class EditModeState : ScrollableListState
+    {
+        private static EditModeState instance;
+        public static EditModeState Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new EditModeState();
+                }
+                return instance;
+            }
+        }
+
+        protected override void HandleButtonClickAction(string item)
+        {
+            MenuManager.Instance.SelectMethod(item);
+        }
+    }
+
+    public class PlayModeState : ScrollableListState
+    {
+        private static PlayModeState instance;
+        public static PlayModeState Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new PlayModeState();
+                }
+                return instance;
+            }
+        }
+
+        protected override void HandleButtonClickAction(string item)
+        {
+            MenuManager.Instance.SelectPlayMethod(item);
         }
     }
 }
