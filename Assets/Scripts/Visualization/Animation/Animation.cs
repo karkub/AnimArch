@@ -164,9 +164,13 @@ namespace Visualization.Animation
             VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
             CurrentCommand.Accept(visitor);
             string commandCode = visitor.GetCommandStringAndResetStateNow();
-            Debug.LogErrorFormat("Animate command code {0}", commandCode);
-            Debug.LogErrorFormat("Animate current command Type {0}", CurrentCommand.GetType());
-            AddActivityToDiagram(CurrentCommand, commandCode);
+
+            if (CurrentCommand.GetType() != typeof(EXEScopeMethod))
+            {
+                Debug.LogErrorFormat("Animate command code {0}", commandCode);
+                Debug.LogErrorFormat("Animate current command Type {0}", CurrentCommand.GetType());
+                AddActivityToDiagram(CurrentCommand, commandCode);
+            }
 
             if (CurrentCommand.GetType() == typeof(EXECommandCall))
             {
