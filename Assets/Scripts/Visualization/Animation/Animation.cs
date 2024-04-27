@@ -164,11 +164,11 @@ namespace Visualization.Animation
             VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
             CurrentCommand.Accept(visitor);
             string commandCode = visitor.GetCommandStringAndResetStateNow();
+            Debug.LogErrorFormat("Animate command code {0}", commandCode);
+            Debug.LogErrorFormat("Animate current command Type {0}", CurrentCommand.GetType());
 
             if (CurrentCommand.GetType() != typeof(EXEScopeMethod))
             {
-                Debug.LogErrorFormat("Animate command code {0}", commandCode);
-                Debug.LogErrorFormat("Animate current command Type {0}", CurrentCommand.GetType());
                 AddActivityToDiagram(CurrentCommand, commandCode);
             }
 
@@ -309,6 +309,11 @@ namespace Visualization.Animation
 
                     yield return new WaitForSeconds(secondsToWait);
                 }
+            }
+            else if (CurrentCommand.GetType().Equals(typeof(EXEScopeMethod)))
+            {
+                Debug.LogError("EXEScopeMethod activityDiagram.ClearDiagram()");
+                activityDiagram.ClearDiagram();
             }
             else
             {

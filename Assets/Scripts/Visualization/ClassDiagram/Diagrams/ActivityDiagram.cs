@@ -18,7 +18,7 @@ namespace AnimArch.Visualization.Diagrams
 
         private float initialActivityPositionX;
         private float initialActivityPositionZ;
-        private float activityOffsetY = 100;
+        private float activityOffsetY = 70;
         private void Awake()
         {
             DiagramPool.Instance.ActivityDiagram = this;
@@ -35,6 +35,17 @@ namespace AnimArch.Visualization.Diagrams
                 }
             }
 
+            ClearDiagram();
+
+            if (graph != null)
+            {
+                Destroy(graph.gameObject);
+                graph = null;
+            }
+        }
+        
+        public void ClearDiagram()
+        {
             // Get rid of already rendered activities in diagram.
             if (Activities != null)
             {
@@ -46,12 +57,6 @@ namespace AnimArch.Visualization.Diagrams
 
             Activities = new List<ActivityInDiagram>();
             Relations = new List<ActivityRelation>();
-
-            if (graph != null)
-            {
-                Destroy(graph.gameObject);
-                graph = null;
-            }
         }
 
         public void LoadDiagram()
@@ -84,7 +89,7 @@ namespace AnimArch.Visualization.Diagrams
                 activityInDiagram.VisualObject.transform.SetPositionAndRotation(
                     new Vector3(initialActivityPositionX, -i * activityOffsetY, initialActivityPositionZ), 
                     Quaternion.identity);
-                Debug.LogErrorFormat("Repositioning activity {0}", i);
+                // Debug.LogErrorFormat("Repositioning activity {0}", i); //TODOa remove
                 i++;
             }
         }
