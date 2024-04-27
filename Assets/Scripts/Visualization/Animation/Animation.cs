@@ -27,6 +27,7 @@ namespace Visualization.Animation
     {
         private ClassDiagram.Diagrams.ClassDiagram classDiagram;
         private ObjectDiagram objectDiagram;
+        private ActivityDiagram activityDiagram;
         public Color classColor;
         public Color methodColor;
         public Color relationColor;
@@ -56,6 +57,7 @@ namespace Visualization.Animation
         {
             classDiagram = GameObject.Find("ClassDiagram").GetComponent<ClassDiagram.Diagrams.ClassDiagram>();
             objectDiagram = GameObject.Find("ObjectDiagram").GetComponent<ObjectDiagram>();
+            activityDiagram = GameObject.Find("ActivityDiagram").GetComponent<ActivityDiagram>();
             standardPlayMode = true;
             edgeHighlighter = HighlightImmediate.GetInstance();
         }
@@ -159,6 +161,13 @@ namespace Visualization.Animation
 
         public IEnumerator AnimateCommand(EXECommand CurrentCommand, AnimationThread AnimationThread, bool Animate = true, bool AnimateNewObjects = true)
         {
+            VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+            CurrentCommand.Accept(visitor);
+            string commandCode = visitor.GetCommandStringAndResetStateNow();
+            Debug.LogErrorFormat("Animate command code {0}", commandCode);
+            Debug.LogErrorFormat("Animate current command Type {0}", CurrentCommand.GetType());
+            AddActivityToDiagram(CurrentCommand, commandCode);
+
             if (CurrentCommand.GetType() == typeof(EXECommandCall))
             {
                 EXECommandCall exeCommandCall = (EXECommandCall)CurrentCommand;
@@ -179,7 +188,7 @@ namespace Visualization.Animation
                         yield return StartCoroutine(BarrierFillCheck());
                     }
                 }
-
+                
                 UI.MenuManager.Instance.RefreshSourceCodePanel(exeCommandCall.InvokedMethod);
             }
             else if (CurrentCommand.GetType() == typeof(EXECommandReturn))
@@ -224,6 +233,8 @@ namespace Visualization.Animation
                         }
                     }
                 }
+                
+                AddFinalActivityToDiagram();
 
                 //UI.MenuManager.Instance.AnimateSourceCodeAtMethodStart(exeCommandReturn.InvokedMethod); // TODO -> should this happen?
             }
@@ -323,6 +334,18 @@ namespace Visualization.Animation
         {
             ObjectInDiagram objectInDiagram = objectDiagram.AddObjectInDiagram(name, newObject, showNewObject);
             return objectInDiagram;
+        }
+        private void AddActivityToDiagram(EXECommand currentCommand, string commandCode)
+        {
+            activityDiagram.AddActivityInDiagram(commandCode);
+            activityDiagram.RepositionActivities();
+            // activityDiagram.AddRelation();
+        }
+        private void AddFinalActivityToDiagram()
+        {
+            activityDiagram.AddFinalActivityInDiagram();
+            activityDiagram.RepositionActivities();
+            // activityDiagram.AddRelation();
         }
         private IEnumerator ResolveCreateObject(EXECommand currentCommand, bool Animate = true, bool AnimateNewObjects = true)
         {
