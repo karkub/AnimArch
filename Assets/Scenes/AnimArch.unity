@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807396, b: 0.35872662, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -26231,6 +26231,11 @@ GameObject:
   - component: {fileID: 650752377}
   - component: {fileID: 650752376}
   - component: {fileID: 650752375}
+  - component: {fileID: 650752379}
+  - component: {fileID: 650752381}
+  - component: {fileID: 650752380}
+  - component: {fileID: 650752382}
+  - component: {fileID: 650752383}
   m_Layer: 5
   m_Name: PatternPanel
   m_TagString: Untagged
@@ -26253,10 +26258,10 @@ RectTransform:
   m_Father: {fileID: 1067981268}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 101.83, y: -214}
+  m_SizeDelta: {x: 203.66, y: 428}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &650752375
 MonoBehaviour:
@@ -26352,6 +26357,86 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 650752373}
   m_CullTransparentMesh: 1
+--- !u!114 &650752379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 650752373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db4cabdf88719c0428b160b72f2413f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ComponentName: 
+  parent: {fileID: 0}
+  children: []
+  Label: {fileID: 0}
+  Arrow: {fileID: 0}
+  Panel: {fileID: 0}
+--- !u!114 &650752380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 650752373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2ae81dcb336c4c4785e93b28fc4e619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LeafPrefab: {fileID: 3741087322950803797, guid: 11e771dad1ee3654498374fa347420bc,
+    type: 3}
+--- !u!114 &650752381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 650752373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a410816f552934e4cb14aec715cd0120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PatternPrefab: {fileID: 9147520873521795905, guid: 62f1d8450967fdf47b451aef9e42d0ea,
+    type: 3}
+--- !u!114 &650752382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 650752373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ced7d70d6a4efe94996fd7ceb6c5cce5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parent: {fileID: 650752373}
+  patternPrefabs: []
+--- !u!114 &650752383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 650752373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab017a7a09209944aa5a69ebf9f73d09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PatternCataloguePanel: {fileID: 1262829237}
+  ButtonExit: {fileID: 1415401426}
+  Separator: {fileID: 744113874}
+  UpperSeparator: {fileID: 1804000478}
+  PatternCatalogueLabel: {fileID: 315080532}
+  PrefabCanvas: {fileID: 650752373}
+  MediatorMainPanel: {fileID: 1739363764}
+  PatternPrefabs: []
 --- !u!1 &659631007
 GameObject:
   m_ObjectHideFlags: 0
@@ -47548,8 +47633,6 @@ GameObject:
   - component: {fileID: 1262829238}
   - component: {fileID: 1262829239}
   - component: {fileID: 1262829240}
-  - component: {fileID: 1262829241}
-  - component: {fileID: 1262829242}
   m_Layer: 5
   m_Name: PatternCataloguePanel
   m_TagString: Untagged
@@ -47600,8 +47683,8 @@ MonoBehaviour:
   UpperSeparator: {fileID: 1804000478}
   PatternCatalogueLabel: {fileID: 315080532}
   PrefabCanvas: {fileID: 650752373}
-  patternCatalogueComponentRoot: {fileID: 1262829237}
   MediatorMainPanel: {fileID: 1739363764}
+  PatternPrefabs: []
 --- !u!114 &1262829240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47609,50 +47692,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1262829237}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6e60139ae7323c47880af5c0d7bad2f, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e1dcc070bf96fb40828192d76b366d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PrefabPattern: {fileID: 9147520873521795905, guid: 62f1d8450967fdf47b451aef9e42d0ea,
-    type: 3}
-  PrefabLeaf: {fileID: 3741087322950803797, guid: 11e771dad1ee3654498374fa347420bc,
-    type: 3}
---- !u!114 &1262829241
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1262829237}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db4cabdf88719c0428b160b72f2413f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ComponentName: 
-  parent: {fileID: 0}
-  CompositeName: 
-  Label: {fileID: 0}
-  Arrow: {fileID: 0}
-  Panel: {fileID: 0}
---- !u!114 &1262829242
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1262829237}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ced7d70d6a4efe94996fd7ceb6c5cce5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leafPrefab: {fileID: 3741087322950803797, guid: 11e771dad1ee3654498374fa347420bc,
-    type: 3}
-  compositePrefab: {fileID: 9147520873521795905, guid: 62f1d8450967fdf47b451aef9e42d0ea,
-    type: 3}
-  patternCataloguePanel: {fileID: 1262829237}
 --- !u!1 &1272554773
 GameObject:
   m_ObjectHideFlags: 0

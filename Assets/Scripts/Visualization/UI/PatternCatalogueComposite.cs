@@ -5,16 +5,14 @@ namespace Visualization.UI
 {
     public class PatternCatalogueComposite : PatternCatalogueComponent
     {
-        private List<PatternCatalogueComponent> children = new List<PatternCatalogueComponent>();
-        public string CompositeName;
+        public List<PatternCatalogueComponent> children;
         public string CompositePath{get; set;}
         public GameObject Label;
         public GameObject Arrow;
         public GameObject Panel;
-        public PatternCatalogueComposite(string path, string name) : base(path, name)
+        public void Awake()
         {
-            CompositeName = name;
-            CompositePath = path;
+            children = new List<PatternCatalogueComponent>();
         }
         public override void Add(PatternCatalogueComponent component)
         {
@@ -42,21 +40,21 @@ namespace Visualization.UI
         }
         public override string GetName()
         {
-            return CompositeName;
+            return ComponentName;
         }
         public override List<PatternCatalogueComponent> GetChildren()
         {
             return children;
         }
-        public GameObject GetLabel()
+        public override GameObject GetLabel()
         {
             return Label;
         }
-        public GameObject GetArrow()
+        public override GameObject GetArrow()
         {
             return Arrow;
         }
-        public GameObject GetPanel()
+        public override GameObject GetPanel()
         {
             return Panel;
         }

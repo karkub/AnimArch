@@ -8,12 +8,6 @@ namespace Visualization.UI
         public string ComponentName;
         public GameObject parent;
         public string ComponentPath{get; set;}
-
-        public PatternCatalogueComponent(string path, string name)
-        {
-            ComponentName = name;
-            ComponentPath = path;
-        }
         public virtual PatternCatalogueComponent GetComponent()
         {
             return null;
@@ -22,9 +16,6 @@ namespace Visualization.UI
         public virtual void Add(PatternCatalogueComponent component){}
         public virtual void Remove(PatternCatalogueComponent component){}
         
-        public void Awake(){
-            // tu setovať parenta
-        }
         public virtual string GetName()
         {
             return ComponentName;

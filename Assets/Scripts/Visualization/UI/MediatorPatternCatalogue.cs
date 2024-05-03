@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.IO;
 using Visualisation.UI;
+using PlasticGui.WorkspaceWindow;
 
 namespace Visualization.UI
 {
@@ -19,29 +20,24 @@ namespace Visualization.UI
         [SerializeField] private GameObject UpperSeparator;
         [SerializeField] private GameObject PatternCatalogueLabel;
         [SerializeField] private GameObject PrefabCanvas;
-        [SerializeField] private GameObject patternCatalogueComponentRoot;
-        private List<PatternCatalogueComponent> PatternNodes = new();
-        private List<GameObject> PatternPrefabs = new List<GameObject>();
-        private PatternCatalogueCompositeLoader patternCatalogueLoader = new PatternCatalogueCompositeLoader();
         public MediatorMainPanel MediatorMainPanel;
-        private PatternCatalogueBuilder patternBuilder = new PatternCatalogueBuilder(); 
+        private PatternCatalogueCompositeLoader patternLoader;
+        public List<GameObject> PatternPrefabs;
+
         public override void OnClicked(GameObject Button)
         {
             if (ReferenceEquals(Button, ButtonExit))
             {
                 OnButtonExitClicked();
-            } else if (Button.CompareTag("PatternNode"))
+            } else if (Button.GetComponentInParent<PatternCatalogueComposite>() != null && Button.GetComponentInParent<PatternCatalogueLeaf>() == null)
             {
                 OnPatternClicked(Button);
                 Debug.Log("PatternNode MEDIATOR CLICKED");
-            } else if (Button.CompareTag("LeafNode"))
+            } else
             {
                 OnLeafClicked(Button);
                 Debug.Log("LeafNode MEDIATOR CLICKED");
-            }else{
-                Debug.Log("Uknown MEDIATOR CLICKED");
             }
-            //TODO pridaj onclick na button a posli mediatora, prekonaj podla typu componentu
         }
 
         public void OnPatternClicked(GameObject patternNode)
@@ -67,7 +63,7 @@ namespace Visualization.UI
         public void OnLeafClicked(GameObject leafNode)
         {
             Debug.Log(leafNode.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text);
-
+/* 
             foreach (var node in PatternNodes)
             {
                 if (leafNode.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text == node.GetName()){
@@ -76,12 +72,11 @@ namespace Visualization.UI
                     FileLoader.Instance.OpenDiagram();
                     //TODO> nacitaj diagram a animaciu
                 }
-            }
+            } */
         }
 
         private void OnButtonExitClicked()
         {
-            DestroyAllNodes();
             DestroyAllChildren(PrefabCanvas);
             MediatorMainPanel.UnshowPatternCatalogue();
             ButtonExit.SetActive(false);
@@ -94,11 +89,18 @@ namespace Visualization.UI
             UpperSeparator.SetActive(active);
             PatternCatalogueLabel.SetActive(active);
             ButtonExit.SetActive(active);
-            PatternCatalogueComponent patternCatalogueComponentRoot = PatternCataloguePanel.GetComponent<PatternCatalogueComposite>();
-            //var components = PatternCataloguePanel.GetComponents<MonoBehaviour>();
 
-            patternCatalogueLoader.Browse(patternCatalogueComponentRoot);
-            RecursiveCreatePatternPrefabs(PrefabCanvas,patternCatalogueComponentRoot);
+            PatternCatalogueComponent patternCatalogueComponentRoot = PrefabCanvas.GetComponent<PatternCatalogueComposite>();
+            //var components = PatternCataloguePanel.GetComponents<MonoBehaviour>();
+            
+            if(PatternPrefabs.Count == 0)
+            {
+                patternLoader = PrefabCanvas.GetComponent<PatternCatalogueCompositeLoader>();
+                patternLoader.Browse(patternCatalogueComponentRoot);
+                PatternPrefabs = patternLoader.patternPrefabs;
+            }
+
+            //RecursiveCreatePatternPrefabs(PrefabCanvas,patternCatalogueComponentRoot);
         }
 
         //TODO Not assigning the children in the scene correctly
@@ -109,40 +111,6 @@ namespace Visualization.UI
         // method pagination = inšpirácia na priradovanie parenta
         // priradit parent do atribútu
         // schoval vytvaranie strruktuy za builder
-        private void RecursiveCreatePatternPrefabs(GameObject parent, PatternCatalogueComponent patternCatalogueComponent)
-        {
-            foreach(PatternCatalogueComponent child in patternCatalogueComponent.GetComponent().GetChildren())
-            {
-                if(child is PatternCatalogueComposite)
-                {
-                    if(child == null)
-                    {
-                        Debug.Log("Child is null");
-                    }
-                    GameObject newParent = patternBuilder.GetCompositeBuilder().Build(child, parent);
-                    PatternPrefabs.Add(newParent);
-                    GameObject panel = newParent.transform.Find("Panel").gameObject;
-                    panel.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => OnPatternClicked(newParent));
-                    RecursiveCreatePatternPrefabs(newParent, child.GetComponent());
-                }
-                else if(child is PatternCatalogueLeaf)
-                {
-                    GameObject newPattern = patternBuilder.GetLeafBuilder().Build(child, parent);
-                    newPattern.transform.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => OnLeafClicked(newPattern));
-                    PatternPrefabs.Add(newPattern);
-                }
-            }
-        }
-
-        private void DestroyAllNodes()
-        {
-            foreach(GameObject node in PatternPrefabs)
-            {
-                Destroy(node);
-            }
-            PatternPrefabs.Clear();
-            Debug.Log(PatternPrefabs.Count);
-        }
 
         void DestroyAllChildren(GameObject parent)
         {
@@ -150,6 +118,7 @@ namespace Visualization.UI
             {
                 Destroy(child.gameObject);
             }
+            PatternPrefabs.Clear();
         }
 
     }

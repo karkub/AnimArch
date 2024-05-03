@@ -4,14 +4,9 @@ namespace Visualization.UI
 {
     public class PatternCatalogueLeaf : PatternCatalogueComponent
     {
-        public string LeafName;
         public string LeafPath{get; set;}
         public GameObject Label;
-        public PatternCatalogueLeaf(string path, string name) : base(path,name)
-        {
-            LeafName = name;
-            LeafPath = path;
-        }
+
         public override PatternCatalogueComponent GetComponent()
         {
             return this;
@@ -23,9 +18,9 @@ namespace Visualization.UI
         } 
         public override string GetName()
         {
-            return LeafName;
+            return ComponentName;
         }
-        public GameObject GetLabel()
+        public override GameObject GetLabel()
         {
             return Label;
         }
