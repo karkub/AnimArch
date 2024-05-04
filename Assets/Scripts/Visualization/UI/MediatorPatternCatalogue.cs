@@ -20,7 +20,7 @@ namespace Visualization.UI
         [SerializeField] private GameObject UpperSeparator;
         [SerializeField] private GameObject PatternCatalogueLabel;
         [SerializeField] private GameObject PrefabCanvas;
-        public MediatorMainPanel MediatorMainPanel;
+        private MediatorMainPanel MediatorMainPanel;
         private PatternCatalogueCompositeLoader patternLoader;
         public List<GameObject> PatternPrefabs;
 
@@ -78,8 +78,14 @@ namespace Visualization.UI
         private void OnButtonExitClicked()
         {
             DestroyAllChildren(PrefabCanvas);
-            MediatorMainPanel.UnshowPatternCatalogue();
-            ButtonExit.SetActive(false);
+            SetActivePatternCataloguePanel(false);
+            SetActiveMainPanel(true);
+        }
+
+        public void SetActiveMainPanel(bool active)
+        {
+            // je null ?!
+            MediatorMainPanel.SetActiveMainPanel(active);
         }
 
         public void SetActivePatternCataloguePanel(bool active)
