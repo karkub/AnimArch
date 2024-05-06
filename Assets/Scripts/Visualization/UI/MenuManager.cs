@@ -77,6 +77,7 @@ namespace Visualization.UI
         public GameObject playIntroTexts;
         public List<AnimMethod> animMethods;
         public bool isSelectingNode;
+        public IStrategy Strategy = new StrategyProduction();
 
         private float SuperSpeedCoefficient
         {

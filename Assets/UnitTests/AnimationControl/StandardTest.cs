@@ -1,13 +1,21 @@
-﻿using OALProgramControl;
+﻿using NUnit.Framework;
+using OALProgramControl;
 using System;
 using UnityEditor;
 using UnityEngine;
+using Visualization.UI;
 
 namespace Assets.UnitTests.AnimationControl
 {
     public abstract class StandardTest
     {
         private const int LIMIT = 200;
+
+        [SetUp]
+        public void Setup()
+        {
+            MenuManager.Instance.Strategy = new StrategyTesting();
+        }
 
         protected EXEExecutionResult PerformExecution(OALProgram programInstance)
         {
@@ -55,5 +63,6 @@ namespace Assets.UnitTests.AnimationControl
             command.Accept(visitor);
             return visitor.GetCommandStringAndResetStateNow();
         }
+
     }
 }

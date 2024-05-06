@@ -24,7 +24,7 @@ namespace Assets.UnitTests.AnimationControl
                 CDClass owningClass = programInstance.ExecutionSpace.SpawnClass("Class1");
 
                 CDMethod owningMethod = new CDMethod(owningClass, "Method1", "");
-                owningClass.AddMethod(owningMethod);
+                owningClass.AddMethod(owningMethod); 
 
                 // Act
                 EXEScopeMethod methodScope = OALParserBridge.Parse(_methodSourceCode);

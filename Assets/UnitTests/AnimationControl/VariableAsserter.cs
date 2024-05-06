@@ -7,7 +7,7 @@ using OALProgramControl;
 
 namespace Assets.UnitTests.AnimationControl
 {
-    public class VariableAsserter
+    public class VariableAsserter 
     {
         private List<EXEVariable> ExpectedVariables;
         private EXEScope ActualScope;
