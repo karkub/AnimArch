@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8217174607727933947}
   - component: {fileID: 4398273929774993785}
   - component: {fileID: 8040429612018962361}
+  - component: {fileID: 6991265669532616712}
   m_Layer: 0
   m_Name: LeafPrefab
   m_TagString: LeafNode
@@ -150,6 +151,26 @@ MonoBehaviour:
   ComponentName: 
   parent: {fileID: 0}
   Label: {fileID: 6398849187033255833}
+--- !u!114 &6991265669532616712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3741087322950803797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 35
+  m_PreferredWidth: -1
+  m_PreferredHeight: 35
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &6398849187033255833
 GameObject:
   m_ObjectHideFlags: 0

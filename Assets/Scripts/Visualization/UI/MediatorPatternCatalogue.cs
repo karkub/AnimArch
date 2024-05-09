@@ -1,14 +1,8 @@
 using UnityEngine;
-using UnityEngine.UIElements;
-using Visualisation.Animation;
-using Visualization.Animation;
-using Visualization.TODO;
-using TMPro;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using System.IO;
-using Visualisation.UI;
-using PlasticGui.WorkspaceWindow;
+using Visualization.ClassDiagram;
+using Visualization.Animation;
+using Visualisation.Animation;
 
 namespace Visualization.UI
 {
@@ -20,9 +14,10 @@ namespace Visualization.UI
         [SerializeField] private GameObject UpperSeparator;
         [SerializeField] private GameObject PatternCatalogueLabel;
         [SerializeField] private GameObject PrefabCanvas;
-        private MediatorMainPanel MediatorMainPanel;
+        public MediatorMainPanel MediatorMainPanel;
         private PatternCatalogueCompositeLoader patternLoader;
         public List<GameObject> PatternPrefabs;
+        private IClassDiagramBuilder _classDiagramBuilder;
 
         public override void OnClicked(GameObject Button)
         {
@@ -32,15 +27,13 @@ namespace Visualization.UI
             } else if (Button.GetComponentInParent<PatternCatalogueComposite>() != null && Button.GetComponentInParent<PatternCatalogueLeaf>() == null)
             {
                 OnPatternClicked(Button);
-                Debug.Log("PatternNode MEDIATOR CLICKED");
             } else
             {
                 OnLeafClicked(Button);
-                Debug.Log("LeafNode MEDIATOR CLICKED");
             }
         }
 
-        public void OnPatternClicked(GameObject patternNode)
+        private void OnPatternClicked(GameObject patternNode)
         {
             foreach (Transform child in patternNode.transform)
             {
@@ -49,20 +42,40 @@ namespace Visualization.UI
                     child.gameObject.SetActive(!child.gameObject.activeSelf);
                 }else{
                     GameObject arrow = child.gameObject.transform.GetChild(1).gameObject;
-                    if(arrow.transform.rotation.z == 0)
-                    {
-                        arrow.transform.Rotate(0,0,90);
-                    }else{  
-                        arrow.transform.Rotate(0,0,-90);
-                    }                    
+                    RotateArrow(arrow);                   
                 }
                 
             }
+            Debug.Log("PATH: " + patternNode.GetComponent<PatternCatalogueComposite>().ComponentPath);
         }
 
-        public void OnLeafClicked(GameObject leafNode)
+        private void OnLeafClicked(GameObject leafNode)
         {
-            Debug.Log(leafNode.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text);
+            string parentPath = leafNode.transform.parent.GetComponent<PatternCatalogueComposite>().ComponentPath;
+            string parentName = leafNode.transform.parent.GetComponent<PatternCatalogueComposite>().ComponentName;
+            string path = leafNode.GetComponent<PatternCatalogueLeaf>().ComponentPath;
+            string name = leafNode.GetComponent<PatternCatalogueLeaf>().ComponentName;
+            Debug.Log("parentPath " + parentPath);
+            Debug.Log("parentName " + parentName);
+            Debug.Log("path " + path);
+            Debug.Log("name " + name);
+            OnButtonExitClicked();
+            _classDiagramBuilder = ClassDiagramBuilderFactory.Create();
+
+            MenuManager.Instance.SetDiagramPath(parentPath);
+            AnimationData.Instance.SetDiagramPath(path);
+            MenuManager.Instance.SetDiagramPath(parentPath);
+            _classDiagramBuilder.LoadDiagram();
+
+            Anim loadedAnim = new Anim(path.Replace(".json", ""));
+            loadedAnim.LoadCode(path);
+            //loadedAnim.Code = GetCleanCode(loadedAnim.Code);
+            MenuManager.SetAnimationButtonsActive(true);
+            AnimationData.Instance.selectedAnim = loadedAnim;
+            MenuManager.Instance.SetSelectedAnimation(loadedAnim.AnimationName);
+
+            //FileLoader.Instance.OpenDiagram();
+
 /* 
             foreach (var node in PatternNodes)
             {
@@ -75,6 +88,16 @@ namespace Visualization.UI
             } */
         }
 
+        private void RotateArrow(GameObject arrow)
+        {
+            if(arrow.transform.rotation.z == 0)
+            {
+                arrow.transform.Rotate(0,0,90);
+            }else{  
+                arrow.transform.Rotate(0,0,-90);
+            }
+        }
+
         private void OnButtonExitClicked()
         {
             DestroyAllChildren(PrefabCanvas);
@@ -84,7 +107,6 @@ namespace Visualization.UI
 
         public void SetActiveMainPanel(bool active)
         {
-            // je null ?!
             MediatorMainPanel.SetActiveMainPanel(active);
         }
 
@@ -97,7 +119,6 @@ namespace Visualization.UI
             ButtonExit.SetActive(active);
 
             PatternCatalogueComponent patternCatalogueComponentRoot = PrefabCanvas.GetComponent<PatternCatalogueComposite>();
-            //var components = PatternCataloguePanel.GetComponents<MonoBehaviour>();
             
             if(PatternPrefabs.Count == 0)
             {
@@ -105,8 +126,6 @@ namespace Visualization.UI
                 patternLoader.Browse(patternCatalogueComponentRoot);
                 PatternPrefabs = patternLoader.patternPrefabs;
             }
-
-            //RecursiveCreatePatternPrefabs(PrefabCanvas,patternCatalogueComponentRoot);
         }
 
         //TODO Not assigning the children in the scene correctly

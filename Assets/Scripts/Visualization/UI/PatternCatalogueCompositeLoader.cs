@@ -7,6 +7,7 @@ namespace Visualization.UI{
     public class PatternCatalogueCompositeLoader : MonoBehaviour
     {
         [SerializeField] private GameObject parent;
+        [SerializeField] private GameObject PatternPanel;
         public List<GameObject> patternPrefabs;
    
         public void Browse(PatternCatalogueComponent patternCatalogueComponent)
@@ -36,6 +37,12 @@ namespace Visualization.UI{
             foreach (string subFolder in subFolders){
                 PatternCatalogueCompositeBuilder compositeBuilder = GetComponent<PatternCatalogueCompositeBuilder>();
                 GameObject composite = compositeBuilder.Build(patternCatalogueComponent, parent, subFolder);
+                if(ReferenceEquals(parent, PatternPanel)){
+                    GameObject arrow = composite.GetComponent<PatternCatalogueComposite>().GetArrow();
+                    arrow.transform.Rotate(0,0,0);
+                }else{
+                    composite.SetActive(false);
+                }
                 GameObject newParent = composite;
                 patternPrefabs.Add(composite);
                 RecursivelyListFiles(subFolder, composite.GetComponent<PatternCatalogueComponent>(), newParent);
