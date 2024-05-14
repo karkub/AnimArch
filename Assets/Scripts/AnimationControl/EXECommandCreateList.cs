@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OALProgramControl
 {
-    public class EXECommandCreateList : EXECommand
+    public class EXECommandCreateList : EXECommandListOperation
     {
         public string ArrayType { get; }
         private string VariableType { get { return this.ArrayType + "[]"; } }
@@ -18,33 +18,28 @@ namespace OALProgramControl
             this.Items = items;
         }
 
-        protected override EXEExecutionResult Execute(OALProgram OALProgram)
+        public override EXEExecutionResult EvaluateItem(OALProgram OALProgram)
         {
+           return this.AssignmentTarget.Evaluate(this.SuperScope, OALProgram, new EXEASTNodeAccessChainContext() { CreateVariableIfItDoesNotExist = true, VariableCreationType = this.VariableType });
+        }
+
+        public override EXEExecutionResult EvaluateArray(OALProgram OALProgram, out bool success)
+        {
+            success = false;
             EXEExecutionResult itemEvaluationResult = null;
-
-            // Acquire the variable to assign the array to
-            EXEExecutionResult evaluationResultOfAssignmentTarget
-                = this.AssignmentTarget.Evaluate(this.SuperScope, OALProgram, new EXEASTNodeAccessChainContext() { CreateVariableIfItDoesNotExist = true, VariableCreationType = this.VariableType });
-
-            if (!HandleRepeatableASTEvaluation(evaluationResultOfAssignmentTarget))
-            {
-                return evaluationResultOfAssignmentTarget;
-            }
-
             // Prepare the items to populate the array with
             foreach (EXEASTNodeBase item in this.Items)
             {
                 itemEvaluationResult = item.Evaluate(this.SuperScope, OALProgram);
 
                 if (!HandleRepeatableASTEvaluation(itemEvaluationResult))
-                {
+                {   
                     return itemEvaluationResult;
                 }
             }
 
             // Create the array
             EXEExecutionResult arrayCreationResult = EXEValueArray.CreateArray(this.VariableType);
-
             if (!HandleSingleShotASTEvaluation(arrayCreationResult))
             {
                 return arrayCreationResult;
@@ -63,18 +58,14 @@ namespace OALProgramControl
                     return itemAppendmentResult;
                 }
             }
-
-            // Perform the assignment
-            EXEExecutionResult arrayAssignmentResult = evaluationResultOfAssignmentTarget.ReturnedOutput.AssignValueFrom(arrayCreationResult.ReturnedOutput);
-
-            if (!HandleSingleShotASTEvaluation(arrayAssignmentResult))
-            {
-                return arrayAssignmentResult;
-            }
-
-            return Success();
+            
+            success = true;
+            return arrayCreationResult;
         }
-
+        public override EXEExecutionResult PerformOperation(OALProgram OALProgram, EXEExecutionResult arrayEvaluationResult, EXEExecutionResult itemEvaluationResult){
+            return itemEvaluationResult.ReturnedOutput.AssignValueFrom(arrayEvaluationResult.ReturnedOutput);
+        }
+        
         public override void Accept(Visitor v)
         {
             v.VisitExeCommandCreateList(this);
