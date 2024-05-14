@@ -7,15 +7,15 @@ using Visualization.ClassDiagram.ComponentsInDiagram;
 namespace Visualization.ClassDiagram
 {
 
-public class HighlightImmediate : HighlightEdgeState
+public class HighlightImmediateState : HighlightEdgeState
 {
 
-    protected static HighlightImmediate instance = null;
-    public static HighlightImmediate GetInstance()
+    protected static HighlightImmediateState instance = null;
+    public static HighlightImmediateState GetInstance()
     {
         if (instance == null)
         {
-            instance = new HighlightImmediate();
+            instance = new HighlightImmediateState();
         }
         return instance;
     }

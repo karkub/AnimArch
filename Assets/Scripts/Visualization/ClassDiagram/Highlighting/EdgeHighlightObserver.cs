@@ -20,13 +20,12 @@ public class EdgeHighlightObserver : HighlightObserver
 
             if (s.HighlightInt == 1)
             {
-                a.edgeHighlighter.Highligt(s.InvocationInfo);
+                a.GetEdgeHighlighter().Highligt(s.InvocationInfo);
             }
             else if (s.HighlightInt == 0)
             {
                 a.HighlightEdge(s.InvocationInfo.Relation?.RelationshipName, false, s.InvocationInfo);
             }
-            
         }
 
 }

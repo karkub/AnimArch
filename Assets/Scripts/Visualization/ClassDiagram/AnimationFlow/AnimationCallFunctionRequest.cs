@@ -22,12 +22,7 @@ namespace Visualization.Animation
 
                 if (methodCallInfo != null)
                 {
-                    animation.BarrierSize = 1;
-                    animation.CurrentBarrierFill = 0;
-
                     animation.objectDiagram.AddRelation(methodCallInfo.CallerObject, methodCallInfo.CalledObject, "ASSOCIATION");
-
-                    animation.StartCoroutine(animation.BarrierFillCheck());
                 }
             }
         }
@@ -53,8 +48,6 @@ namespace Visualization.Animation
             yield return new WaitForSeconds(AnimationData.Instance.AnimSpeed * ANIM_SPEED_QUANTIFIER);
 
             Done = true;
-
-            animation.IncrementBarrier();
         }
     }
 }

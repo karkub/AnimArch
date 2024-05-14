@@ -128,7 +128,7 @@ namespace OALProgramControl
                 // Check if the returned value matches the expected parameter type
                 if (!EXETypes.CanBeAssignedTo(argumentExecutionResult.ReturnedOutput, this.Method.Parameters[i].Type, currentProgramInstance.ExecutionSpace))
                 {
-                    VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+                    VisitorCommandToString visitor = new VisitorCommandToString();
                     argumentExecutionResult.ReturnedOutput.Accept(visitor);
                     return EXEExecutionResult.Error
                     (
@@ -138,7 +138,7 @@ namespace OALProgramControl
                             this.Method.OwningClass.Name,
                             this.MethodName,
                             this.Method.Parameters[i].Name,
-                            this.Method.Parameters[i].Type, visitor.GetCommandStringAndResetStateNow()
+                            this.Method.Parameters[i].Type, visitor.GetCommandString()
                         )
                     );
                 }

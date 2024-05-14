@@ -31,9 +31,9 @@ namespace OALProgramControl
             }
 
             string result = string.Join(", ", this.Arguments.Select(argument => {
-                        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+                        VisitorCommandToString visitor = new VisitorCommandToString();
                         argument.EvaluationResult.ReturnedOutput.Accept(visitor);
-                        return visitor.GetCommandStringAndResetStateNow();
+                        return visitor.GetCommandString();
             }));
 
             this.PromptText = result;

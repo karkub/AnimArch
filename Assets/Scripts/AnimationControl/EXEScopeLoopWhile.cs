@@ -38,9 +38,9 @@ namespace OALProgramControl
             if (conditionEvaluationResult.ReturnedOutput is not EXEValueBool)
             {
                 startNewIteration = false;
-                VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+                VisitorCommandToString visitor = new VisitorCommandToString();
                 conditionEvaluationResult.ReturnedOutput.Accept(visitor);
-                return Error("XEC2028", ErrorMessage.InvalidValueForType(visitor.GetCommandStringAndResetStateNow(), EXETypes.BooleanTypeName));
+                return Error("XEC2028", ErrorMessage.InvalidValueForType(visitor.GetCommandString(), EXETypes.BooleanTypeName));
             }
 
             startNewIteration = (conditionEvaluationResult.ReturnedOutput as EXEValueBool).Value;

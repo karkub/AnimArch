@@ -619,7 +619,7 @@ namespace Visualization.UI
                 }
                 else
                 {
-                    VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+                    VisitorCommandToString visitor = new VisitorCommandToString();
 
                     if (a.startMethodParameters.ContainsKey(startMethodName))
                     {
@@ -630,7 +630,7 @@ namespace Visualization.UI
                         EXETypes.DefaultValue(parameter.Type, a.CurrentProgramInstance.ExecutionSpace).Accept(visitor);
                     }
                     
-                    parameterValue = visitor.GetCommandStringAndResetStateNow();
+                    parameterValue = visitor.GetCommandString();
                 }
 
                 parameterGo.GetComponent<MethodParameterManager>().SetPlaceholderText(parameterValue);
@@ -673,15 +673,13 @@ namespace Visualization.UI
         }
         public void ChangeEdgeHighlighting()
         {
-            Animation.Animation a = Animation.Animation.Instance;
+            HighlightEdgeState state = HighlightImmediateState.GetInstance(); 
             if (fillEdgeToggle.isOn)
             {
-               a.edgeHighlighter = HighlightFill.GetInstance(); 
+               state = HighlightFillState.GetInstance(); 
             }
-            else
-            {
-                a.edgeHighlighter = HighlightImmediate.GetInstance(); 
-            }
+
+            Animation.Animation.Instance.SetEdgeHighlighter(state);
         }
 
         public static void SetAnimationButtonsActive(bool active)
@@ -700,10 +698,10 @@ namespace Visualization.UI
                 .GetComponent<PanelSourceCodeAnimation>()
                 .SetMethodLabelText(currentMethodScope.MethodDefinition.OwningClass.Name, currentMethodScope.MethodDefinition.Name);
 
-            VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+            VisitorCommandToString visitor = new VisitorCommandToString();
             visitor.ActivateHighlighting();
             currentMethodScope.Accept(visitor);
-            string sourceCode = visitor.GetCommandStringAndResetStateNow();
+            string sourceCode = visitor.GetCommandString();
             PanelSourceCodeAnimation.GetComponent<PanelSourceCodeAnimation>().SetSourceCodeText(sourceCode);
         }
     }

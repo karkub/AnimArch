@@ -7,14 +7,14 @@ using Visualization.ClassDiagram.ComponentsInDiagram;
 namespace Visualization.ClassDiagram
 {
 
-public class HighlightFill : HighlightEdgeState
+public class HighlightFillState : HighlightEdgeState
 {
-    protected static HighlightFill instance = null;
-    public static HighlightFill GetInstance()
+    protected static HighlightFillState instance = null;
+    public static HighlightFillState GetInstance()
     {
         if (instance == null)
         {
-            instance = new HighlightFill();
+            instance = new HighlightFillState();
         }
         return instance;
     }

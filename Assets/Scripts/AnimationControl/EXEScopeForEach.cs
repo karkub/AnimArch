@@ -40,18 +40,18 @@ namespace OALProgramControl
                 return iterableEvaluationResult;
             }
 
-            VisitorCommandToString visitor2 = VisitorCommandToString.BorrowAVisitor();
+            VisitorCommandToString visitor2 = new VisitorCommandToString();
             iterableEvaluationResult.ReturnedOutput.Accept(visitor2);
             if (iterableEvaluationResult.ReturnedOutput is not EXEValueArray)
             {
-                return Error("XEC2028", ErrorMessage.IsNotIterable(visitor2.GetCommandStringAndResetStateNow()));
+                return Error("XEC2028", ErrorMessage.IsNotIterable(visitor2.GetCommandString()));
             }
 
             EXEValueArray iterableValue = iterableEvaluationResult.ReturnedOutput as EXEValueArray;
 
-            VisitorCommandToString visitor3 = VisitorCommandToString.BorrowAVisitor();
+            VisitorCommandToString visitor3 = new VisitorCommandToString();
             iterableValue.Accept(visitor3);
-            if (EXETypes.UnitializedName.Equals(visitor3.GetCommandStringAndResetStateNow()))
+            if (EXETypes.UnitializedName.Equals(visitor3.GetCommandString()))
             {
                 return Error("XEC2027", "Cannot iterate over uninitialized collection.");
             }
@@ -62,7 +62,7 @@ namespace OALProgramControl
             {
                 if (!EXETypes.CanBeAssignedTo(iterableValue.ElementTypeName, iteratorVariable.Value.TypeName, OALProgram.ExecutionSpace))
                 {
-                    VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+                    VisitorCommandToString visitor = new VisitorCommandToString();
                     this.Iterable.Accept(visitor);
                     return Error
                     (
@@ -77,7 +77,7 @@ namespace OALProgramControl
                             string.Join(", ", iterableValue.Elements.Select(element => element.TypeName)),
                             ErrorMessage.IterableAndIteratorTypeMismatch
                             (
-                                visitor.GetCommandStringAndResetStateNow(),
+                                visitor.GetCommandString(),
                                 iterableValue.ElementTypeName,
                                 this.IteratorName,
                                 iteratorVariable.Value.TypeName

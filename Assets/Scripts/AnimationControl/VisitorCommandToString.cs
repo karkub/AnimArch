@@ -16,47 +16,14 @@ public class VisitorCommandToString : Visitor
 
     private int indentationLevel;
 
-    private bool available;
-    private static readonly LinkedList<VisitorCommandToString> visitors = new LinkedList<VisitorCommandToString>();
-
-    private static bool aCoroutineIsTryingToBorrow = false;
-
-    public static VisitorCommandToString BorrowAVisitor() {
-        while (aCoroutineIsTryingToBorrow) {Debug.Log("Another coroutine is trying to borrow visitor, waiting for it to finish!");}
-        aCoroutineIsTryingToBorrow = true;
-        foreach (VisitorCommandToString v in visitors) {
-            if (v.isVisitorAvailable()) {
-                aCoroutineIsTryingToBorrow = false;
-                return v.BorrowVisitor();
-            }
-        }
-        VisitorCommandToString newVisitor = new VisitorCommandToString();
-        visitors.AddLast(newVisitor);
-        aCoroutineIsTryingToBorrow = false;
-        return newVisitor.BorrowVisitor();
-    }
-
-    private VisitorCommandToString()
+    public VisitorCommandToString()
     {
         commandString = new StringBuilder();
-        available = true;
         ResetState();
     }
 
-    private bool isVisitorAvailable() {
-        return available;
-    }
-
-    private VisitorCommandToString BorrowVisitor() {
-        if (!available) {throw new Exception("Borrowing a visitor that is not available!");}
-        available = false;
-        return this;
-    }
-
-    public string GetCommandStringAndResetStateNow() {
+    public string GetCommandString() {
         string result = commandString.ToString();
-        available = true;
-        ResetState();
         return result;
     }
 

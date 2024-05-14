@@ -29,9 +29,9 @@ namespace OALProgramControl
             this.MethodAccessChainS = null;
             if (methodAccessChain != null)
             {
-                VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+                VisitorCommandToString visitor = new VisitorCommandToString();
                 methodAccessChain.Accept(visitor);
-                this.MethodAccessChainS = visitor.GetCommandStringAndResetStateNow();
+                this.MethodAccessChainS = visitor.GetCommandString();
             }
         }
         public EXECommandCall(EXEValueBase methodOwningObject, string accessChain, EXEASTNodeMethodCall methodCall)

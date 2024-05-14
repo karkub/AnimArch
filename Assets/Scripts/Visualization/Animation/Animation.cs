@@ -31,8 +31,6 @@ namespace Visualization.Animation
         public Color methodColor;
         public Color relationColor;
         public GameObject LineFill;
-        public int BarrierSize;
-        public int CurrentBarrierFill;
         public HighlightEdgeState edgeHighlighter;
         [HideInInspector] public bool AnimationIsRunning = false;
         [HideInInspector] public bool isPaused = false;
@@ -59,24 +57,11 @@ namespace Visualization.Animation
             classDiagram = GameObject.Find("ClassDiagram").GetComponent<ClassDiagram.Diagrams.ClassDiagram>();
             objectDiagram = GameObject.Find("ObjectDiagram").GetComponent<ObjectDiagram>();
             standardPlayMode = true;
-            edgeHighlighter = HighlightImmediate.GetInstance();
+            edgeHighlighter = HighlightImmediateState.GetInstance();
         }
 
-
-        // Main Couroutine for compiling the OAL of Animation script and then starting the visualisation of Animation
-        public IEnumerator Animate()
+        private void ParseAnimationMethods()
         {
-            Fillers = new List<GameObject>();
-
-            if (AnimationIsRunning)
-            {
-                yield break;
-            }
-
-            AnimationIsRunning = true;
-
-            UI.MenuManager.Instance.HideErrorPanelOnStopButton();
-
             Anim selectedAnimation = AnimationData.Instance.selectedAnim;
 
             List<AnimClass> MethodsCodes = selectedAnimation.GetMethodsCodesList(); //Filip
@@ -97,14 +82,17 @@ namespace Visualization.Animation
                     Method.ExecutableCode = MethodBody;
                 }
             }
+        }
 
+        private CDMethod FindInitialMethod()
+        {
             CDClass startClass = CurrentProgramInstance.ExecutionSpace.getClassByName(startClassName);
             if (startClass == null)
             {
                 AnimationIsRunning = false;
                 isPaused = true;
                 UI.MenuManager.Instance.ShowNotSelectedPanel("class");
-                yield break;
+                return null;
             }
 
             CDMethod startMethod = startClass.GetMethodByName(startMethodName);
@@ -113,34 +101,48 @@ namespace Visualization.Animation
                 AnimationIsRunning = false;
                 isPaused = true;
                 UI.MenuManager.Instance.ShowNotSelectedPanel("method");
-                yield break;
+                return null;
             }
 
+            return startMethod;
+        }
+
+        private EXEScopeMethod FindInitialMethodCode()
+        {
             //najdeme startMethod z daneho class stringu a method stringu, ak startMethod.ExecutableCode je null tak return null alebo yield break
             EXEScopeMethod MethodExecutableCode = CurrentProgramInstance.ExecutionSpace.getClassByName(startClassName)
                 .GetMethodByName(startMethodName).ExecutableCode;
             if (MethodExecutableCode == null)
             {
                 Debug.Log("Warning, EXEScopeMethod of selected Method is null");
-                yield break;
+                return null;
             }
 
             CurrentProgramInstance.SuperScope = MethodExecutableCode; //StartMethod.ExecutableCode
             //OALProgram.Instance.SuperScope = OALParserBridge.Parse(Code); //Method.ExecutableCode dame namiesto OALParserBridge.Parse(Code) pre metodu ktora bude zacinat
-            UI.MenuManager.Instance.RefreshSourceCodePanel(MethodExecutableCode);
 
-            Debug.Log("Abt to execute program");
+            return MethodExecutableCode;
+        }
 
-            string currentClassName = startClassName;
-            string currentMethodName = startMethodName;
-
+        private CDClassInstance CreateInitialInstance(EXEScopeMethod MethodExecutableCode)
+        {
             CDClassInstance startingInstance = MethodExecutableCode.MethodDefinition.OwningClass.CreateClassInstance();
             MethodExecutableCode.OwningObject = new EXEValueReference(startingInstance);
-            objectDiagram.ShowObject(AddObjectToDiagram(startingInstance));
 
+            return startingInstance;
+        }
+
+        private void AssignInitialVariables(EXEScopeMethod MethodExecutableCode)
+        {
             MethodExecutableCode.InitializeVariables(startMethodParameters.ContainsKey(startMethodName) ?
                 startMethodParameters[startMethodName] :
                 new List<EXEVariable>());
+        }
+
+        private void HighlightInitialMethod(CDMethod startMethod, CDClassInstance startingInstance)
+        {
+            Fillers = new List<GameObject>();
+            objectDiagram.ShowObject(AddObjectToDiagram(startingInstance));
 
             Class caller = classDiagram.FindClassByName(startClassName).ParsedClass;
             Method callerMethod = classDiagram.FindMethodByName(startClassName, startMethodName);
@@ -153,18 +155,73 @@ namespace Visualization.Animation
             caller.HighlightSubject.IncrementHighlightLevel();
             callerMethod.HighlightSubject.IncrementHighlightLevel();
             callerMethod.HighlightObjectSubject.IncrementHighlightLevel();
+        }
 
+        private void InitializeSchedulers()
+        {
             consoleScheduler = new ConsoleScheduler();
             highlightScheduler = new AnimationScheduler();
             StartCoroutine(consoleScheduler.Start(this));
+        }
+
+        private void TerminateSchedulers()
+        {
+            consoleScheduler.Terminate();
+            highlightScheduler.Terminate();
+        }
+
+        private void SetupAnimation(CDMethod startMethod, EXEScopeMethod MethodExecutableCode)
+        {
+            UI.MenuManager.Instance.HideErrorPanelOnStopButton();
+            UI.MenuManager.Instance.RefreshSourceCodePanel(MethodExecutableCode);
+
+            Debug.Log("Abt to execute program");
+
+            CDClassInstance startingInstance = CreateInitialInstance(MethodExecutableCode);
+            AssignInitialVariables(MethodExecutableCode);
+
+            HighlightInitialMethod(startMethod, startingInstance);
+
+            InitializeSchedulers();
+        }
+
+        private IEnumerator TeardownAnimation()
+        {
+            TerminateSchedulers();
+            yield return new WaitUntil(() => highlightScheduler.IsOver());
+            Debug.Log("Over");
+        }
+
+        // Main Couroutine for compiling the OAL of Animation script and then starting the visualisation of Animation
+        public IEnumerator Animate()
+        {
+            if (AnimationIsRunning)
+            {
+                yield break;
+            }
+
+            AnimationIsRunning = true;
+
+            ParseAnimationMethods();
+
+            CDMethod startMethod = FindInitialMethod();
+            if (startMethod == null)
+            {
+                yield break;
+            }
+
+            EXEScopeMethod MethodExecutableCode = FindInitialMethodCode();
+            if (MethodExecutableCode == null)
+            {
+                yield break;
+            }
+
+            SetupAnimation(startMethod, MethodExecutableCode);
 
             AnimationThread SuperThread = new AnimationThread(currentProgramInstance.CommandStack, currentProgramInstance, this);
             yield return StartCoroutine(SuperThread.Start());
 
-            consoleScheduler.Terminate();
-            highlightScheduler.Terminate();
-            yield return new WaitUntil(() => highlightScheduler.IsOver());
-            Debug.Log("Over");
+            yield return TeardownAnimation();
             AnimationIsRunning = false;
         }
 
@@ -219,16 +276,6 @@ namespace Visualization.Animation
             }
 
             return step;
-        }
-
-        public void IncrementBarrier()
-        {
-            this.CurrentBarrierFill++;
-        }
-
-        public IEnumerator BarrierFillCheck()
-        {
-            yield return new WaitUntil(() => CurrentBarrierFill >= BarrierSize);
         }
 
         public void StartAnimation()
@@ -681,6 +728,16 @@ namespace Visualization.Animation
         {
             nextStep = true;
             prevStep = true;
+        }
+
+        public void SetEdgeHighlighter(HighlightEdgeState newState)
+        {
+            edgeHighlighter = newState; 
+        }
+
+        public HighlightEdgeState GetEdgeHighlighter()
+        {
+            return edgeHighlighter;
         }
     }
 }

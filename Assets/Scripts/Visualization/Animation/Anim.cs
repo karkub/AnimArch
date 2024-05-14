@@ -193,11 +193,11 @@ namespace Visualisation.Animation
 
                     if (!string.Empty.Equals(constructor.Code))
                     {
-                        VisitorPythonCode visitor = VisitorPythonCode.BorrowAVisitor();
+                        VisitorPythonCode visitor = new VisitorPythonCode();
                         EXEScopeMethod _scope = OALParserBridge.Parse(constructor.Code);
                         visitor.SetIndentation(2);
                         _scope.Accept(visitor);
-                        string result = visitor.GetCommandStringAndResetStateNow();
+                        string result = visitor.GetCommandString();
                         Code.AppendLine(result);
                     }
 
@@ -226,11 +226,11 @@ namespace Visualisation.Animation
                     }
                     else
                     {
-                        VisitorPythonCode visitor = VisitorPythonCode.BorrowAVisitor();
+                        VisitorPythonCode visitor = new VisitorPythonCode();
                         EXEScopeMethod _scope = OALParserBridge.Parse(methodItem.Code);
                         visitor.SetIndentation(2);
                         _scope.Accept(visitor);
-                        string result = visitor.GetCommandStringAndResetStateNow();
+                        string result = visitor.GetCommandString();
                         Code.AppendLine(result);
                     }
             }

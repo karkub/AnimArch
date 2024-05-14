@@ -72,11 +72,11 @@ namespace OALProgramControl
                     return conditionEvaluationResult;
                 }
 
-                VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+                VisitorCommandToString visitor = new VisitorCommandToString();
                 conditionEvaluationResult.ReturnedOutput.Accept(visitor);
                 if (conditionEvaluationResult.ReturnedOutput is not EXEValueBool)
                 {
-                    return Error("XEC2027", ErrorMessage.InvalidValueForType(visitor.GetCommandStringAndResetStateNow(), EXETypes.BooleanTypeName));
+                    return Error("XEC2027", ErrorMessage.InvalidValueForType(visitor.GetCommandString(), EXETypes.BooleanTypeName));
                 }
 
                 if ((conditionEvaluationResult.ReturnedOutput as EXEValueBool).Value)

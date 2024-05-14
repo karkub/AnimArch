@@ -14,54 +14,18 @@ public class VisitorPythonCode : Visitor
 
     private int indentationLevel;
 
-    private bool available;
-    private static readonly LinkedList<VisitorPythonCode> visitors = new LinkedList<VisitorPythonCode>();
-
-    private static bool aCoroutineIsTryingToBorrow = false;
-
     private const string THREAD_FUNCTION_NAME_TEMPLATE = "___thread_function_{0}___";
     private const string THREAD_VARIABLE_NAME_TEMPLATE = "___thread_{0}___";
     private static readonly string[] castableTypesFromInput = new string[] { "int", "bool", "real" };
 
-    public static VisitorPythonCode BorrowAVisitor() 
-    {
-        while (aCoroutineIsTryingToBorrow) {Debug.Log("Another coroutine is trying to borrow visitor, waiting for it to finish!");}
-        aCoroutineIsTryingToBorrow = true;
-        foreach (VisitorPythonCode v in visitors) 
-        {
-            if (v.isVisitorAvailable()) 
-            {
-                aCoroutineIsTryingToBorrow = false;
-                return v.BorrowVisitor();
-            }
-        }
-        VisitorPythonCode newVisitor = new VisitorPythonCode();
-        visitors.AddLast(newVisitor);
-        aCoroutineIsTryingToBorrow = false;
-        return newVisitor.BorrowVisitor();
-    }
-
-    private VisitorPythonCode()
+    public VisitorPythonCode()
     {
         commandString = new StringBuilder();
-        available = true;
         ResetState();
     }
 
-    private bool isVisitorAvailable() 
-    {
-        return available;
-    }
-
-    private VisitorPythonCode BorrowVisitor() {
-        if (!available) {throw new Exception("Borrowing a visitor that is not available!");}
-        available = false;
-        return this;
-    }
-
-    public string GetCommandStringAndResetStateNow() {
+    public string GetCommandString() {
         string result = commandString.ToString();
-        available = true;
         ResetState();
         return result;
     }
