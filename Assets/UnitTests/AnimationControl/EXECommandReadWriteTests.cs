@@ -23,6 +23,7 @@ namespace Assets.UnitTests.AnimationControl
 
             CDMethod owningMethod = new CDMethod(owningClass, "Method1", "");
             owningClass.AddMethod(owningMethod);
+
             List<String> _mockedInputs = new List<String> { "\"Ahoj\"" };
             MenuManager.Instance.Strategy.MockedInputs = _mockedInputs;
 
@@ -36,12 +37,12 @@ namespace Assets.UnitTests.AnimationControl
             // Assert
             Test.Declare(methodScope, _executionResult);
             Test.Variables
-                .ExpectVariable("self", methodScope.OwningObject)
-                .ExpectVariable("placeholder", new EXEValueString("\"Zadaj string...\""))
-                .ExpectVariable("x", new EXEValueString("\"Ahoj\""));
+                    .ExpectVariable("self", methodScope.OwningObject)
+                    .ExpectVariable("placeholder", new EXEValueString("\"Zadaj string...\""))
+                    .ExpectVariable("x", new EXEValueString("\"Ahoj\""));
             Test.ConsoleHistory
-                .ExpectText("\"Zadaj string...\"")
-                .ExpectText("\"Ahoj\"");
+                    .ExpectText("\"Zadaj string...\"")
+                    .ExpectText("\"Ahoj\"");
 
             Test.PerformAssertion();
         }
@@ -59,6 +60,7 @@ namespace Assets.UnitTests.AnimationControl
 
             CDMethod owningMethod = new CDMethod(owningClass, "Method1", "");
             owningClass.AddMethod(owningMethod);
+
             List<String> _mockedInputs = new List<String> { "12345" };
             MenuManager.Instance.Strategy.MockedInputs = _mockedInputs;
 
@@ -72,12 +74,12 @@ namespace Assets.UnitTests.AnimationControl
             // Assert
             Test.Declare(methodScope, _executionResult);
             Test.Variables
-                .ExpectVariable("self", methodScope.OwningObject)
-                .ExpectVariable("placeholder", new EXEValueString("\"Zadaj int...\""))
-                .ExpectVariable("x", new EXEValueInt("12345"));
+                    .ExpectVariable("self", methodScope.OwningObject)
+                    .ExpectVariable("placeholder", new EXEValueString("\"Zadaj int...\""))
+                    .ExpectVariable("x", new EXEValueInt("12345"));
             Test.ConsoleHistory
-                .ExpectText("\"Zadaj int...\"")
-                .ExpectText("12345");
+                    .ExpectText("\"Zadaj int...\"")
+                    .ExpectText("12345");
 
             Test.PerformAssertion();
         }
@@ -95,6 +97,7 @@ namespace Assets.UnitTests.AnimationControl
 
             CDMethod owningMethod = new CDMethod(owningClass, "Method1", "");
             owningClass.AddMethod(owningMethod);
+
             List<String> _mockedInputs = new List<String> { "TRUE" };
             MenuManager.Instance.Strategy.MockedInputs = _mockedInputs;
 
@@ -108,12 +111,12 @@ namespace Assets.UnitTests.AnimationControl
             // Assert
             Test.Declare(methodScope, _executionResult);
             Test.Variables
-                .ExpectVariable("self", methodScope.OwningObject)
-                .ExpectVariable("placeholder", new EXEValueString("\"Zadaj bool...\""))
-                .ExpectVariable("x", new EXEValueBool("TRUE"));
+                    .ExpectVariable("self", methodScope.OwningObject)
+                    .ExpectVariable("placeholder", new EXEValueString("\"Zadaj bool...\""))
+                    .ExpectVariable("x", new EXEValueBool("TRUE"));
             Test.ConsoleHistory
-                .ExpectText("\"Zadaj bool...\"")
-                .ExpectText("TRUE");
+                    .ExpectText("\"Zadaj bool...\"")
+                    .ExpectText("TRUE");
 
             Test.PerformAssertion();
         }
@@ -131,6 +134,7 @@ namespace Assets.UnitTests.AnimationControl
 
             CDMethod owningMethod = new CDMethod(owningClass, "Method1", "");
             owningClass.AddMethod(owningMethod);
+
             List<String> _mockedInputs = new List<String> { "0.123" };
             MenuManager.Instance.Strategy.MockedInputs = _mockedInputs;
 
@@ -144,12 +148,12 @@ namespace Assets.UnitTests.AnimationControl
             // Assert
             Test.Declare(methodScope, _executionResult);
             Test.Variables
-                .ExpectVariable("self", methodScope.OwningObject)
-                .ExpectVariable("placeholder", new EXEValueString("\"Zadaj real...\""))
-                .ExpectVariable("x", new EXEValueReal("0.123"));
+                    .ExpectVariable("self", methodScope.OwningObject)
+                    .ExpectVariable("placeholder", new EXEValueString("\"Zadaj real...\""))
+                    .ExpectVariable("x", new EXEValueReal("0.123"));
             Test.ConsoleHistory
-                .ExpectText("\"Zadaj real...\"")
-                .ExpectText("0.123");
+                    .ExpectText("\"Zadaj real...\"")
+                    .ExpectText("0.123");
 
             Test.PerformAssertion();
         }
@@ -167,6 +171,7 @@ namespace Assets.UnitTests.AnimationControl
 
             CDMethod owningMethod = new CDMethod(owningClass, "Method1", "");
             owningClass.AddMethod(owningMethod);
+
             List<String> _mockedInputs = new List<String> { "\"Hello\"", "-123", "-0.123", "False" };
             MenuManager.Instance.Strategy.MockedInputs = _mockedInputs;
 
@@ -180,24 +185,24 @@ namespace Assets.UnitTests.AnimationControl
             // Assert
             Test.Declare(methodScope, _executionResult);
             Test.Variables
-                .ExpectVariable("self", methodScope.OwningObject)
-                .ExpectVariable("p1", new EXEValueString("\"Zadaj string...\""))
-                .ExpectVariable("x1", new EXEValueString("\"Hello\""))
-                .ExpectVariable("p2", new EXEValueString("\"Zadaj int...\""))
-                .ExpectVariable("x2", new EXEValueInt("-123"))
-                .ExpectVariable("p3", new EXEValueString("\"Zadaj real...\""))
-                .ExpectVariable("x3", new EXEValueReal("-0.123"))
-                .ExpectVariable("p4", new EXEValueString("\"Zadaj bool...\""))
-                .ExpectVariable("x4", new EXEValueBool("False"));
+                    .ExpectVariable("self", methodScope.OwningObject)
+                    .ExpectVariable("p1", new EXEValueString("\"Zadaj string...\""))
+                    .ExpectVariable("x1", new EXEValueString("\"Hello\""))
+                    .ExpectVariable("p2", new EXEValueString("\"Zadaj int...\""))
+                    .ExpectVariable("x2", new EXEValueInt("-123"))
+                    .ExpectVariable("p3", new EXEValueString("\"Zadaj real...\""))
+                    .ExpectVariable("x3", new EXEValueReal("-0.123"))
+                    .ExpectVariable("p4", new EXEValueString("\"Zadaj bool...\""))
+                    .ExpectVariable("x4", new EXEValueBool("False"));
             Test.ConsoleHistory
-                .ExpectText("\"Zadaj string...\"")
-                .ExpectText("\"Hello\"")
-                .ExpectText("\"Zadaj int...\"")
-                .ExpectText("-123")
-                .ExpectText("\"Zadaj real...\"")
-                .ExpectText("-0.123")
-                .ExpectText("\"Zadaj bool...\"")
-                .ExpectText("False");
+                    .ExpectText("\"Zadaj string...\"")
+                    .ExpectText("\"Hello\"")
+                    .ExpectText("\"Zadaj int...\"")
+                    .ExpectText("-123")
+                    .ExpectText("\"Zadaj real...\"")
+                    .ExpectText("-0.123")
+                    .ExpectText("\"Zadaj bool...\"")
+                    .ExpectText("False");
 
             Test.PerformAssertion();
         }
@@ -226,9 +231,9 @@ namespace Assets.UnitTests.AnimationControl
             // Assert
             Test.Declare(methodScope, _executionResult);
             Test.Variables
-                .ExpectVariable("self", methodScope.OwningObject);
+                    .ExpectVariable("self", methodScope.OwningObject);
             Test.ConsoleHistory
-                .ExpectText("\"Ahoj\"");
+                    .ExpectText("\"Ahoj\"");
 
             Test.PerformAssertion();
         }
@@ -257,9 +262,9 @@ namespace Assets.UnitTests.AnimationControl
             // Assert
             Test.Declare(methodScope, _executionResult);
             Test.Variables
-                .ExpectVariable("self", methodScope.OwningObject);
+                    .ExpectVariable("self", methodScope.OwningObject);
             Test.ConsoleHistory
-                .ExpectText("123456789");
+                    .ExpectText("123456789");
                 
             Test.PerformAssertion();
         }
@@ -288,9 +293,9 @@ namespace Assets.UnitTests.AnimationControl
             // Assert
             Test.Declare(methodScope, _executionResult);
             Test.Variables
-                .ExpectVariable("self", methodScope.OwningObject);
+                    .ExpectVariable("self", methodScope.OwningObject);
             Test.ConsoleHistory
-                .ExpectText("TRUE");
+                    .ExpectText("TRUE");
                 
             Test.PerformAssertion();
         }
@@ -319,9 +324,9 @@ namespace Assets.UnitTests.AnimationControl
             // Assert
             Test.Declare(methodScope, _executionResult);
             Test.Variables
-                .ExpectVariable("self", methodScope.OwningObject);
+                    .ExpectVariable("self", methodScope.OwningObject);
             Test.ConsoleHistory
-                .ExpectText("0.123");
+                    .ExpectText("0,123");
                 
             Test.PerformAssertion();
         }
@@ -350,13 +355,13 @@ namespace Assets.UnitTests.AnimationControl
             // Assert
             Test.Declare(methodScope, _executionResult);
             Test.Variables
-                .ExpectVariable("self", methodScope.OwningObject);
+                    .ExpectVariable("self", methodScope.OwningObject);
             Test.ConsoleHistory
-                .ExpectText("\"Čo je wrist?\"")
-                .ExpectText("\"Zápästie,\nnie fist - päsť.\"")
-                .ExpectText("-123")
-                .ExpectText("0.987")
-                .ExpectText("FALSE");          
+                    .ExpectText("\"Čo je wrist?\"")
+                    .ExpectText("\"Zápästie,\nnie fist - päsť.\"")
+                    .ExpectText("-123")
+                    .ExpectText("0,987")
+                    .ExpectText("FALSE");          
 
             Test.PerformAssertion();
         }
@@ -387,16 +392,16 @@ namespace Assets.UnitTests.AnimationControl
             // Assert
             Test.Declare(methodScope, _executionResult);
             Test.Variables
-                .ExpectVariable("self", methodScope.OwningObject)
-                .ExpectVariable("x", new EXEValueString("\"Dobre.\""))
-                .ExpectVariable("y", new EXEValueInt("3"));
+                    .ExpectVariable("self", methodScope.OwningObject)
+                    .ExpectVariable("x", new EXEValueString("\"Dobre.\""))
+                    .ExpectVariable("y", new EXEValueInt("3"));
             Test.ConsoleHistory
-                .ExpectText("\"Ahoj.\"")
-                .ExpectText("\"Ako sa máš?\"")
-                .ExpectText("\"\"")
-                .ExpectText("\"Dobre.\"")
-                .ExpectText("\"1+2=\"")
-                .ExpectText("3");
+                    .ExpectText("\"Ahoj.\"")
+                    .ExpectText("\"Ako sa máš?\"")
+                    .ExpectText("\"\"")
+                    .ExpectText("\"Dobre.\"")
+                    .ExpectText("\"1+2=\"")
+                    .ExpectText("3");
 
             Test.PerformAssertion();
         }
