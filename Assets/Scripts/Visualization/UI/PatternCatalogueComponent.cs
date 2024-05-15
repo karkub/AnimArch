@@ -22,7 +22,7 @@ namespace Visualization.UI
         }
         public virtual List<PatternCatalogueComponent> GetChildren()
         {
-            return null;
+            return new List<PatternCatalogueComponent>();
         }
         public virtual PatternCatalogueComponent GetChild(int index)
         {

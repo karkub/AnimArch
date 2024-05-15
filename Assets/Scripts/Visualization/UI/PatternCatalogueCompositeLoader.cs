@@ -9,6 +9,8 @@ namespace Visualization.UI{
         [SerializeField] private GameObject parent;
         [SerializeField] private GameObject PatternPanel;
         public List<GameObject> patternPrefabs;
+
+        //TODO pridat builder ako privatny atribut a vytvorit ho v Awake/Start
    
         public void Browse(PatternCatalogueComponent patternCatalogueComponent)
         {
