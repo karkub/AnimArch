@@ -26237,6 +26237,7 @@ GameObject:
   - component: {fileID: 650752383}
   - component: {fileID: 650752384}
   - component: {fileID: 650752385}
+  - component: {fileID: 650752386}
   m_Layer: 5
   m_Name: PatternPanel
   m_TagString: Untagged
@@ -26392,7 +26393,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parent: {fileID: 650752373}
   PatternPanel: {fileID: 650752373}
-  patternPrefabs: []
+  patternComposites: []
+  patternLeafs: []
 --- !u!114 &650752383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26412,7 +26414,8 @@ MonoBehaviour:
   PatternCatalogueLabel: {fileID: 315080532}
   PrefabCanvas: {fileID: 650752373}
   MediatorMainPanel: {fileID: 1739363764}
-  PatternPrefabs: []
+  PatternComposites: []
+  PatternLeafs: []
 --- !u!114 &650752384
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26453,6 +26456,23 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &650752386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 650752373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e60139ae7323c47880af5c0d7bad2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LeafPrefab: {fileID: 3741087322950803797, guid: 11e771dad1ee3654498374fa347420bc,
+    type: 3}
+  PatternPrefab: {fileID: 9147520873521795905, guid: 62f1d8450967fdf47b451aef9e42d0ea,
+    type: 3}
+  PrefabCanvas: {fileID: 650752373}
 --- !u!1 &659631007
 GameObject:
   m_ObjectHideFlags: 0
@@ -47672,7 +47692,8 @@ MonoBehaviour:
   PatternCatalogueLabel: {fileID: 315080532}
   PrefabCanvas: {fileID: 650752373}
   MediatorMainPanel: {fileID: 1739363764}
-  PatternPrefabs: []
+  PatternComposites: []
+  PatternLeafs: []
 --- !u!1 &1272554773
 GameObject:
   m_ObjectHideFlags: 0

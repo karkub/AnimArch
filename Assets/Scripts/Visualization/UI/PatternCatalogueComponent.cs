@@ -40,6 +40,7 @@ namespace Visualization.UI
         {
             return null;
         }
+        public virtual void ActivateLeaf(GameObject gameObject){}
         
     }
 }

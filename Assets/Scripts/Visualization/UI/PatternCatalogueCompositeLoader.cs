@@ -8,12 +8,28 @@ namespace Visualization.UI{
     {
         [SerializeField] private GameObject parent;
         [SerializeField] private GameObject PatternPanel;
-        public List<GameObject> patternPrefabs;
+        public List<GameObject> patternComposites;
+        public List<GameObject> patternLeafs;
+        private PatternCatalogueBuilder PatternCatalogueBuilder;
+
+        public void Awake()
+        {
+            PatternCatalogueBuilder = GetComponent<PatternCatalogueBuilder>();
+        }
+
+        public List<GameObject> GetPatternComposites()
+        {
+            return patternComposites;
+        }
+        public List<GameObject> GetPatternLeafs()
+        {
+            return patternLeafs;
+        }
    
         public void Browse(PatternCatalogueComponent patternCatalogueComponent)
         {
-            patternPrefabs = new List<GameObject>();
-
+            patternComposites = new List<GameObject>();
+            patternLeafs = new List<GameObject>();
             string folderPath = "Assets/Resources/PatternCatalogue";
 
             if (Directory.Exists(folderPath)){
@@ -28,15 +44,14 @@ namespace Visualization.UI{
             string[] files = Directory.GetFiles(folderPath);
             foreach (string file in files){
                 if(!file.Contains(".meta")){
-                    GameObject leaf = GetComponent<PatternCatalogueLeafBuilder>().Build(patternCatalogueComponent, parent, file);
-                    patternPrefabs.Add(leaf);
+                    GameObject leaf = PatternCatalogueBuilder.BuildLeaf(patternCatalogueComponent, parent, file);
+                    patternLeafs.Add(leaf);
                 }
             }
 
             string[] subFolders = Directory.GetDirectories(folderPath);
             foreach (string subFolder in subFolders){
-                PatternCatalogueCompositeBuilder compositeBuilder = GetComponent<PatternCatalogueCompositeBuilder>();
-                GameObject composite = compositeBuilder.Build(patternCatalogueComponent, parent, subFolder);
+                GameObject composite = PatternCatalogueBuilder.BuildComposite(patternCatalogueComponent, parent, subFolder);
                 if(ReferenceEquals(parent, PatternPanel)){
                     GameObject arrow = composite.GetComponent<PatternCatalogueComposite>().GetArrow();
                     arrow.transform.Rotate(0,0,0);
@@ -44,7 +59,7 @@ namespace Visualization.UI{
                     composite.SetActive(false);
                 }
                 GameObject newParent = composite;
-                patternPrefabs.Add(composite);
+                patternComposites.Add(composite);
                 RecursivelyListFiles(subFolder, composite.GetComponent<PatternCatalogueComponent>(), newParent);
             }
         }

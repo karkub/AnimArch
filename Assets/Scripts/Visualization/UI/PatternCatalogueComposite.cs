@@ -26,14 +26,6 @@ namespace Visualization.UI
         {
             return this;
         }
-        public override void Operation()
-        {
-            foreach (PatternCatalogueComponent child in children)
-            {
-                child.Operation();
-                // child.gameObject;
-            }
-        }
         public override PatternCatalogueComponent GetChild(int index)
         {
             return children[index];
@@ -41,6 +33,28 @@ namespace Visualization.UI
         public override string GetName()
         {
             return ComponentName;
+        }
+        public void ActivateChildren(GameObject patternNode)
+        {
+            foreach (Transform child in patternNode.transform){
+                if (!ReferenceEquals(child.gameObject, child.gameObject.GetComponentInParent<PatternCatalogueComposite>().GetPanel())){
+                    child.gameObject.SetActive(!child.gameObject.activeSelf);
+                    if(child.gameObject.GetComponent<PatternCatalogueComposite>() != null){
+                        child.gameObject.GetComponent<PatternCatalogueComposite>().ActivateLeaf(child.gameObject);
+                    }
+                }else{
+                    RotateArrow();
+                }
+            
+            }
+        }
+        public void RotateArrow()
+        {
+            if(Arrow.transform.rotation.z == 0){
+                Arrow.transform.Rotate(0,0,90);
+            }else{
+                Arrow.transform.Rotate(0,0,-90);
+            }
         }
         public override List<PatternCatalogueComponent> GetChildren()
         {

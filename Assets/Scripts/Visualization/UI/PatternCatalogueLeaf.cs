@@ -11,10 +11,9 @@ namespace Visualization.UI
         {
             return this;
         }
-        public override void Operation()
+        public override void ActivateLeaf(GameObject leafNode)
         {
-            //TODO: nacitanie animace/diagramu atd...
-            Debug.Log("Leaf operation");
+            leafNode.SetActive(!leafNode.activeSelf);
         } 
         public override string GetName()
         {
@@ -24,8 +23,5 @@ namespace Visualization.UI
         {
             return Label;
         }
-        //TODO pridaj leaf masking a diagram
-        //TODO pridaj sipka atribut a drag and dropni ho v editore z prefabu
-
     }
 }

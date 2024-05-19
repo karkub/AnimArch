@@ -15,55 +15,55 @@ namespace Visualization.UI
         private bool EditMode = true;
         private void Start()
         {   
-            this.Items = new();
+            Items = new();
         }
 
         public void FillItems(List<string> items, bool editMode = true)
         {
-            this.EditMode = editMode;
-            this.Items = new List<string>(items);
+            EditMode = editMode;
+            Items = new List<string>(items);
             Refresh();
         }
 
         public void Refresh()
         {
-            foreach (GameObject button in this.Buttons)
+            foreach (GameObject button in Buttons)
             {
                 Destroy(button); 
             }
-            this.Buttons.Clear();
+            Buttons.Clear();
 
             ConstructButtons();
         }
 
         public void ClearItems()
         {
-            foreach (GameObject button in this.Buttons)
+            foreach (GameObject button in Buttons)
             {
                 Destroy(button); 
             }
-            this.Buttons.Clear();
-            this.Items.Clear();
+            Buttons.Clear();
+            Items.Clear();
         }
 
         private void ConstructButtons()
         {
-            if (this.Items == null)
+            if (Items == null)
             {
                 return;
             }
-            foreach (string item in this.Items)
+            foreach (string item in Items)
             {
                 GameObject button = Instantiate(MethodPrefabButton, ButtonParent);
                 button.GetComponentInChildren<TextMeshProUGUI>().text = item;
                 
-                if(this.EditMode){
+                if(EditMode){
                     button.GetComponent<Button>().onClick.AddListener(() => MenuManager.Instance.SelectMethod(item));
                 }else{
                     button.GetComponent<Button>().onClick.AddListener(() => MenuManager.Instance.SelectPlayMethod(item));
                 }
                 button.SetActive(true);
-                this.Buttons.Add(button);
+                Buttons.Add(button);
             }
         }
     }
