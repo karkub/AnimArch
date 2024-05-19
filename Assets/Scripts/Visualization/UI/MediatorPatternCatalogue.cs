@@ -29,6 +29,8 @@ namespace Visualization.UI
 
         public override void OnClicked(GameObject Button)
         {
+            //TODO ppozeraj cez listy a porovnaj ci je to composite alebo leaf
+            //else pre neznamy GUI prvok
             if (ReferenceEquals(Button, ButtonExit))
             {
                 OnButtonExitClicked();
