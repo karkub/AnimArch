@@ -194,7 +194,7 @@ namespace AnimArch.Visualization.Diagrams
                     GenerateActivity(Activity);
                     break;
             }
-            // graph.Layout();
+            // graph.Layout(); // TODO
         }
 
         public void AddRelation()

@@ -40,6 +40,8 @@ namespace Visualization.Animation
         [HideInInspector] public bool standardPlayMode = true;
         public bool nextStep = false;
         private bool prevStep = false;
+        private bool isEXECommandReturn = false;
+
         private List<GameObject> Fillers;
         private ConsoleScheduler consoleScheduler;
 
@@ -166,9 +168,17 @@ namespace Visualization.Animation
             string commandCode = visitor.GetCommandStringAndResetStateNow();
             Debug.LogErrorFormat("Animate command code {0}", commandCode);
             Debug.LogErrorFormat("Animate current command Type {0}", CurrentCommand.GetType());
-
             if (CurrentCommand.GetType() != typeof(EXEScopeMethod))
             {
+                if (isEXECommandReturn) 
+                {
+                    float speedPerAnim = AnimationData.Instance.AnimSpeed;
+                    float timeModifier = 2.2f;
+                    yield return new WaitForSeconds(timeModifier * speedPerAnim);
+                    Debug.LogError("EXECommandReturn activityDiagram.ClearDiagram()");
+                    activityDiagram.ClearDiagram();
+                    isEXECommandReturn = false;
+                }
                 AddActivityToDiagram(CurrentCommand, commandCode);
             }
 
@@ -239,7 +249,7 @@ namespace Visualization.Animation
                 }
                 
                 AddFinalActivityToDiagram();
-
+                isEXECommandReturn = true;
                 //UI.MenuManager.Instance.AnimateSourceCodeAtMethodStart(exeCommandReturn.InvokedMethod); // TODO -> should this happen?
             }
             else if (CurrentCommand.GetType() == typeof(EXECommandQueryCreate))
