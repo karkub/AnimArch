@@ -16,9 +16,11 @@ namespace Visualization.ClassDiagram
     {
         protected void ParseData()
         {
-            var parser = Parser.GetParser(Path.GetExtension(AnimationData.Instance.GetDiagramPath()));
+            XMIDiagramLoader diagramLoader = new XMIDiagramLoader();
+            var parser = diagramLoader.LoadDiagram(AnimationData.Instance.GetDiagramPath());
+            //var parser = Parser.GetParser(Path.GetExtension(AnimationData.Instance.GetDiagramPath()));
             
-            parser.LoadDiagram();
+            //parser.LoadDiagram();
             var classList = parser.ParseClasses() ?? new List<Class>();
             var relationList = parser.ParseRelations() ?? new List<Relation>();
             
