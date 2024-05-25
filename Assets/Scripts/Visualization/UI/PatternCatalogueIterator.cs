@@ -16,7 +16,7 @@ namespace Visualization.UI
             int nextIndex = index + 1;
             while (nextIndex < files.Length)
             {
-                if (!files[nextIndex].EndsWith(".meta"))
+                if (!IsExcluded(files[nextIndex]))
                 {
                     return true;
                 }
@@ -27,15 +27,21 @@ namespace Visualization.UI
 
         public string GetItem()
         {
-            while (index + 1  < files.Length)
+            while (index + 1 < files.Length)
             {
                 index++;
-                if (!files[index].EndsWith(".meta"))
+                string item = files[index];
+                if (!IsExcluded(item))
                 {
-                    return files[index];
+                    return item;
                 }
             }
             throw new InvalidOperationException("No more elements in array.");
+        }
+
+        public bool IsExcluded(string filename)
+        {
+            return filename.EndsWith(".meta");
 
         }
         public void ResetFiles(string[] newfiles) 

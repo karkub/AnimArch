@@ -17,7 +17,7 @@ namespace Parsers
             {
                 ".xml" => new XMIParser(),
                 ".json" => new JsonParser(),
-                _ => null
+                _ => new DefaultParser()
             };
         }
     }
