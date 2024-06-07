@@ -27,16 +27,16 @@ namespace Visualization.UI
 
         public string GetItem()
         {
-            while (index + 1 < files.Length)
+            while (HasNext())
             {
                 index++;
                 string item = files[index];
                 if (!IsExcluded(item))
                 {
-                    return item;
+                    break;
                 }
             }
-            throw new InvalidOperationException("No more elements in array.");
+            return files[index];
         }
 
         public bool IsExcluded(string filename)
