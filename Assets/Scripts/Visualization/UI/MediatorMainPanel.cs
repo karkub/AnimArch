@@ -22,7 +22,7 @@ namespace Visualization.UI
             if (ReferenceEquals(gameObject, Toggle))
             {
                 OnToggleValueChanged();
-            }else if (ReferenceEquals(gameObject, PatternCatalogueButton)) // tato vetva pôjde zrejme odstraniť
+            }else if (ReferenceEquals(gameObject, PatternCatalogueButton))
             {
                 OnPatternCatalogueButtonClicked();
             }
@@ -36,7 +36,7 @@ namespace Visualization.UI
         public void SetActiveMainPanel(bool active)
         {
             MainPanel.SetActive(active); 
-            PatternCatalogueButton.SetActive(active); // toto pôjde zrejme odstraniť
+            PatternCatalogueButton.SetActive(active);
         }
         public void SetActiveCreationPanel(bool active)
         {
@@ -46,10 +46,9 @@ namespace Visualization.UI
         public void SetActivePatternCataloguePanel(bool active)
         {
             MediatorPatternCatalogue.SetActivePatternCataloguePanel(active);
-            PatternCatalogueButton.SetActive(!active); // toto pôjde zrejme odstraniť
+            PatternCatalogueButton.SetActive(!active);
         }  
 
-        // toto pôjde zrejme odstraniť
         private void OnPatternCatalogueButtonClicked(){
             Debug.Log("Pattern Catalogue Button Clicked");
             SetActiveMainPanel(false);
