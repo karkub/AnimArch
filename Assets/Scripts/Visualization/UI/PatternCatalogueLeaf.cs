@@ -4,28 +4,24 @@ namespace Visualization.UI
 {
     public class PatternCatalogueLeaf : PatternCatalogueComponent
     {
-        public string LeafName;
         public string LeafPath{get; set;}
-        public PatternCatalogueLeaf(string path, string name) : base(path,name)
-        {
-            LeafName = name;
-            LeafPath = path;
-        }
+        public GameObject Label;
+
         public override PatternCatalogueComponent GetComponent()
         {
             return this;
         }
-        public override void Operation()
+        public override void ActivateLeaf(GameObject leafNode)
         {
-            //TODO: nacitanie animace/diagramu atd...
-            Debug.Log("Leaf operation");
+            leafNode.SetActive(!leafNode.activeSelf);
         } 
         public override string GetName()
         {
-            return LeafName;
+            return ComponentName;
         }
-        //TODO pridaj leaf masking a diagram
-        //TODO pridaj sipka atribut a drag and dropni ho v editore z prefabu
-
+        public override GameObject GetLabel()
+        {
+            return Label;
+        }
     }
 }
