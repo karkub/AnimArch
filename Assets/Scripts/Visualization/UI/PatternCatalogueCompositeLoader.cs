@@ -2,6 +2,7 @@ using UnityEngine;
 using System.IO;
 using Visualisation.UI;
 using System.Collections.Generic;
+using System;
 
 namespace Visualization.UI{
     public class PatternCatalogueCompositeLoader : MonoBehaviour
@@ -42,15 +43,18 @@ namespace Visualization.UI{
         void RecursivelyListFiles(string folderPath, PatternCatalogueComponent patternCatalogueComponent, GameObject parent)
         {   
             string[] files = Directory.GetFiles(folderPath);
-            foreach (string file in files){
-                if(!file.Contains(".meta")){
-                    GameObject leaf = PatternCatalogueBuilder.BuildLeaf(patternCatalogueComponent, parent, file);
-                    patternLeafs.Add(leaf);
-                }
-            }
+            PatternCatalogueIterator patternCatalogueIterator = new PatternCatalogueIterator(files);
+            while(patternCatalogueIterator.HasNext()) 
+            {
+                string file = patternCatalogueIterator.GetItem();
+                GameObject leaf = PatternCatalogueBuilder.BuildLeaf(patternCatalogueComponent, parent, file);
+                patternLeafs.Add(leaf);
 
+            }
             string[] subFolders = Directory.GetDirectories(folderPath);
-            foreach (string subFolder in subFolders){
+            patternCatalogueIterator.ResetFiles(subFolders);
+            while (patternCatalogueIterator.HasNext()){
+                string subFolder = patternCatalogueIterator.GetItem();
                 GameObject composite = PatternCatalogueBuilder.BuildComposite(patternCatalogueComponent, parent, subFolder);
                 if(ReferenceEquals(parent, PatternPanel)){
                     GameObject arrow = composite.GetComponent<PatternCatalogueComposite>().GetArrow();
