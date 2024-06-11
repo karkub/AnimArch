@@ -60,8 +60,16 @@ namespace Visualization.UI
 
             ConsoleRequestRead currentRequest = CurrentRequest;
             CurrentRequest = null;
+            
             currentRequest.ReadValue = enteredText;
             currentRequest.Done = true;
+
+            if (currentRequest.Request != null) 
+            {
+                currentRequest.Request.ReadValue = enteredText;
+                currentRequest.Request.Done = true;
+            }
+            
         }
     }
 }

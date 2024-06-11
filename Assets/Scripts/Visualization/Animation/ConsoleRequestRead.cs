@@ -1,6 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using Visualization.UI;
+using Visualization.Animation;
 
 namespace Visualization.Animation
 {
@@ -8,14 +10,16 @@ namespace Visualization.Animation
     {
         public string ReadValue { get; set; }
 
-        public ConsoleRequestRead(string textToWrite) : base(textToWrite)
+        public ConsoleRequestReadWithInput Request;
+
+        public ConsoleRequestRead(string textToWrite, ConsoleRequestReadWithInput request) : base(textToWrite)
         {
             this.ReadValue = null;
+            this.Request = request;
         }
 
         public override void PerformRequest()
         {
-            ConsolePanel.Instance.YieldOutput(WriteText, null);
             ConsolePanel.Instance.ActivateInputField(this);
         }
     }
