@@ -7,13 +7,13 @@ namespace Visualization.Animation
 {
     public class ConsoleScheduler
     {
-        private readonly Queue<ConsoleRequestRead> BlockingRequestQueue;
+        private readonly Queue<ConsoleRequestReadWithInput> BlockingRequestQueue;
         private readonly Queue<ConsoleRequestWrite> NonblockingRequestQueue;
         private bool Over;
 
         public ConsoleScheduler()
         {
-            this.BlockingRequestQueue = new Queue<ConsoleRequestRead>();
+            this.BlockingRequestQueue = new Queue<ConsoleRequestReadWithInput>();
             this.NonblockingRequestQueue = new Queue<ConsoleRequestWrite>();
             this.Over = false;
         }
@@ -41,7 +41,7 @@ namespace Visualization.Animation
             }
         }
 
-        public void Enqueue(ConsoleRequestRead request)
+        public void Enqueue(ConsoleRequestReadWithInput request)
         {
             this.BlockingRequestQueue.Enqueue(request);
         }
