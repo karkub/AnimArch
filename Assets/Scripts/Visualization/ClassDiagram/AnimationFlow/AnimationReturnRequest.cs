@@ -3,7 +3,6 @@ using OALProgramControl;
 using UnityEngine;
 using Visualization.ClassDiagram.ClassComponents;
 using Visualization.ClassDiagram.ComponentsInDiagram;
-using Visualization.UI;
 
 namespace Visualization.Animation
 {
@@ -11,7 +10,7 @@ namespace Visualization.Animation
     {
         public AnimationReturnRequest(EXECommand command, AnimationThread thread, bool animate, bool animateNewObjects) : base(command, thread, animate, animateNewObjects)
         {
-             EXECommandReturn exeCommandReturn = (EXECommandReturn)command;
+            EXECommandReturn exeCommandReturn = (EXECommandReturn)command;
 
             if (animate)
             {
@@ -25,7 +24,7 @@ namespace Visualization.Animation
 
                     if
                     (
-                        exeScopeCaller != null && callerMethod !=  null &&
+                        exeScopeCaller != null && callerMethod != null &&
                         exeScopeCaller.OwningObject != null && exeScopeCaller.OwningObject is EXEValueReference &&
                         exeScopeMethod.OwningObject != null && exeScopeMethod.OwningObject is EXEValueReference
                     )
@@ -54,6 +53,14 @@ namespace Visualization.Animation
 
         public override IEnumerator PerformRequest()
         {
+            yield return UnhighlightClassAndObject();
+            AnimateActivityDiagram();
+
+            Done = true;
+        }
+
+        private IEnumerator UnhighlightClassAndObject()
+        {
             float timeModifier = 1f;
             Animation a = Animation.Instance;
 
@@ -76,8 +83,11 @@ namespace Visualization.Animation
             {
                 yield return new WaitForSeconds(AnimationData.Instance.AnimSpeed * timeModifier);
             }
-
-            Done = true;
+        }
+        private void AnimateActivityDiagram()
+        {
+            animation.AddFinalActivityToDiagram();
+            animation.isEXECommandReturn = true;
         }
     }
 }

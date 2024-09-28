@@ -25,8 +25,9 @@ namespace Visualization.Animation
     //Controls the entire animation process
     public class Animation : Singleton<Animation>
     {
-        public ClassDiagram.Diagrams.ClassDiagram classDiagram {get; private set;}
-        public ObjectDiagram objectDiagram {get; private set;}
+        public ClassDiagram.Diagrams.ClassDiagram classDiagram { get; private set;}
+        public ObjectDiagram objectDiagram { get; private set;}
+        public ActivityDiagram activityDiagram { get; private set; }
         public Color classColor;
         public Color methodColor;
         public Color relationColor;
@@ -36,7 +37,9 @@ namespace Visualization.Animation
         [HideInInspector] public bool isPaused = false;
         [HideInInspector] public bool standardPlayMode = true;
         public bool nextStep = false;
-        public bool prevStep = false;
+        private bool prevStep = false;
+        public bool isEXECommandReturn = false;
+
         private List<GameObject> Fillers;
         public ConsoleScheduler consoleScheduler;
         private AnimationScheduler highlightScheduler;
@@ -56,6 +59,7 @@ namespace Visualization.Animation
         {
             classDiagram = GameObject.Find("ClassDiagram").GetComponent<ClassDiagram.Diagrams.ClassDiagram>();
             objectDiagram = GameObject.Find("ObjectDiagram").GetComponent<ObjectDiagram>();
+            activityDiagram = GameObject.Find("ActivityDiagram").GetComponent<ActivityDiagram>();
             standardPlayMode = true;
             edgeHighlighter = HighlightImmediateState.GetInstance();
         }
@@ -227,9 +231,31 @@ namespace Visualization.Animation
 
         public IEnumerator AnimateCommand(EXECommand CurrentCommand, AnimationThread AnimationThread, bool Animate = true, bool AnimateNewObjects = true)
         {
+            // Karin - Activity Diagram =>
+            VisitorCommandToString visitor = new VisitorCommandToString();
+            CurrentCommand.Accept(visitor);
+            string commandCode = visitor.GetCommandString();
+            Debug.LogErrorFormat("Animate command code {0}", commandCode);
+            Debug.LogErrorFormat("Animate current command Type {0}", CurrentCommand.GetType());
+            if (CurrentCommand.GetType() != typeof(EXEScopeMethod))
+            {
+                if (isEXECommandReturn)
+                {
+                    float speedPerAnim = AnimationData.Instance.AnimSpeed;
+                    float timeModifier = 2.2f;
+                    yield return new WaitForSeconds(timeModifier * speedPerAnim);
+                    Debug.LogError("EXECommandReturn activityDiagram.ClearDiagram()");
+                    activityDiagram.ClearDiagram();
+                    isEXECommandReturn = false;
+                }
+                AddActivityToDiagram(CurrentCommand, commandCode);
+            }
+            // <= Karin - Activity Diagram
+
             AnimationRequest request = AnimationRequestFactory.Create(CurrentCommand, AnimationThread, Animate, AnimateNewObjects);
             highlightScheduler.Enqueue(request);
             yield return new WaitUntil(() => request.IsDone());
+
 
             yield return new WaitUntil(() => !isPaused);
         }
@@ -238,6 +264,117 @@ namespace Visualization.Animation
         {
             ObjectInDiagram objectInDiagram = objectDiagram.AddObjectInDiagram(name, newObject, showNewObject);
             return objectInDiagram;
+        }
+        private void AddActivityToDiagram(EXECommand currentCommand, string commandCode)
+        {
+            activityDiagram.AddActivityInDiagram(commandCode);
+            activityDiagram.RepositionActivities();
+            // activityDiagram.AddRelation();
+        }
+        public void AddFinalActivityToDiagram()
+        {
+            activityDiagram.AddFinalActivityInDiagram();
+            activityDiagram.RepositionActivities();
+            // activityDiagram.AddRelation();
+        }
+        private IEnumerator ResolveCreateObject(EXECommand currentCommand, bool Animate = true, bool AnimateNewObjects = true)
+        {
+            EXECommandQueryCreate createCommand = (EXECommandQueryCreate)currentCommand;
+
+            CDClassInstance callerObject = (currentCommand.GetCurrentMethodScope().OwningObject as EXEValueReference).ClassInstance;
+            CDClassInstance createdObject = createCommand.GetCreatedInstance();
+
+            string targetVariableName = null;
+            if (createCommand.AssignmentTarget != null)
+            {
+                VisitorCommandToString visitor = new VisitorCommandToString();
+                createCommand.AssignmentTarget.Accept(visitor);
+                targetVariableName = visitor.GetCommandString();
+            }
+
+            if (AnimateNewObjects)
+            {
+
+                
+
+                var objectInDiagram = AddObjectToDiagram(createdObject, targetVariableName);
+                var relation = FindInterGraphRelation(createdObject.UniqueID);
+
+                if (!Animate)
+                {
+                    objectDiagram.ShowObject(objectInDiagram);
+                    objectDiagram.AddRelation(callerObject, createdObject, "ASSOCIATION");
+                }
+                else
+                {
+                    #region Object creation animation
+
+                    int step = 0;
+                    float speedPerAnim = AnimationData.Instance.AnimSpeed;
+                    float timeModifier = 1f;
+                    while (step < 7)
+                    {
+                        switch (step)
+                        {
+                            case 0:
+                                HighlightClass(createdObject.OwningClass.Name, true);
+                                break;
+                            case 1:
+                                // yield return StartCoroutine(AnimateFillInterGraph(relation));
+                                timeModifier = 0f;
+                                break;
+                            case 3:
+                                // relation.Show();
+                                // relation.Highlight();
+                                timeModifier = 1f;
+                                break;
+                            case 2:
+                                objectDiagram.ShowObject(objectInDiagram);
+                                timeModifier = 0.5f;
+                                break;
+                            case 6:
+                                HighlightClass(createdObject.OwningClass.Name, false);
+                                relation.UnHighlight();
+                                timeModifier = 1f;
+                                break;
+                        }
+
+                        step++;
+                        if (standardPlayMode)
+                        {
+                            yield return new WaitForSeconds(AnimationData.Instance.AnimSpeed * timeModifier);
+                        }
+                        //Else means we are working with step animation
+                        else
+                        {
+                            if (step == 1) step = 2;
+                            nextStep = false;
+                            prevStep = false;
+                            yield return new WaitUntil(() => nextStep);
+                            if (prevStep)
+                            {
+                                if (step > 0) step--;
+                                step = UnhighlightObjectCreationStepAnimation(step, createdObject.OwningClass.Name, objectInDiagram);
+
+                                if (step > -1) step--;
+                                step = UnhighlightObjectCreationStepAnimation(step, createdObject.OwningClass.Name, objectInDiagram);
+                            }
+
+                            yield return new WaitForFixedUpdate();
+                            nextStep = false;
+                            prevStep = false;
+                        }
+                    }
+
+                    #endregion
+
+                    objectDiagram.AddRelation(callerObject, createdObject, "ASSOCIATION");
+                }
+            }
+            else
+            {
+                AddObjectToDiagram(createdObject, targetVariableName, false);
+            }
         }
 
         private IEnumerator AnimateFillInterGraph(InterGraphRelation relation)

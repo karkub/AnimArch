@@ -39,6 +39,10 @@ namespace Visualization.Animation
             {
                 return new AnimationWaitRequest(command, thread, animate, animateNewObjects);
             }
+            else if (command.GetType() == typeof(EXEScopeMethod))
+            {
+                return new AnimationMethodScopeRequest(command, thread, animate, animateNewObjects);
+            }
             return new AnimationNullRequest(command, thread, animate, animateNewObjects);
         }
     }
