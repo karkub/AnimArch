@@ -8,12 +8,6 @@ namespace Visualization.UI
         public string ComponentName;
         public GameObject parent;
         public string ComponentPath{get; set;}
-
-        public PatternCatalogueComponent(string path, string name)
-        {
-            ComponentName = name;
-            ComponentPath = path;
-        }
         public virtual PatternCatalogueComponent GetComponent()
         {
             return null;
@@ -22,21 +16,31 @@ namespace Visualization.UI
         public virtual void Add(PatternCatalogueComponent component){}
         public virtual void Remove(PatternCatalogueComponent component){}
         
-        public void Awake(){
-            // tu setovať parenta
-        }
         public virtual string GetName()
         {
             return ComponentName;
         }
         public virtual List<PatternCatalogueComponent> GetChildren()
         {
-            return null;
+            return new List<PatternCatalogueComponent>();
         }
         public virtual PatternCatalogueComponent GetChild(int index)
         {
             return null;
         }
-        //TODO pridaj label atribut a drag and dropni ho v editore z prefabu
+        public virtual GameObject GetLabel()
+        {
+            return null;
+        }
+        public virtual GameObject GetArrow()
+        {
+            return null;
+        }
+        public virtual GameObject GetPanel()
+        {
+            return null;
+        }
+        public virtual void ActivateLeaf(GameObject gameObject){}
+        
     }
 }

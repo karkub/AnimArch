@@ -230,7 +230,6 @@ namespace Visualization.Animation
             AnimationRequest request = AnimationRequestFactory.Create(CurrentCommand, AnimationThread, Animate, AnimateNewObjects);
             highlightScheduler.Enqueue(request);
             yield return new WaitUntil(() => request.IsDone());
-
             yield return new WaitUntil(() => !isPaused);
         }
 

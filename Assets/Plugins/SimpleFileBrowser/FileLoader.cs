@@ -38,7 +38,7 @@ public class FileLoader : MonoBehaviour
                 new FileBrowser.Filter("Python files", ".py")
             };
         FileBrowser.SetFilters(true, filters);
-        FileBrowser.SetDefaultFilter(".json");
+        //FileBrowser.SetDefaultFilter(".json");
         FileBrowser.SetExcludedExtensions(".lnk", ".tmp", ".zip", ".rar", ".exe");
         FileBrowser.AddQuickLink("Resources", @"Assets" + Path.DirectorySeparatorChar + "Resources" + Path.DirectorySeparatorChar, null);
     }
@@ -102,7 +102,7 @@ public class FileLoader : MonoBehaviour
 
     private IEnumerator LoadDiagramCoroutine()
     {
-        FileBrowser.SetDefaultFilter(".xml");
+        //FileBrowser.SetDefaultFilter(".xml");
         yield return FileBrowser.WaitForLoadDialog(false, @"Assets" + Path.DirectorySeparatorChar + "Resources" + Path.DirectorySeparatorChar, "Load Diagram", "Load");
 
         if (!FileBrowser.Success) yield break;

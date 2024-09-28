@@ -5,13 +5,14 @@ namespace Visualization.UI
 {
     public class PatternCatalogueComposite : PatternCatalogueComponent
     {
-        private List<PatternCatalogueComponent> children = new List<PatternCatalogueComponent>();
-        public string CompositeName;
+        public List<PatternCatalogueComponent> children;
         public string CompositePath{get; set;}
-        public PatternCatalogueComposite(string path, string name) : base(path, name)
+        public GameObject Label;
+        public GameObject Arrow;
+        public GameObject Panel;
+        public void Awake()
         {
-            CompositeName = name;
-            CompositePath = path;
+            children = new List<PatternCatalogueComponent>();
         }
         public override void Add(PatternCatalogueComponent component)
         {
@@ -25,25 +26,51 @@ namespace Visualization.UI
         {
             return this;
         }
-        public override void Operation()
-        {
-            foreach (PatternCatalogueComponent child in children)
-            {
-                child.Operation();
-                // child.gameObject;
-            }
-        }
         public override PatternCatalogueComponent GetChild(int index)
         {
             return children[index];
         }
         public override string GetName()
         {
-            return CompositeName;
+            return ComponentName;
+        }
+        public void ActivateChildren(GameObject patternNode)
+        {
+            foreach (Transform child in patternNode.transform){
+                if (!ReferenceEquals(child.gameObject, child.gameObject.GetComponentInParent<PatternCatalogueComposite>().GetPanel())){
+                    child.gameObject.SetActive(!child.gameObject.activeSelf);
+                    if(child.gameObject.GetComponent<PatternCatalogueComposite>() != null){
+                        child.gameObject.GetComponent<PatternCatalogueComposite>().ActivateLeaf(child.gameObject);
+                    }
+                }else{
+                    RotateArrow();
+                }
+            
+            }
+        }
+        public void RotateArrow()
+        {
+            if(Arrow.transform.rotation.z == 0){
+                Arrow.transform.Rotate(0,0,90);
+            }else{
+                Arrow.transform.Rotate(0,0,-90);
+            }
         }
         public override List<PatternCatalogueComponent> GetChildren()
         {
             return children;
+        }
+        public override GameObject GetLabel()
+        {
+            return Label;
+        }
+        public override GameObject GetArrow()
+        {
+            return Arrow;
+        }
+        public override GameObject GetPanel()
+        {
+            return Panel;
         }
     }
 }

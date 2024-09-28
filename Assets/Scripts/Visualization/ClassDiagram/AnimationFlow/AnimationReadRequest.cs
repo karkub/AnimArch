@@ -19,7 +19,7 @@ namespace Visualization.Animation
            
              EXECommandRead readCommand = command as EXECommandRead;
 
-            ConsoleRequestRead consoleRequest = new ConsoleRequestRead(readCommand.PromptText);
+            ConsoleRequestReadWithInput consoleRequest = new ConsoleRequestReadWithInput(readCommand.PromptText);
             animation.consoleScheduler.Enqueue(consoleRequest);
             yield return new WaitUntil(() => consoleRequest.Done);
 

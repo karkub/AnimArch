@@ -46,7 +46,7 @@ namespace Visualization.UI
 
         public void SetActiveMainPanel(bool active)
         {
-            MainPanel.SetActive(active);
+            MainPanel.SetActive(active); 
             PatternCatalogueButton.SetActive(active);
         }
         public void SetActiveCreationPanel(bool active)
@@ -65,6 +65,5 @@ namespace Visualization.UI
             SetActiveMainPanel(true);
             SetActivePatternCataloguePanel(false);
         }
-    
     }
 }
