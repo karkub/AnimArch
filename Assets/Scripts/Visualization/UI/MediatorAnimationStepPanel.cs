@@ -26,6 +26,10 @@ namespace Visualization.UI
             {
                 OnPlayModeBtnClicked();
             }
+            else
+            {
+                OnClickedDefault(gameObject);
+            }
         }
 
         private void OnStepBackBtnClicked()

@@ -26,6 +26,10 @@ namespace Visualization.UI
             {
                 OnToENButtonClicked();
             }
+            else
+            {
+                OnClickedDefault(gameObject);
+            }
         }
 
         private void OnGenerateToPythonButtonClicked()

@@ -22,15 +22,26 @@ namespace Visualization.UI
             if (ReferenceEquals(gameObject, Toggle))
             {
                 OnToggleValueChanged();
-            }else if (ReferenceEquals(gameObject, PatternCatalogueButton))
+            }
+            else if (ReferenceEquals(gameObject, PatternCatalogueButton))
             {
                 OnPatternCatalogueButtonClicked();
+            }
+            else
+            {
+                OnClickedDefault(gameObject);
             }
         }
 
         private void OnToggleValueChanged()
         {
             MenuManager.Instance.HideGraphRelations();
+        }
+        private void OnPatternCatalogueButtonClicked()
+        {
+            Debug.Log("Pattern Catalogue Button Clicked");
+            SetActiveMainPanel(false);
+            SetActivePatternCataloguePanel(true);
         }
 
         public void SetActiveMainPanel(bool active)
@@ -48,11 +59,6 @@ namespace Visualization.UI
             MediatorPatternCatalogue.SetActivePatternCataloguePanel(active);
             PatternCatalogueButton.SetActive(!active);
         }  
-        private void OnPatternCatalogueButtonClicked(){
-            Debug.Log("Pattern Catalogue Button Clicked");
-            SetActiveMainPanel(false);
-            SetActivePatternCataloguePanel(true);
-        }
         public void UnshowPatternCatalogue()
         {
             Debug.Log("Unshow Pattern Catalogue");

@@ -7,8 +7,12 @@ namespace OALProgramControl
 {
     public class EXEScope : EXEScopeBase
     {
+        public List<EXECommand> Commands { get; protected set; }
+        public String OALCode;
+
         public EXEScope() : base()
         {
+            this.Commands = new List<EXECommand>();
         }
         public EXEScope(EXEScopeBase SuperScope, EXECommand[] Commands)
         {
@@ -49,7 +53,7 @@ namespace OALProgramControl
             return result;
         }
         
-        protected override void AddCommandsToStack(List<EXECommand> Commands)
+        protected void AddCommandsToStack(List<EXECommand> Commands)
         {
             Commands.ForEach(command => { command.SetSuperScope(this); command.CommandStack = this.CommandStack; });
             this.CommandStack.Enqueue(Commands);

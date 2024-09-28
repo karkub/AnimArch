@@ -25,6 +25,10 @@ namespace Visualization.UI
             {
                 OnSaveButtonClicked();
             }
+            else 
+            {
+                OnClickedDefault(gameObject);
+            }
         }
 
         private void OnCloseButtonClicked()

@@ -115,6 +115,15 @@ public class VisitorPythonCode : Visitor
         
     }
 
+    public override void VisitExeCommandListOperation(EXECommandListOperation command)
+    {
+        HandleBasicEXECommand(command, (visitor) => {
+            visitor.commandString.Append("EXECommandListOperation");
+            
+            return false;
+        });
+    }
+
     public override void VisitExeCommandAssignment(EXECommandAssignment command)
     {
         
@@ -326,6 +335,15 @@ public class VisitorPythonCode : Visitor
             return false;
         });
         
+    }
+
+    public override void VisitExeScopeNull(EXEScopeNull scope)
+    {
+        HandleBasicEXECommand(scope, (visitor) => {
+            visitor.commandString.Append("EXEScopeNull");
+
+            return false;
+        });
     }
 
     public override void VisitExeScope(EXEScope scope)

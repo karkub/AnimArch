@@ -36,11 +36,7 @@ namespace OALProgramControl
         {
             return new Dictionary<string, string>();
         }
-        
-        protected override void AddCommandsToStack(List<EXECommand> Commands)
-        {
-        }
-        
+                
         public override EXEExecutionResult AddVariable(EXEVariable variable)
         {
             return EXEExecutionResult.Success();
@@ -68,6 +64,11 @@ namespace OALProgramControl
 
         public override void ToggleActiveRecursiveBottomUp(bool active)
         {
+        }
+
+        public override void Accept(Visitor v)
+        {
+            v.VisitExeScopeNull(this);
         }
     }
 }

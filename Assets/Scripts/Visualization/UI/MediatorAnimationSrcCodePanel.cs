@@ -19,6 +19,10 @@ namespace Visualization.UI
             {
                 OnSrcCodeAnimationPanelSelected();
             }
+            else
+            {
+                OnClickedDefault(gameObject);
+            }
         }
 
         private void OnSrcCodeAnimationPanelSelected()

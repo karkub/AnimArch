@@ -29,17 +29,23 @@ namespace Visualization.UI
             if (ReferenceEquals(Button, ButtonExit))
             {
                 OnButtonExitClicked();
-            } else if (Button.CompareTag("PatternNode"))
+            } 
+            else if (Button.CompareTag("PatternNode"))
             {
                 OnPatternClicked(Button);
                 Debug.Log("PatternNode MEDIATOR CLICKED");
-            } else if (Button.CompareTag("LeafNode"))
+            } 
+            else if (Button.CompareTag("LeafNode"))
             {
                 OnLeafClicked(Button);
                 Debug.Log("LeafNode MEDIATOR CLICKED");
-            }else{
+            }
+            else
+            {
+                OnClickedDefault(Button);
                 Debug.Log("Uknown MEDIATOR CLICKED");
             }
+
             //TODO pridaj onclick na button a posli mediatora, prekonaj podla typu componentu
         }
 

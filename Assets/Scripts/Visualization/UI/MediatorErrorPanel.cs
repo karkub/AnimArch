@@ -16,6 +16,10 @@ namespace Visualization.UI
             {
                 OnCloseButtonClicked();
             }
+            else
+            {
+                OnClickedDefault(gameObject);
+            }
         }
 
         private void OnCloseButtonClicked()

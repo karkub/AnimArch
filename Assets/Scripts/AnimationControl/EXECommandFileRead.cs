@@ -81,5 +81,10 @@ namespace OALProgramControl
         {
             return new EXECommandFileRead(AssignmentTarget, FileToReadFrom);
         }
+
+        public override void Accept(Visitor v)
+        {
+            v.VisitExeCommandFileRead(this);
+        }
     }
 }

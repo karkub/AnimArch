@@ -14,5 +14,10 @@ namespace OALProgramControl
         {
             return new EXECommandFileWrite(StringToWrite.Clone(), FileToWriteTo.Clone());
         }
+
+        public override void Accept(Visitor v)
+        {
+            v.VisitExeCommandFileWrite(this);
+        }
     }
 }

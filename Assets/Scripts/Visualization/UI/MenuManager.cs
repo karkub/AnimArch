@@ -457,16 +457,15 @@ namespace Visualization.UI
             }
         }
 
-        public void SelectPlayMethod(string startMethodName)
-        {
-            
-            string startClassName = Animation.Animation.Instance.startClassName;
+        // public void SelectPlayMethod(string startMethodName)
+        // {
+        //     string startClassName = Animation.Animation.Instance.startClassName;
 
-            Animation.Animation.Instance.startMethodName = startMethodName;
+        //     Animation.Animation.Instance.startMethodName = startMethodName;
 
-            playIntroTexts.SetActive(true);
-            Animation.Animation.Instance.HighlightClass(startClassName, false);
-        }
+        //     playIntroTexts.SetActive(true);
+        //     Animation.Animation.Instance.HighlightClass(startClassName, false);
+        // }
         private void ApplyPlayMethodSelection(string startMethodName)
         {
             Animation.Animation a = Animation.Animation.Instance;
@@ -583,10 +582,9 @@ namespace Visualization.UI
             }
         }
 
-        public void SelectPlayMethod(int id)
+        public void SelectPlayMethod(string startMethodName)
         {
             Animation.Animation a = Animation.Animation.Instance;
-            string startMethodName = StartingMethodPagination.GetSelectedItem(id);
             string startClassName = a.startClassName;
             List<CDParameter> parameters = a.CurrentProgramInstance.ExecutionSpace.getClassByName(startClassName).GetMethodByName(startMethodName).Parameters;
 

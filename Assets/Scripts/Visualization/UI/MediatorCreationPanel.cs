@@ -35,6 +35,10 @@ namespace Visualization.UI
             {
                 OnAddRelationClicked();
             }
+            else
+            {
+                OnClickedDefault(gameObject);
+            }
         }
 
         private void OnBackButtonClicked()
