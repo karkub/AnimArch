@@ -15,11 +15,27 @@ namespace Visualization.Animation
         List<Vector2> addedPoints;
         float step = 0.5f;
         int index = 1;
-        public IEnumerator AnimateFlow(Vector2[] targetPoints, bool shouldFlip, Func<bool> highlightEdgeCallback = null, bool isObjectDiagram = false)
+
+        private Color createLineFillerColor()
+        {
+            Color c = Animation.Instance.relationColor;
+            float h, s, v;
+
+            Color.RGBToHSV(c, out h, out s, out v);
+            s *= 1.5f;
+            if (s > 1f) {s = 1f;}
+            v *= 1.5f;
+            if (v > 1f) {v = 1f;}
+
+            return Color.HSVToRGB(h, s, v);
+        }
+
+        public IEnumerator AnimateFlow(Vector2[] targetPoints, bool shouldFlip, Func<bool> highlightEdgeCallback, bool isObject)
         {
             float animSpeed = AnimationData.Instance.AnimSpeed / (5*targetPoints.Length);
-            if (isObjectDiagram) {
-                animSpeed /= 5;
+            if (isObject)
+            {
+                animSpeed = (float)((float) animSpeed * 0.7);
             }
             this.targetPoints = targetPoints;
             if (targetPoints != null && targetPoints.Length >= 2)
@@ -34,7 +50,8 @@ namespace Visualization.Animation
                 nextPoint = targetPoints[1];
                 addedPoints = new List<Vector2>();
                 addedPoints.Add(currentPosition);
-                color = Animation.Instance.relationColor;
+                //color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+                color = Animation.Instance.methodColor;
             }
             while (addedPoints.Count < targetPoints.Length)
             {

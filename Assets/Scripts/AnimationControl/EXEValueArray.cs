@@ -21,7 +21,7 @@ namespace OALProgramControl
             this.ElementTypeName = type.Substring(0, type.Length - 2);
             this.Elements = null;
         }
-        private EXEValueArray(string type, List<EXEValueBase> elements) : this(type)
+        public EXEValueArray(string type, List<EXEValueBase> elements) : this(type)
         {
             this.Elements = elements;
         }

@@ -8,6 +8,7 @@ public abstract class Visitor : IValueVisitor
     public abstract void VisitExeCommandCall(EXECommandCall command);
     public abstract void VisitExeCommandBreak(EXECommandBreak command);
     public abstract void VisitExeCommandContinue(EXECommandContinue command);
+    public abstract void VisitExeCommandListOperation(EXECommandListOperation command);
     public abstract void VisitExeCommandAddingToList(EXECommandAddingToList command);
     public abstract void VisitExeCommandAssignment(EXECommandAssignment command);
     public abstract void VisitExeCommandCreateList(EXECommandCreateList command);
@@ -15,6 +16,7 @@ public abstract class Visitor : IValueVisitor
     public abstract void VisitExeCommandFileExists(EXECommandFileExists command);
     public abstract void VisitExeCommandFileRead(EXECommandFileRead command);
     public abstract void VisitExeCommandFileWrite(EXECommandFileWrite command);
+    public virtual  void VisitExeCommandPragma(EXECommandPragma command) { }
     public abstract void VisitExeCommandQueryCreate(EXECommandQueryCreate command);
     public abstract void VisitExeCommandQueryDelete(EXECommandQueryDelete command);
     public abstract void VisitExeCommandRead(EXECommandRead command);
@@ -31,6 +33,7 @@ public abstract class Visitor : IValueVisitor
     public abstract void VisitExeScopeParallel(EXEScopeParallel scope);
     public abstract void VisitExeScopeCondition(EXEScopeCondition scope);
     public abstract void VisitExeScopeLoopWhile(EXEScopeLoopWhile scope);
+    public abstract void VisitExeScopeNull(EXEScopeNull scope);
 
     public abstract void VisitExeASTNodeAccesChain(EXEASTNodeAccessChain node);
 

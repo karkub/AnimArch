@@ -1,0 +1,83 @@
+{
+    "Code": "create object instance ast_1 of AST;\nast_1.execute();\n",
+    "AnimationName": "strategy",
+    "StartClass": "",
+    "StartMethod": "",
+    "MethodsCodes": [
+        {
+            "Name": "AST",
+            "SuperClass": "",
+            "Attributes": [
+                "code"
+            ],
+            "Methods": [
+                {
+                    "Name": "execute",
+                    "Parameters": [
+                        "operationEvaluator",
+                        "scope"
+                    ],
+                    "Code": "y=\"ahoj\";\nwrite(y);\nwrite(123);\nplaceholder=\"Zadaj string...\";\nx=string(read(placeholder));\nx=int(read(\"Zadaj int...\"));"
+                },
+                {
+                    "Name": "printPretty",
+                    "Parameters": [],
+                    "Code": ""
+                }
+            ]
+        },
+        {
+            "Name": "ASTComposite",
+            "SuperClass": "AST",
+            "Attributes": [
+                "operands"
+            ],
+            "Methods": []
+        },
+        {
+            "Name": "ASTLeaf",
+            "SuperClass": "AST",
+            "Attributes": [
+                "type",
+                "value"
+            ],
+            "Methods": [
+                {
+                    "Name": "getType",
+                    "Parameters": [],
+                    "Code": ""
+                }
+            ]
+        },
+        {
+            "Name": "OperationEvaluator",
+            "SuperClass": "",
+            "Attributes": [],
+            "Methods": [
+                {
+                    "Name": "evaluateOperation",
+                    "Parameters": [
+                        "operator",
+                        "operands"
+                    ],
+                    "Code": ""
+                },
+                {
+                    "Name": "tellType",
+                    "Parameters": [
+                        "value"
+                    ],
+                    "Code": ""
+                }
+            ]
+        },
+        {
+            "Name": "Operator",
+            "SuperClass": "",
+            "Attributes": [
+                "operator"
+            ],
+            "Methods": []
+        }
+    ]
+}

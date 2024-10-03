@@ -48,6 +48,10 @@ namespace Visualization.UI
             {
                 OnButtonSaveClicked();
             }
+            else
+            {
+                OnClickedDefault(gameObject);
+            }
         }
 
         private void OnButtonFullClicked()

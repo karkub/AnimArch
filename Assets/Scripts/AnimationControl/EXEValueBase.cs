@@ -72,21 +72,21 @@ namespace OALProgramControl
         }
         public virtual EXEExecutionResult AppendElement(EXEValueBase appendedElement, CDClassPool classPool)
         {
-            VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+            VisitorCommandToString visitor = new VisitorCommandToString();
             appendedElement.Accept(visitor);
-            return EXEExecutionResult.Error("XEC2018", string.Format("Cannot append element \"{0}\" of type \"{1}\" to \"{2}\".", visitor.GetCommandStringAndResetStateNow(), appendedElement.TypeName, this.TypeName));
+            return EXEExecutionResult.Error("XEC2018", string.Format("Cannot append element \"{0}\" of type \"{1}\" to \"{2}\".", visitor.GetCommandString(), appendedElement.TypeName, this.TypeName));
         }
         public virtual EXEExecutionResult RemoveElement(EXEValueBase removedElement, CDClassPool classPool)
         {
-            VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+            VisitorCommandToString visitor = new VisitorCommandToString();
             removedElement.Accept(visitor);
-            return EXEExecutionResult.Error("XEC2019", string.Format("Cannot remove element \"{0}\" of type \"{1}\" from \"{2}\".", visitor.GetCommandStringAndResetStateNow(), removedElement.TypeName, this.TypeName));
+            return EXEExecutionResult.Error("XEC2019", string.Format("Cannot remove element \"{0}\" of type \"{1}\" from \"{2}\".", visitor.GetCommandString(), removedElement.TypeName, this.TypeName));
         }
         public virtual EXEExecutionResult ApplyOperator(string operation)
         {
-            VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+            VisitorCommandToString visitor = new VisitorCommandToString();
             this.Accept(visitor);
-            return EXEExecutionResult.Error("XEC2017", string.Format("Cannot apply unary operation \"{0}\" on operand \"{1}\".", operation, visitor.GetCommandStringAndResetStateNow()));
+            return EXEExecutionResult.Error("XEC2017", string.Format("Cannot apply unary operation \"{0}\" on operand \"{1}\".", operation, visitor.GetCommandString()));
         }
         public virtual EXEExecutionResult ApplyOperator(string operation, EXEValueBase operand)
         {
@@ -119,11 +119,11 @@ namespace OALProgramControl
         }
         private EXEExecutionResult BinaryOperatorError(string operation, EXEValueBase operand)
         {
-            VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+            VisitorCommandToString visitor = new VisitorCommandToString();
             this.Accept(visitor);
-            VisitorCommandToString visitor2 = VisitorCommandToString.BorrowAVisitor();
+            VisitorCommandToString visitor2 = new VisitorCommandToString();
             operand.Accept(visitor2);
-            return EXEExecutionResult.Error("XEC2018", string.Format("Cannot apply binary operation \"{0}\" on operands \"{1}\" and \"{2}\".", operation, visitor.GetCommandStringAndResetStateNow(), visitor2.GetCommandStringAndResetStateNow()));
+            return EXEExecutionResult.Error("XEC2018", string.Format("Cannot apply binary operation \"{0}\" on operands \"{1}\" and \"{2}\".", operation, visitor.GetCommandString(), visitor2.GetCommandString()));
         }
         protected virtual EXEExecutionResult UninitializedError()
         {

@@ -16,7 +16,8 @@ MonoBehaviour:
     m_Code: en
   m_SharedData: {fileID: 11400000, guid: 16b6cc14bc8b80b40a8d33c8d619201c, type: 2}
   m_Metadata:
-    m_Items: []
+    m_Items:
+    - rid: 2566348361475555336
   m_TableData:
   - m_Id: 3086442565632
     m_Localized: Create diagram
@@ -712,6 +713,28 @@ MonoBehaviour:
     m_Localized: Select a method to start the animation.
     m_Metadata:
       m_Items: []
+  - m_Id: 53135231578173440
+    m_Localized: '{defaultValue}'
+    m_Metadata:
+      m_Items:
+      - rid: 2566348361475555336
+  - m_Id: 53234715201007616
+    m_Localized: Invalid {type} value!
+    m_Metadata:
+      m_Items:
+      - rid: 2566348361475555336
+  - m_Id: 53528851764604928
+    m_Localized: Default value will be used for object!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53906103811616768
+    m_Localized: Pattern Catalogue
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 2566348361475555336
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 00704601b120bd000070462b36c6bc00

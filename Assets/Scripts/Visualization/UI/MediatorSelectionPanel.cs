@@ -17,6 +17,10 @@ namespace Visualization.UI
             {
                 OnCancelButtonClicked();
             }
+            else
+            {
+                OnClickedDefault(gameObject);
+            }
         }
 
         private void OnCancelButtonClicked()

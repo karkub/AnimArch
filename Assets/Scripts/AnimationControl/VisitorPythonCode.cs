@@ -14,50 +14,18 @@ public class VisitorPythonCode : Visitor
 
     private int indentationLevel;
 
-    private bool available;
-    private static readonly LinkedList<VisitorPythonCode> visitors = new LinkedList<VisitorPythonCode>();
+    private const string THREAD_FUNCTION_NAME_TEMPLATE = "___thread_function_{0}___";
+    private const string THREAD_VARIABLE_NAME_TEMPLATE = "___thread_{0}___";
+    private static readonly string[] castableTypesFromInput = new string[] { "int", "bool", "real" };
 
-    private static bool aCoroutineIsTryingToBorrow = false;
-
-    public static VisitorPythonCode BorrowAVisitor() 
-    {
-        while (aCoroutineIsTryingToBorrow) {Debug.Log("Another coroutine is trying to borrow visitor, waiting for it to finish!");}
-        aCoroutineIsTryingToBorrow = true;
-        foreach (VisitorPythonCode v in visitors) 
-        {
-            if (v.isVisitorAvailable()) 
-            {
-                aCoroutineIsTryingToBorrow = false;
-                return v.BorrowVisitor();
-            }
-        }
-        VisitorPythonCode newVisitor = new VisitorPythonCode();
-        visitors.AddLast(newVisitor);
-        aCoroutineIsTryingToBorrow = false;
-        return newVisitor.BorrowVisitor();
-    }
-
-    private VisitorPythonCode()
+    public VisitorPythonCode()
     {
         commandString = new StringBuilder();
-        available = true;
         ResetState();
     }
 
-    private bool isVisitorAvailable() 
-    {
-        return available;
-    }
-
-    private VisitorPythonCode BorrowVisitor() {
-        if (!available) {throw new Exception("Borrowing a visitor that is not available!");}
-        available = false;
-        return this;
-    }
-
-    public string GetCommandStringAndResetStateNow() {
+    public string GetCommandString() {
         string result = commandString.ToString();
-        available = true;
         ResetState();
         return result;
     }
@@ -145,6 +113,15 @@ public class VisitorPythonCode : Visitor
             return false;
         });
         
+    }
+
+    public override void VisitExeCommandListOperation(EXECommandListOperation command)
+    {
+        HandleBasicEXECommand(command, (visitor) => {
+            visitor.commandString.Append("EXECommandListOperation");
+            
+            return false;
+        });
     }
 
     public override void VisitExeCommandAssignment(EXECommandAssignment command)
@@ -264,15 +241,22 @@ public class VisitorPythonCode : Visitor
         HandleBasicEXECommand(command, (visitor) => {
             command.AssignmentTarget.Accept(visitor);
             visitor.commandString.Append(" = ");
+            bool performCasting = false;
             if (!EXETypes.StringTypeName.Equals(command.AssignmentType)) {
-                if (command.AssignmentType.Equals("int")) {
+                if (EXETypes.IsValidIntName(command.AssignmentType))
+                {
                     visitor.commandString.Append("int(");
+                    performCasting = true;
                 }
-                else if (command.AssignmentType.Equals("real")) {
+                else if (EXETypes.IsValidRealName(command.AssignmentType))
+                {
                     visitor.commandString.Append("float(");
+                    performCasting = true;
                 }
-                else if (command.AssignmentType.Equals("bool")) {
+                else if (EXETypes.IsValidBoolName(command.AssignmentType))
+                {
                     visitor.commandString.Append("boolean(");
+                    performCasting = true;
                 }
             }
             visitor.commandString.Append("input(");
@@ -281,8 +265,9 @@ public class VisitorPythonCode : Visitor
                 command.Prompt.Accept(visitor);
             }
             visitor.commandString.Append(")");
-            if (!EXETypes.StringTypeName.Equals(command.AssignmentType)) {
-                visitor.commandString.Append(")");
+
+            if (performCasting) {
+                    visitor.commandString.Append(")");
             }
             return false;
         });
@@ -352,6 +337,15 @@ public class VisitorPythonCode : Visitor
         
     }
 
+    public override void VisitExeScopeNull(EXEScopeNull scope)
+    {
+        HandleBasicEXECommand(scope, (visitor) => {
+            visitor.commandString.Append("EXEScopeNull");
+
+            return false;
+        });
+    }
+
     public override void VisitExeScope(EXEScope scope)
     {
         foreach (EXECommand Command in scope.Commands)
@@ -394,7 +388,60 @@ public class VisitorPythonCode : Visitor
 
     public override void VisitExeScopeParallel(EXEScopeParallel scope)
     {
-        throw new Exception("Tried to visit EXEScopeParallel.");
+        if (!scope.Threads.Any())
+        {
+            return;
+        }
+
+        WriteIndentation();
+
+        List<string> methodNames = new List<string>();
+        string methodName;
+
+        for (int i = 0; i < scope.Threads.Count; i++)
+        {
+            methodName = string.Format(THREAD_FUNCTION_NAME_TEMPLATE, i+1);
+            methodNames.Add(methodName);
+
+            WriteIndentation();
+            commandString.AppendFormat("def {0}():", methodName);
+            AddEOL();
+
+            IncreaseIndentation();
+            VisitExeScope(scope.Threads[i]);
+            DecreaseIndentation();
+
+            AddEOL();
+        }
+
+        List<string> variableNames = new List<string>();
+        string variableName;
+        for (int i = 0; i < scope.Threads.Count; i++)
+        {
+            variableName = string.Format(THREAD_VARIABLE_NAME_TEMPLATE, i+1);
+            variableNames.Add(variableName);
+        }
+
+        for (int i = 0; i < scope.Threads.Count; i++)
+        {
+            WriteIndentation();
+            commandString.AppendFormat("{0} = Thread(target={1})", variableNames[i], methodNames[i]);
+            AddEOL();
+        }
+
+        for (int i = 0; i < scope.Threads.Count; i++)
+        {
+            WriteIndentation();
+            commandString.AppendFormat("{0}.start()", variableNames[i]);
+            AddEOL();
+        }
+
+        for (int i = 0; i < scope.Threads.Count; i++)
+        {
+            WriteIndentation();
+            commandString.AppendFormat("{0}.join()", variableNames[i]);
+            AddEOL();
+        }
     }
 
     public override void VisitExeScopeCondition(EXEScopeCondition scope)
@@ -464,17 +511,55 @@ public class VisitorPythonCode : Visitor
     public override void VisitExeASTNodeAccesChain(EXEASTNodeAccessChain node)
     {
         bool first = true;
+
+        for (int i = 0; i < node.GetElements().Count(element => IsContainsMethod(element)); i++)
+        {
+            commandString.Append("contains(");
+        }
+
+        bool skip;
         foreach (var element in node.GetElements()) {
+
+            skip = false;
             if (first)
             {
                 first = false;
+            }
+            else if (IsContainsMethod(element))
+            {
+                commandString.Append(", ");
+                (element.NodeValue as EXEASTNodeMethodCall).Arguments.First().Accept(this);
+                commandString.Append(")");
+                skip = true;
             }
             else
             {
                 commandString.Append(".");
             }
-            element.NodeValue.Accept(this);
+
+            if (skip) { continue; }
+
+            if
+            (
+                element.NodeValue is EXEASTNodeMethodCall
+                && "Count".Equals((element.NodeValue as EXEASTNodeMethodCall).MethodName)
+                && !(element.NodeValue as EXEASTNodeMethodCall).Arguments.Any()
+            )
+            {
+                commandString.Append("__len__()");
+            }
+            else
+            {
+                element.NodeValue.Accept(this);
+            }
         }
+    }
+
+    private bool IsContainsMethod(EXEASTNodeAccessChainElement element)
+    {
+        return element.NodeValue is EXEASTNodeMethodCall
+                && "Contains".Equals((element.NodeValue as EXEASTNodeMethodCall).MethodName)
+                && (element.NodeValue as EXEASTNodeMethodCall).Arguments.Count() == 1;
     }
 
     public override void VisitExeASTNodeComposite(EXEASTNodeComposite node)
@@ -485,12 +570,14 @@ public class VisitorPythonCode : Visitor
                 commandString.Append("not ");
                 node.Operands.First().Accept(this);
             }
-            else if (node.Operation.ToLower().Equals("cardinality")) {
+            else if (node.Operation.ToLower().Equals("cardinality"))
+            {
                 commandString.Append("cardinality(");
                 node.Operands.First().Accept(this);
                 commandString.Append(")");
             }
-            if (node.Operation.ToLower().Equals("not_empty")) {
+            else if (node.Operation.ToLower().Equals("not_empty"))
+            {
                 node.Operands.First().Accept(this);
             }
             else {

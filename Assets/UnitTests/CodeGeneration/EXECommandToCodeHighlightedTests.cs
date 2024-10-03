@@ -16,13 +16,13 @@ public class EXECommandToCodeHighlightedTests
 
         EXECommand _command = new EXECommandAddingToList(_assignmentTarget, _assignedValue);
         _command.IsActive = true;
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         visitor.ActivateHighlighting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "<b><color=green>add element to list</color></b>";
@@ -39,13 +39,13 @@ public class EXECommandToCodeHighlightedTests
 
         EXECommand _command = new EXECommandAssignment(_assignmentTarget, _assignedValue);
         _command.IsActive = true;
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         visitor.ActivateHighlighting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "<b><color=green>variable = 5</color></b>";
@@ -58,13 +58,13 @@ public class EXECommandToCodeHighlightedTests
         // Arrange
         EXECommand _command = new EXECommandBreak();
         _command.IsActive = true;
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         visitor.ActivateHighlighting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "<b><color=green>break</color></b>";
@@ -82,13 +82,13 @@ public class EXECommandToCodeHighlightedTests
 
         EXECommand _command = new EXECommandCall(_callSource, _callTargett);
         _command.IsActive = true;
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         visitor.ActivateHighlighting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "<b><color=green>firstVariable.secondVariable.function()</color></b>";
@@ -101,13 +101,13 @@ public class EXECommandToCodeHighlightedTests
         // Arrange
         EXECommand _command = new EXECommandContinue();
         _command.IsActive = true;
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         visitor.ActivateHighlighting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "<b><color=green>continue</color></b>";
@@ -130,13 +130,13 @@ public class EXECommandToCodeHighlightedTests
 
         EXECommand _command = new EXECommandCreateList("ListType", _callSource, _elementList);
         _command.IsActive = true;
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         visitor.ActivateHighlighting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "<b><color=green>create list firstVariable.secondVariable of ListType { firstElement, secondElement, thirdElement }</color></b>";
@@ -152,13 +152,13 @@ public class EXECommandToCodeHighlightedTests
 
         EXECommand _command = new EXECommandQueryCreate("ClassName", _callSource);
         _command.IsActive = true;
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         visitor.ActivateHighlighting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "<b><color=green>create object instance InstanceName of ClassName</color></b>";
@@ -172,13 +172,13 @@ public class EXECommandToCodeHighlightedTests
         EXEASTNodeBase _deletedValue = new EXEASTNodeLeaf("variable");
         EXECommand _command = new EXECommandQueryDelete(_deletedValue);
         _command.IsActive = true;
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         visitor.ActivateHighlighting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "<b><color=green>delete object instance variable</color></b>";
@@ -196,16 +196,16 @@ public class EXECommandToCodeHighlightedTests
 
         EXECommand _command = new EXECommandRead("assignmentType", _callSource, _prompt);
         _command.IsActive = true;
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         visitor.ActivateHighlighting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
-        string _expectedOutput = "<b><color=green>firstVariable.secondVariable = assignmentType (read( prompt ))</color></b>"; // not sure if this is how the result should look, bud originally it was `firstVariable.secondVariable = assignmentTypeprompt))` and this seems better according to grammar, but feel free to change it
+        string _expectedOutput = "<b><color=green>firstVariable.secondVariable = assignmentType(read(prompt))</color></b>"; // not sure if this is how the result should look, bud originally it was `firstVariable.secondVariable = assignmentTypeprompt))` and this seems better according to grammar, but feel free to change it
 
         Assert.AreEqual(_expectedOutput, _actualOutput);
     }
@@ -218,13 +218,13 @@ public class EXECommandToCodeHighlightedTests
 
         EXECommand _command = new EXECommandRemovingFromList(_list, _element);
         _command.IsActive = true;
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         visitor.ActivateHighlighting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "<b><color=green>remove element from list</color></b>";
@@ -239,13 +239,13 @@ public class EXECommandToCodeHighlightedTests
 
         EXECommand _command = new EXECommandReturn(_returnValue);
         _command.IsActive = true;
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         visitor.ActivateHighlighting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "<b><color=green>return value</color></b>";
@@ -263,13 +263,13 @@ public class EXECommandToCodeHighlightedTests
 
         EXECommand _command = new EXECommandWrite(_args);
         _command.IsActive = true;
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         visitor.ActivateHighlighting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "<b><color=green>write(arg1, arg2)</color></b>";

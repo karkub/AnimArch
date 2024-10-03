@@ -30,13 +30,13 @@ public class ExecutionErrorPanel : MonoBehaviour
         {
             return;
         }
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         ErrorIDTextComponent.text = executionSuccess.ErrorCode;
         ErrorDescriptionTextComponent.text = executionSuccess.ErrorMessage;
         ErrorCommandTypeTextComponent.text = executionSuccess.OwningCommand.GetType().Name;
         executionSuccess.OwningCommand.Accept(visitor);
 
-        ErrorSourceCodeTextComponent.text = visitor.GetCommandStringAndResetStateNow();
+        ErrorSourceCodeTextComponent.text = visitor.GetCommandString();
     }
 }

@@ -52,6 +52,10 @@ namespace Visualization.UI
             {
                 OnRemoveButtonClicked();
             }
+            else
+            {
+                OnClickedDefault(gameObject);
+            }
         }
 
         private void OnExpandButtonClicked()
@@ -83,6 +87,8 @@ namespace Visualization.UI
             TooltipManager.Instance.HideTooltip();
             FileLoader.Instance.OpenAnimation();
         }
+        //TODO chcem zopakovat vsetko a len vymenim cestu k animacii
+        
         private void OnEditButtonClicked()
         {
             TooltipManager.Instance.HideTooltip();

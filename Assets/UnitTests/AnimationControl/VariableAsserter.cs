@@ -7,7 +7,7 @@ using OALProgramControl;
 
 namespace Assets.UnitTests.AnimationControl
 {
-    public class VariableAsserter
+    public class VariableAsserter 
     {
         private List<EXEVariable> ExpectedVariables;
         private EXEScope ActualScope;
@@ -90,11 +90,11 @@ namespace Assets.UnitTests.AnimationControl
 
                         if (actualVariable.Value is not EXEValueReference)
                         {
-                            VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+                            VisitorCommandToString visitor = new VisitorCommandToString();
                             expectedVariable.Value.Accept(visitor);
-                            VisitorCommandToString visitor2 = VisitorCommandToString.BorrowAVisitor();
+                            VisitorCommandToString visitor2 = new VisitorCommandToString();
                             actualVariable.Value.Accept(visitor2);
-                            Assert.AreEqual(visitor.GetCommandStringAndResetStateNow(), visitor2.GetCommandStringAndResetStateNow(), string.Format("The expected variable '{0}' has invalid value.\n{1}", expectedVariable.Name, variableDumpMessage));
+                            Assert.AreEqual(visitor.GetCommandString(), visitor2.GetCommandString(), string.Format("The expected variable '{0}' has invalid value.\n{1}", expectedVariable.Name, variableDumpMessage));
                         }
                         else
                         {

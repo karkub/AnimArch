@@ -1,30 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace OALProgramControl
 {
-    public class EXEScope : EXECommand
+    public class EXEScope : EXEScopeBase
     {
-        protected readonly List<EXEVariable> LocalVariables;
-        public List<EXEVariable> Variables
-        {
-            get
-            {
-                return this.LocalVariables.Select(x => x).ToList();
-            }
-        }
         public List<EXECommand> Commands { get; protected set; }
-
         public String OALCode;
 
         public EXEScope() : base()
         {
-            this.LocalVariables = new List<EXEVariable>();
             this.Commands = new List<EXECommand>();
         }
-
-        public EXEScope(EXEScope SuperScope, EXECommand[] Commands)
+        public EXEScope(EXEScopeBase SuperScope, EXECommand[] Commands)
         {
             this.LocalVariables = new List<EXEVariable>();
 
@@ -37,18 +27,24 @@ namespace OALProgramControl
             }
         }
 
-        public override IEnumerable<EXEScope> ScopesToTop()
+        public override IEnumerable<EXEScopeBase> ScopesToTop()
         {
-            EXEScope currentScope = this;
+            EXEScopeBase currentScope = this;
+            yield return currentScope;
 
-            while (currentScope != null)
+            foreach (EXEScopeBase scope in currentScope.SuperScope.ScopesToTop())
             {
-                yield return currentScope;
-                currentScope = currentScope.SuperScope;
+                yield return scope;
             }
         }
-
-        public Dictionary<string, string> AllDeclaredVariables()
+        
+        protected override EXEExecutionResult Execute(OALProgram OALProgram)
+        {
+            AddCommandsToStack(this.Commands);
+            return Success();
+        }
+        
+        public override Dictionary<string, string> AllDeclaredVariables()
         {
             Dictionary<string, string> result = new Dictionary<string, string>();
 
@@ -56,20 +52,14 @@ namespace OALProgramControl
 
             return result;
         }
-
-        protected override EXEExecutionResult Execute(OALProgram OALProgram)
-        {
-            AddCommandsToStack(this.Commands);
-            return Success();
-        }
-
+        
         protected void AddCommandsToStack(List<EXECommand> Commands)
         {
             Commands.ForEach(command => { command.SetSuperScope(this); command.CommandStack = this.CommandStack; });
             this.CommandStack.Enqueue(Commands);
         }
 
-        public virtual EXEExecutionResult AddVariable(EXEVariable variable)
+        public override EXEExecutionResult AddVariable(EXEVariable variable)
         {
             EXEExecutionResult Result;
 
@@ -86,16 +76,16 @@ namespace OALProgramControl
             return Result;
         }
 
-        public bool VariableExists(String seekedVariableName)
+        public override bool VariableExists(String seekedVariableName)
         {
             return FindVariable(seekedVariableName) != null;
         }
 
-        public EXEVariable FindVariable(String seekedVariableName)
+        public override EXEVariable FindVariable(String seekedVariableName)
         {
             EXEVariable result = null;
 
-            foreach (EXEScope scope in ScopesToTop())
+            foreach (EXEScopeBase scope in ScopesToTop())
             {
                 result = scope.LocalVariables.Where(variable => string.Equals(seekedVariableName, variable.Name)).FirstOrDefault();
 

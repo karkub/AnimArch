@@ -35,5 +35,10 @@ namespace OALProgramControl
         {
             return new EXECommandPragma(Pragma);
         }
+
+        public override void Accept(Visitor v)
+        {
+            v.VisitExeCommandPragma(this);
+        }
     }
 }

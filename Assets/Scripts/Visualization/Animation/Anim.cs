@@ -13,6 +13,7 @@ using Visualization.ClassDiagram;
 using Visualization.ClassDiagram.Relations;
 using Assets.Scripts.AnimationControl;
 using Microsoft.Msagl.Core.DataStructures;
+using System;
 
 namespace Visualisation.Animation
 {
@@ -192,11 +193,11 @@ namespace Visualisation.Animation
 
                     if (!string.Empty.Equals(constructor.Code))
                     {
-                        VisitorPythonCode visitor = VisitorPythonCode.BorrowAVisitor();
+                        VisitorPythonCode visitor = new VisitorPythonCode();
                         EXEScopeMethod _scope = OALParserBridge.Parse(constructor.Code);
                         visitor.SetIndentation(2);
                         _scope.Accept(visitor);
-                        string result = visitor.GetCommandStringAndResetStateNow();
+                        string result = visitor.GetCommandString();
                         Code.AppendLine(result);
                     }
 
@@ -225,11 +226,11 @@ namespace Visualisation.Animation
                     }
                     else
                     {
-                        VisitorPythonCode visitor = VisitorPythonCode.BorrowAVisitor();
+                        VisitorPythonCode visitor = new VisitorPythonCode();
                         EXEScopeMethod _scope = OALParserBridge.Parse(methodItem.Code);
                         visitor.SetIndentation(2);
                         _scope.Accept(visitor);
-                        string result = visitor.GetCommandStringAndResetStateNow();
+                        string result = visitor.GetCommandString();
                         Code.AppendLine(result);
                     }
             }
@@ -239,7 +240,9 @@ namespace Visualisation.Animation
         {
             StringBuilder Code = new StringBuilder();
             Code.AppendLine("import time");
+            Code.AppendLine("from time import sleep");
             Code.AppendLine("from pathlib import Path");
+            Code.AppendLine("from threading import Thread");
             Code.AppendLine();
 
             OALProgram currentProgram = Visualization.Animation.Animation.Instance.CurrentProgramInstance;
@@ -250,7 +253,15 @@ namespace Visualisation.Animation
                 List<CDClass> nextClasses = new List<CDClass>();
                 foreach (CDClass classCD in classes) 
                 {
-                    AnimClass classAnim = MethodsCodes.Where(_class => _class.Name.Equals(classCD.Name)).ToList().First();
+                    AnimClass classAnim = MethodsCodes.Where(_class => _class.Name.Equals(classCD.Name)).ToList().FirstOrDefault();
+
+                    if (classAnim == null)
+                    {
+                        string className = classCD.Name;
+                        string availableMethodClasses = string.Join(",", MethodsCodes.Select(_class => _class.Name));
+                        throw new Exception(string.Format("No code found for class '{0}' in list of method codes. Available method codes classes are: {1}.", className, availableMethodClasses));
+                    }
+
                     ClassToPython(Code, classAnim);
                     nextClasses.AddRange(currentProgram.ExecutionSpace.Classes.Where(_class => _class.SuperClass == classCD).ToList());
                 }
@@ -273,6 +284,8 @@ namespace Visualisation.Animation
             Code.AppendLine("\t\t" + "return 1");
             Code.AppendLine("\t" + "else:");
             Code.AppendLine("\t\t" + "return 0");
+            Code.AppendLine("def contains(array, value):");
+            Code.AppendLine("\t" + "return len([x for x in array if x.Equals(value)]) > 0");
             Code.AppendLine();
 
             return Code.ToString();

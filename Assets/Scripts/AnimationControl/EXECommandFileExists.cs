@@ -77,5 +77,10 @@ namespace OALProgramControl
         {
             return new EXECommandFileExists(AssignmentTarget, FileToCheck);
         }
+
+        public override void Accept(Visitor v)
+        {
+            v.VisitExeCommandFileExists(this);
+        }
     }
 }

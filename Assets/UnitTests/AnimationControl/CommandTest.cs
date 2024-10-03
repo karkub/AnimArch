@@ -2,6 +2,7 @@ using OALProgramControl;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
+using Visualization.UI;
 
 namespace Assets.UnitTests.AnimationControl
 {
@@ -9,18 +10,21 @@ namespace Assets.UnitTests.AnimationControl
     {
         public readonly VariableAsserter Variables;
         public readonly ObjectInstanceAsserter ObjectInstances;
+        public readonly ConsoleHistoryAsserter ConsoleHistory;
         private EXEExecutionResult ActualExecutionResult;
 
         public CommandTest()
         {
             this.Variables = new VariableAsserter();
             this.ObjectInstances = new ObjectInstanceAsserter();
+            this.ConsoleHistory = new ConsoleHistoryAsserter();
         }
 
         public void Declare(EXEScope actualScope, EXEExecutionResult executionResult)
         {
             this.Variables.Declare(actualScope);
             this.ObjectInstances.Declare();
+            this.ConsoleHistory.Declare(MenuManager.Instance.Strategy.ConsoleHistory);
             this.ActualExecutionResult = executionResult;
         }
 
@@ -31,6 +35,7 @@ namespace Assets.UnitTests.AnimationControl
 
             this.Variables.PerformAssertion();
             this.ObjectInstances.PerformAssertion();
+            this.ConsoleHistory.PerformAssertion();
         }
     }
 }

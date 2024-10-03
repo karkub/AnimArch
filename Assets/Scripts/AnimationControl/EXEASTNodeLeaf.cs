@@ -13,7 +13,7 @@ namespace OALProgramControl
             this.Value = Value;
         }
 
-        public override EXEExecutionResult Evaluate(EXEScope currentScope, OALProgram currentProgramInstance, EXEASTNodeAccessChainContext valueContext = null)
+        public override EXEExecutionResult Evaluate(EXEScopeBase currentScope, OALProgram currentProgramInstance, EXEASTNodeAccessChainContext valueContext = null)
         {
             if (this.EvaluationState == EEvaluationState.HasBeenEvaluated)
             {

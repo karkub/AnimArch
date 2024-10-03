@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using Visualization.UI;
+using UnityEngine;
 
 namespace OALProgramControl
 {
@@ -11,7 +12,7 @@ namespace OALProgramControl
         public String AssignmentType { get; }
         public EXEASTNodeAccessChain AssignmentTarget { get; }
         public EXEASTNodeBase Prompt { get; }  // Must be String type
-        public string PromptText { get; private set; }
+        public string PromptText { get; set; }
 
         public EXECommandRead(String assignmentType, EXEASTNodeAccessChain assignmentTarget, EXEASTNodeBase prompt)
         {
@@ -33,7 +34,7 @@ namespace OALProgramControl
             EXEExecutionResult promptEvaluationResult = null;
             if (this.Prompt != null)
             {
-                promptEvaluationResult  = this.Prompt.Evaluate(this.SuperScope, OALProgram);
+                promptEvaluationResult = this.Prompt.Evaluate(this.SuperScope, OALProgram);
 
                 if (!HandleRepeatableASTEvaluation(promptEvaluationResult))
                 {
@@ -48,13 +49,15 @@ namespace OALProgramControl
 
             string prompt = string.Empty;
             EXEValueString retOutput = promptEvaluationResult.ReturnedOutput as EXEValueString;
+            
             if (retOutput != null) {
-                VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+                VisitorCommandToString visitor = new VisitorCommandToString();
                 retOutput.Accept(visitor);
-                prompt = visitor.GetCommandStringAndResetStateNow();
+                prompt = visitor.GetCommandString();
             }
 
             this.PromptText = prompt;
+            MenuManager.Instance.Strategy.Read(this, OALProgram);
 
             return Success();
         }

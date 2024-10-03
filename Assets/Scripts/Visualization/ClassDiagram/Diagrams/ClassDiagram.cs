@@ -103,6 +103,12 @@ namespace Visualization.ClassDiagram.Diagrams
                 .FirstOrDefault(relation => string.Equals(relationshipName, relation.RelationInfo.RelationshipName));
         }
 
+        public void AddRelation(RelationInDiagram relation)
+        {
+            Relations.Add(relation);
+            relation.HighlightSubject = new EdgeHighlightSubject();
+        }
+
         public string FindOwnerOfRelation(string relationName)
         {
             return Relations
@@ -117,6 +123,13 @@ namespace Visualization.ClassDiagram.Diagrams
                     ((relation.RelationInfo.FromClass == fromClass && relation.RelationInfo.ToClass == toClass) ||
                     (relation.RelationInfo.FromClass == toClass && relation.RelationInfo.ToClass == fromClass)) &&
                     relation.ParsedRelation.PropertiesEaType == type);
+        }
+
+        public IEnumerable<RelationInDiagram> FindRelationsByClass(string classInDiagram)
+        {
+            return Relations
+                .FindAll(relation => 
+                    (relation.RelationInfo.FromClass == classInDiagram  || relation.RelationInfo.ToClass == classInDiagram));
         }
 
 

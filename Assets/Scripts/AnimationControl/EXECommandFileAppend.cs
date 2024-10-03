@@ -13,5 +13,10 @@ namespace OALProgramControl
         {
             return new EXECommandFileAppend(StringToWrite.Clone(), FileToWriteTo.Clone());
         }
+
+        public override void Accept(Visitor v)
+        {
+            v.VisitExeCommandFileAppend(this);
+        }
     }
 }

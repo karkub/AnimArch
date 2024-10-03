@@ -20,25 +20,25 @@ public class EXEScopeToCodeTests
         }
 
         // Act
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
         visitor.DeactivateSimpleFormatting();
         _scope.Accept(visitor);
-        string _actualUnformattedOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualUnformattedOutput = visitor.GetCommandString();
 
-        visitor = VisitorCommandToString.BorrowAVisitor();
+        visitor = new VisitorCommandToString();
         _scope.Accept(visitor);
-        string _actualFormattedOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualFormattedOutput = visitor.GetCommandString();
 
-        visitor = VisitorCommandToString.BorrowAVisitor();
+        visitor = new VisitorCommandToString();
         visitor.DeactivateSimpleFormatting();
         visitor.ActivateHighlighting();
         _scope.Accept(visitor);
-        string _actualHighlightedOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualHighlightedOutput = visitor.GetCommandString();
 
-        visitor = VisitorCommandToString.BorrowAVisitor();
+        visitor = new VisitorCommandToString();
         visitor.ActivateHighlighting();
         _scope.Accept(visitor);
-        string _actualHighlightedAndFormattedOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualHighlightedAndFormattedOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedUnformattedOutput             = "for each element in list\nelement.Perform()end for";
@@ -62,11 +62,11 @@ public class EXEScopeToCodeTests
         ";
         EXEScopeMethod _scope = OALParserBridge.Parse(_methodSourceCode);
 
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         _scope.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "create list Numbers of PrettyIntegers { 1, 2, 3 };\nx = Numbers[1];\n";
@@ -84,11 +84,11 @@ public class EXEScopeToCodeTests
         ";
         EXEScopeMethod _scope = OALParserBridge.Parse(_methodSourceCode);
 
-        VisitorPythonCode visitor = VisitorPythonCode.BorrowAVisitor();
+        VisitorPythonCode visitor = new VisitorPythonCode();
 
         // Act
         _scope.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "Numbers = [1, 2, 3]\nx = Numbers[1]\n";

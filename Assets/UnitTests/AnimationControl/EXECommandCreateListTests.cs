@@ -80,7 +80,7 @@ namespace Assets.UnitTests.AnimationControl
             Test.Variables
                 .ExpectVariable("x", array)
                 .ExpectVariable("self", methodScope.OwningObject);
-
+            // test console history
             Test.PerformAssertion();
         }
 
