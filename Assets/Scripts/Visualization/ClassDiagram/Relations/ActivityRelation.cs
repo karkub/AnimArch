@@ -22,7 +22,7 @@ namespace Visualization.ClassDiagram.Relations
 
         public void Generate()
         {
-            Debug.LogError("ActivityRelation::Generate()");
+            Debug.Log("[Karin] ActivityRelation::Generate()");
             GameObject = InitEdge();
             var uEdge = GameObject.GetComponent<UEdge>();
             uEdge.Points = new Vector2[]
@@ -34,7 +34,7 @@ namespace Visualization.ClassDiagram.Relations
 
         private GameObject InitEdge()
         {
-            Debug.LogError("ActivityRelation::InitEdge()");
+            Debug.Log("[Karin] ActivityRelation::InitEdge()");
             return _graph.AddEdge(_start.VisualObject, _end.VisualObject,
                 DiagramPool.Instance.associationNonePrefab);
         }

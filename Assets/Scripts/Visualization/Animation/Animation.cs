@@ -235,8 +235,8 @@ namespace Visualization.Animation
             VisitorCommandToString visitor = new VisitorCommandToString();
             CurrentCommand.Accept(visitor);
             string commandCode = visitor.GetCommandString();
-            Debug.LogErrorFormat("Animate command code {0}", commandCode);
-            Debug.LogErrorFormat("Animate current command Type {0}", CurrentCommand.GetType());
+            Debug.LogFormat("[Karin] Animate command code {0}", commandCode);
+            Debug.LogFormat("[Karin] Animate current command Type {0}", CurrentCommand.GetType());
             if (CurrentCommand.GetType() != typeof(EXEScopeMethod))
             {
                 if (isEXECommandReturn)
@@ -244,7 +244,7 @@ namespace Visualization.Animation
                     float speedPerAnim = AnimationData.Instance.AnimSpeed;
                     float timeModifier = 2.2f;
                     yield return new WaitForSeconds(timeModifier * speedPerAnim);
-                    Debug.LogError("EXECommandReturn activityDiagram.ClearDiagram()");
+                    Debug.Log("[Karin] EXECommandReturn activityDiagram.ClearDiagram()");
                     activityDiagram.ClearDiagram();
                     isEXECommandReturn = false;
                 }

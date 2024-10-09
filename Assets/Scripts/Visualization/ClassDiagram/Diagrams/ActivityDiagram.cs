@@ -89,7 +89,6 @@ namespace AnimArch.Visualization.Diagrams
                 activityInDiagram.VisualObject.transform.SetPositionAndRotation(
                     new Vector3(initialActivityPositionX, -i * activityOffsetY, initialActivityPositionZ), 
                     Quaternion.identity);
-                // Debug.LogErrorFormat("Repositioning activity {0}", i); //TODOa remove
                 i++;
             }
         }
@@ -154,7 +153,7 @@ namespace AnimArch.Visualization.Diagrams
                 VisualObject = null
             };
             AddVisualPartOfActivity(activityInDiagram);
-            Debug.LogErrorFormat("AddActivityInDiagram, activities count je {0}", Activities.Count);
+            Debug.LogFormat("[Karin] AddActivityInDiagram, activities count je {0}", Activities.Count);
         }
 
         private void AddInitialActivityInDiagram()
@@ -165,7 +164,7 @@ namespace AnimArch.Visualization.Diagrams
                 VisualObject = null
             };
             AddVisualPartOfActivity(initialActivityInDiagram, "initial");
-            Debug.LogErrorFormat("AddInitialActivityInDiagram, activities count je {0}", Activities.Count);
+            Debug.LogFormat("[Karin] AddInitialActivityInDiagram, activities count je {0}", Activities.Count);
         }
 
         public void AddFinalActivityInDiagram()
@@ -176,7 +175,7 @@ namespace AnimArch.Visualization.Diagrams
                 VisualObject = null
             };
             AddVisualPartOfActivity(finalActivityInDiagram, "final");
-            Debug.LogErrorFormat("AddFinalActivityInDiagram, activities count je {0}", Activities.Count);
+            Debug.LogFormat("[Karin] AddFinalActivityInDiagram, activities count je {0}", Activities.Count);
         }
 
         private void AddVisualPartOfActivity(ActivityInDiagram Activity, string typeOfActivity = "classic")
@@ -201,7 +200,7 @@ namespace AnimArch.Visualization.Diagrams
         {
             ActivityInDiagram start = Activities[Activities.Count - 2];
             ActivityInDiagram end = Activities[Activities.Count - 1];
-            Debug.LogErrorFormat("Adding relation from {0} to {1}", start.ActivityText, end.ActivityText);
+            Debug.LogFormat("[Karin] Adding relation from {0} to {1}", start.ActivityText, end.ActivityText);
             ActivityRelation relation = new ActivityRelation(graph, start, end);
             Relations.Add(relation);
             relation.Generate();
