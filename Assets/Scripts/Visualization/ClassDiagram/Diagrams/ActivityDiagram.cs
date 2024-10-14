@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UMSAGL.Scripts;
 using UnityEngine;
@@ -22,7 +23,6 @@ namespace AnimArch.Visualization.Diagrams
         private void Awake()
         {
             DiagramPool.Instance.ActivityDiagram = this;
-            ResetDiagram();
         }
 
         public void ResetDiagram()
@@ -47,14 +47,13 @@ namespace AnimArch.Visualization.Diagrams
         public void ClearDiagram()
         {
             // Get rid of already rendered activities in diagram.
-            if (Activities != null)
+            if (Activities != null && Activities.Count > 0)
             {
                 foreach (ActivityInDiagram Activity in Activities)
                 {
                     Destroy(Activity.VisualObject);
                 }
             }
-
             Activities = new List<ActivityInDiagram>();
             Relations = new List<ActivityRelation>();
         }
@@ -63,47 +62,61 @@ namespace AnimArch.Visualization.Diagrams
         {
             CreateGraph();
             //Generate UI objects displaying the diagram
-            Generate();
-
-            //Set the layout of diagram so it is corresponding to EA view // TODOa toto asi netreba
-            //ManualLayout(); 
-            //AutoLayout();
-
             graph.transform.position = new Vector3(0, 0, 2 * offsetZ);
+            Generate();
+        }
+
+        public void SaveDiagram()
+        {
+            Debug.Log("[Karin] ActivityDiagram::SaveDiagram() PUSH");
+            ActivityDiagramManager.Instance.ActivityDiagrams.Push(this.copy());
+            ActivityDiagramManager.Instance.PrintDiagamsInStack();
+        }
+
+        private ActivityDiagram copy()
+        {
+            ActivityDiagram newActivityDiagram = new ActivityDiagram();
+            newActivityDiagram.Activities = new List<ActivityInDiagram>(Activities);
+            newActivityDiagram.Relations = new List<ActivityRelation>(Relations);
+            return newActivityDiagram;
         }
 
         private Graph CreateGraph()
         {
-            ResetDiagram();
             var go = Instantiate(DiagramPool.Instance.graphPrefab);
             graph = go.GetComponent<Graph>();
             graph.nodePrefab = DiagramPool.Instance.activityPrefab; 
             return graph;
         }
 
-        public void RepositionActivities() 
-        {
-            int i = 0;
-            foreach (ActivityInDiagram activityInDiagram in Activities)
-            {
-                activityInDiagram.VisualObject.transform.SetPositionAndRotation(
-                    new Vector3(initialActivityPositionX, -i * activityOffsetY, initialActivityPositionZ), 
-                    Quaternion.identity);
-                i++;
-            }
-        }
-
-        private void Generate()
+        public void Generate()
         {
             //Render activities
-            for (int i = 0; i < Activities.Count; i++)
+            Debug.Log("[Karin] ActivityDiagram::Generate()");
+            Debug.LogFormat("[Karin] Activities.Count = {0}", Activities.Count);
+            if (Activities != null && Activities.Count > 0)
             {
-                GenerateActivity(Activities[i]);
-            }
+                for (int i = 0; i < Activities.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        GenerateInitialActivity(Activities[i]);
+                    }
+                    //else if (i == Activities.Count - 1)
+                    //{
+                     //   GenerateFinalActivity(Activities[i]);
+                    //}
+                    else
+                    {
+                        GenerateActivity(Activities[i]);
+                    }
+                }
+                RepositionActivities();
 
-            foreach (ActivityRelation relation in Relations)
-            {
-                relation.Generate();
+                foreach (ActivityRelation relation in Relations)
+                {
+                    relation.Generate();
+                }
             }
         }
 
@@ -153,7 +166,7 @@ namespace AnimArch.Visualization.Diagrams
                 VisualObject = null
             };
             AddVisualPartOfActivity(activityInDiagram);
-            Debug.LogFormat("[Karin] AddActivityInDiagram, activities count je {0}", Activities.Count);
+            RepositionActivities();
         }
 
         private void AddInitialActivityInDiagram()
@@ -164,7 +177,6 @@ namespace AnimArch.Visualization.Diagrams
                 VisualObject = null
             };
             AddVisualPartOfActivity(initialActivityInDiagram, "initial");
-            Debug.LogFormat("[Karin] AddInitialActivityInDiagram, activities count je {0}", Activities.Count);
         }
 
         public void AddFinalActivityInDiagram()
@@ -175,7 +187,7 @@ namespace AnimArch.Visualization.Diagrams
                 VisualObject = null
             };
             AddVisualPartOfActivity(finalActivityInDiagram, "final");
-            Debug.LogFormat("[Karin] AddFinalActivityInDiagram, activities count je {0}", Activities.Count);
+            RepositionActivities();
         }
 
         private void AddVisualPartOfActivity(ActivityInDiagram Activity, string typeOfActivity = "classic")
@@ -193,7 +205,20 @@ namespace AnimArch.Visualization.Diagrams
                     GenerateActivity(Activity);
                     break;
             }
-            // graph.Layout(); // TODO
+            // graph.Layout(); // TODOa
+        }
+
+        public void RepositionActivities()
+        {
+            Debug.Log("[Karin] ActivityDiagram::RepositionActivities()");
+            int i = 0;
+            foreach (ActivityInDiagram activityInDiagram in Activities)
+            {
+                activityInDiagram.VisualObject.transform.SetPositionAndRotation(
+                    new Vector3(initialActivityPositionX, -i * activityOffsetY, initialActivityPositionZ),
+                    Quaternion.identity);
+                i++;
+            }
         }
 
         public void AddRelation()
@@ -206,5 +231,15 @@ namespace AnimArch.Visualization.Diagrams
             relation.Generate();
         }
 
+
+        public void PrintActivitiesinDiagram()
+        {
+            Debug.Log("[Karin] -------- ActivityDiagram::PrintDiagram()");
+            foreach (ActivityInDiagram Activity in Activities)
+            {
+                Debug.LogFormat("[Karin] {0}", Activity.ActivityText);
+            }
+            Debug.Log("[Karin] -------- END ActivityDiagram::PrintDiagram()");
+        }
     }
 }

@@ -27,7 +27,7 @@ namespace Visualization.Animation
     {
         public ClassDiagram.Diagrams.ClassDiagram classDiagram { get; private set;}
         public ObjectDiagram objectDiagram { get; private set;}
-        public ActivityDiagram activityDiagram { get; private set; }
+        public ActivityDiagram activityDiagram { get; set; }
         public Color classColor;
         public Color methodColor;
         public Color relationColor;
@@ -235,8 +235,8 @@ namespace Visualization.Animation
             VisitorCommandToString visitor = new VisitorCommandToString();
             CurrentCommand.Accept(visitor);
             string commandCode = visitor.GetCommandString();
-            Debug.LogFormat("[Karin] Animate command code {0}", commandCode);
-            Debug.LogFormat("[Karin] Animate current command Type {0}", CurrentCommand.GetType());
+            Debug.LogFormat("[Karin] Animate command code: {0}", commandCode);
+            Debug.LogFormat("[Karin] Animate current command Type: {0}", CurrentCommand.GetType());
             if (CurrentCommand.GetType() != typeof(EXEScopeMethod))
             {
                 if (isEXECommandReturn)
@@ -244,11 +244,14 @@ namespace Visualization.Animation
                     float speedPerAnim = AnimationData.Instance.AnimSpeed;
                     float timeModifier = 2.2f;
                     yield return new WaitForSeconds(timeModifier * speedPerAnim);
-                    Debug.Log("[Karin] EXECommandReturn activityDiagram.ClearDiagram()");
-                    activityDiagram.ClearDiagram();
+                    // Debug.Log("[Karin] EXECommandReturn PrintStack()");  //TODOa Debug
+                    // ActivityDiagramManager.Instance.PrintStack();
+                    activityDiagram.ResetDiagram();
+                    activityDiagram = ActivityDiagramManager.Instance.ActivityDiagrams.Pop();
+                    activityDiagram.LoadDiagram();
                     isEXECommandReturn = false;
                 }
-                AddActivityToDiagram(CurrentCommand, commandCode);
+                AddActivityToDiagram(commandCode);
             }
             // <= Karin - Activity Diagram
 
@@ -264,16 +267,14 @@ namespace Visualization.Animation
             ObjectInDiagram objectInDiagram = objectDiagram.AddObjectInDiagram(name, newObject, showNewObject);
             return objectInDiagram;
         }
-        private void AddActivityToDiagram(EXECommand currentCommand, string commandCode)
+        private void AddActivityToDiagram(string commandCode)
         {
             activityDiagram.AddActivityInDiagram(commandCode);
-            activityDiagram.RepositionActivities();
             // activityDiagram.AddRelation();
         }
         public void AddFinalActivityToDiagram()
         {
             activityDiagram.AddFinalActivityInDiagram();
-            activityDiagram.RepositionActivities();
             // activityDiagram.AddRelation();
         }
         private IEnumerator ResolveCreateObject(EXECommand currentCommand, bool Animate = true, bool AnimateNewObjects = true)

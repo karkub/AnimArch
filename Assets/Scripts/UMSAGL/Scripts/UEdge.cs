@@ -156,6 +156,11 @@ namespace UMSAGL.Scripts
 
         private void UpdateDeleteButtonPosition()
         {
+            if (!Points.Any()) 
+            {
+                return;
+            }
+            
             var prev = Points.First();
             var maxDistance = float.MinValue;
             Vector2 first = default;
