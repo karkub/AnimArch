@@ -11,6 +11,7 @@ using System.Collections;
 using OALProgramControl;
 using UnityEngine;
 using AnimArch.Extensions;
+using System.Runtime.Remoting.Messaging;
 
 namespace AnimationControl.OAL
 {
@@ -160,7 +161,10 @@ namespace AnimationControl.OAL
                 HandleError("Malformed break command.", context);
             }
 
-            return new EXECommandBreak();
+            EXECommandBreak result = new EXECommandBreak();
+            CommandCreationRoutine(result);
+
+            return result;
         }
         // Class name
         public override object VisitClassName([NotNull] OALParser.ClassNameContext context)
@@ -248,7 +252,10 @@ namespace AnimationControl.OAL
                 HandleError("Malformed continue command.", context);
             }
 
-            return new EXECommandContinue();
+            EXECommandContinue result = new EXECommandContinue();
+            CommandCreationRoutine(result);
+
+            return result;
         }
         // Elif block in an IF command
         public override object VisitElif([NotNull] OALParser.ElifContext context)
@@ -273,6 +280,7 @@ namespace AnimationControl.OAL
             }
 
             EXEScopeCondition result = new EXEScopeCondition(condition as EXEASTNodeBase);
+            CommandCreationRoutine(result);
             (commands as List<EXECommand>).ForEach(command => result.AddCommand(command));
 
             return result;
@@ -293,6 +301,7 @@ namespace AnimationControl.OAL
             }
 
             EXEScope result = new EXEScope();
+            CommandCreationRoutine(result);
             (commands as List<EXECommand>).ForEach(command => result.AddCommand(command));
 
             return result;
@@ -319,6 +328,7 @@ namespace AnimationControl.OAL
             }
 
             EXECommandAddingToList result = new EXECommandAddingToList(list as EXEASTNodeBase, item as EXEASTNodeBase);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -344,7 +354,10 @@ namespace AnimationControl.OAL
                 HandleError(string.Format("Malformed assignment command - assigned expression is not supposed to be '{0}'.", assignedExpression?.GetType().Name ?? "NULL"), context);
             }
 
-            return new EXECommandAssignment(assignmentTarget as EXEASTNodeAccessChain, assignedExpression as EXEASTNodeBase);
+            EXECommandAssignment result = new EXECommandAssignment(assignmentTarget as EXEASTNodeAccessChain, assignedExpression as EXEASTNodeBase);
+            CommandCreationRoutine(result);
+
+            return result;
         }
         // Method invocation command
         public override object VisitExeCommandCall([NotNull] OALParser.ExeCommandCallContext context)
@@ -376,6 +389,7 @@ namespace AnimationControl.OAL
             }
 
             EXECommandCall result = new EXECommandCall(accessChain, methodCall as EXEASTNodeMethodCall);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -416,6 +430,7 @@ namespace AnimationControl.OAL
 
             EXECommandCreateList result
                 = new EXECommandCreateList(elementType as string, assignmentTarget as EXEASTNodeAccessChain, listElements);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -444,6 +459,7 @@ namespace AnimationControl.OAL
 
             EXECommandFileAppend result
                 = new EXECommandFileAppend(textToAppend as EXEASTNodeBase, fileToAppendTo as EXEASTNodeBase);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -473,6 +489,7 @@ namespace AnimationControl.OAL
 
             EXECommandFileExists result
                 = new EXECommandFileExists(assignmentTarget as EXEASTNodeAccessChain, fileToCheck as EXEASTNodeBase);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -501,6 +518,7 @@ namespace AnimationControl.OAL
 
             EXECommandFileRead result
                 = new EXECommandFileRead(assignmentTarget as EXEASTNodeAccessChain, fileToReadFrom as EXEASTNodeBase);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -529,6 +547,7 @@ namespace AnimationControl.OAL
 
             EXECommandFileWrite result
                 = new EXECommandFileWrite(textToWrite as EXEASTNodeBase, fileToWriteTo as EXEASTNodeBase);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -580,6 +599,7 @@ namespace AnimationControl.OAL
             }
 
             EXECommandQueryCreate result = new EXECommandQueryCreate(className as string, assignmentTarget);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -599,6 +619,7 @@ namespace AnimationControl.OAL
             }
 
             EXECommandQueryDelete result = new EXECommandQueryDelete(expression as EXEASTNodeBase);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -645,6 +666,7 @@ namespace AnimationControl.OAL
             }
 
             EXECommandRead result = new EXECommandRead(className as string, accessChain as EXEASTNodeAccessChain, promptExpression);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -671,6 +693,7 @@ namespace AnimationControl.OAL
             }
 
             EXECommandRemovingFromList result = new EXECommandRemovingFromList(list as EXEASTNodeBase, item as EXEASTNodeBase);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -690,6 +713,7 @@ namespace AnimationControl.OAL
             }
 
             EXECommandWait result = new EXECommandWait(waitSecondsExpression as EXEASTNodeBase);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -709,6 +733,7 @@ namespace AnimationControl.OAL
             }
 
             EXECommandWrite result = new EXECommandWrite(parameterList as List<EXEASTNodeBase>);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -825,6 +850,7 @@ namespace AnimationControl.OAL
             }
 
             EXEScopeForEach result = new EXEScopeForEach(variableName as string, array as EXEASTNodeBase);
+            CommandCreationRoutine(result);
             (commands as List<EXECommand>).ForEach(command => result.AddCommand(command));
 
             return result;
@@ -883,6 +909,7 @@ namespace AnimationControl.OAL
             }
 
             EXEScopeCondition result = new EXEScopeCondition(condition as EXEASTNodeBase, elifs, elseScope);
+            CommandCreationRoutine(result);
             (commands as List<EXECommand>).ForEach(command => result.AddCommand(command));
 
             return result;
@@ -1088,6 +1115,7 @@ namespace AnimationControl.OAL
             }
 
             EXEScopeParallel result = new EXEScopeParallel(threads);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -1100,6 +1128,7 @@ namespace AnimationControl.OAL
             string pragmaOption = context.GetChild(1).GetText();
 
             EXECommandPragma result = new EXECommandPragma(pragmaOption);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -1125,6 +1154,7 @@ namespace AnimationControl.OAL
             }
 
             EXECommandReturn result = new EXECommandReturn(expression);
+            CommandCreationRoutine(result);
 
             return result;
         }
@@ -1144,6 +1174,7 @@ namespace AnimationControl.OAL
             }
 
             EXEScope result = new EXEScope();
+            CommandCreationRoutine(result);
             (commands as List<EXECommand>).ForEach(command => result.AddCommand(command));
 
             return result;
@@ -1201,6 +1232,7 @@ namespace AnimationControl.OAL
             }
 
             EXEScopeLoopWhile result = new EXEScopeLoopWhile(condition as EXEASTNodeBase);
+            CommandCreationRoutine(result);
             (commands as List<EXECommand>).ForEach(command => result.AddCommand(command));
 
             return result;
@@ -1209,6 +1241,11 @@ namespace AnimationControl.OAL
         public override object VisitTerminal(ITerminalNode node)
         {
             return new EXEASTNodeLeaf(node.GetText());
+        }
+
+        private void CommandCreationRoutine(EXECommand command)
+        {
+            command.IsDirectlyInCode = true;
         }
     }
 }

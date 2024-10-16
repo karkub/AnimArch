@@ -58,7 +58,7 @@ namespace OALProgramControl
             v.VisitExeCommandQueryCreate(this);
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandQueryCreate(this.ClassName, this.AssignmentTarget?.Clone() as EXEASTNodeAccessChain);
         }

@@ -10,7 +10,7 @@ namespace OALProgramControl
 
         public EXECommandFileWrite(EXEASTNodeBase stringToWrite, EXEASTNodeBase fileToWriteTo) : base(stringToWrite, fileToWriteTo) { }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandFileWrite(StringToWrite.Clone(), FileToWriteTo.Clone());
         }

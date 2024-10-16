@@ -104,7 +104,7 @@ namespace OALProgramControl
             return new EXEScopeCondition
             (
                 Condition.Clone(),
-                ElifScopes?.Select(x => (EXEScopeCondition)x.CreateClone()).ToList() ?? new List<EXEScopeCondition>(),
+                ElifScopes?.Select(x => (EXEScopeCondition)x.CreateCloneCustom()).ToList() ?? new List<EXEScopeCondition>(),
                 ElseScope == null ? null : (EXEScope)ElseScope.CreateClone()
             );
         }

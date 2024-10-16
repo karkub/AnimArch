@@ -71,7 +71,7 @@ namespace OALProgramControl
             v.VisitExeCommandCreateList(this);
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandCreateList
             (

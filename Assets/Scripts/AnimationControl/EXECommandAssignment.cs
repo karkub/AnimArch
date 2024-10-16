@@ -49,7 +49,7 @@ namespace OALProgramControl
             v.VisitExeCommandAssignment(this);
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandAssignment((EXEASTNodeAccessChain)this.AssignmentTarget.Clone(), this.AssignedExpression.Clone());
         }

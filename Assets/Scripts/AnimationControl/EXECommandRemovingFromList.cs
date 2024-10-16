@@ -44,7 +44,7 @@ namespace OALProgramControl
             v.VisitExeCommandRemovingFromList(this);
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandRemovingFromList(this.Array.Clone() as EXEASTNodeAccessChain, this.Item.Clone());
         }

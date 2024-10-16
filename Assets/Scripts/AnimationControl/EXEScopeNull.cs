@@ -57,7 +57,7 @@ namespace OALProgramControl
             return true;
         }
         
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return GetInstance();
         }

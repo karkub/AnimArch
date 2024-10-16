@@ -8,6 +8,7 @@ namespace OALProgramControl
     public abstract class EXECommand
     {
         public bool IsActive { get; set; } = false;
+        public bool IsDirectlyInCode { get; set; } = false;
         public static EXEScopeNull NullScope = EXEScopeNull.GetInstance();
         public EXEScopeBase SuperScope { get; set; } = NullScope; 
         public EXEExecutionStack CommandStack { get; set; } = null;
@@ -86,7 +87,16 @@ namespace OALProgramControl
         {
             return false;
         }
-        public abstract EXECommand CreateClone();
+        public EXECommand CreateClone()
+        {
+            EXECommand copy = CreateCloneCustom();
+
+            // Shared behaviour of cloning goes here
+            copy.IsDirectlyInCode = IsDirectlyInCode;
+
+            return copy;
+        }
+        protected abstract EXECommand CreateCloneCustom();
         public virtual void Accept(Visitor v) {
             v.VisitExeCommand(this);
         }

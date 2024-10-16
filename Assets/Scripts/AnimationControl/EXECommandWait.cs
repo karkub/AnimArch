@@ -24,7 +24,7 @@
         {
             v.VisitExeCommandWait(this);
         }
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandWait(WaitTime.Clone());
         }
