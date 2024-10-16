@@ -83,7 +83,7 @@ namespace OALProgramControl
             v.VisitExeCommandRead(this);
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandRead(this.AssignmentType, this.AssignmentTarget.Clone() as EXEASTNodeAccessChain, this.Prompt.Clone());
         }
