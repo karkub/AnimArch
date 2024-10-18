@@ -132,7 +132,7 @@ namespace OALProgramControl
             v.VisitExeScope(this);
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             EXEScope Clone = CreateDuplicateScope();
             

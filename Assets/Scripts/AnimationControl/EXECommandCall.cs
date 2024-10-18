@@ -44,7 +44,7 @@ namespace OALProgramControl
             this.MethodAccessChainS = accessChain;
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandCall(this.MethodAccessChain?.Clone() as EXEASTNodeAccessChain, this.MethodCall.Clone() as EXEASTNodeMethodCall);
         }

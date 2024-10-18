@@ -43,7 +43,7 @@ namespace OALProgramControl
             v.VisitExeCommandQueryDelete(this);
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandQueryDelete(this.DeletedVariable.Clone() as EXEASTNodeAccessChain);
         }

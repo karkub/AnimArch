@@ -36,7 +36,7 @@
             v.VisitExeCommandContinue(this);
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandContinue();
         }
