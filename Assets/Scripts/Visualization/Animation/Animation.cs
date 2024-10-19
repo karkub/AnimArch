@@ -237,15 +237,13 @@ namespace Visualization.Animation
             string commandCode = visitor.GetCommandString();
             Debug.LogFormat("[Karin] Animate command code: {0}", commandCode);
             Debug.LogFormat("[Karin] Animate current command Type: {0}", CurrentCommand.GetType());
-            if (CurrentCommand.GetType() != typeof(EXEScopeMethod))
+            if (CurrentCommand.GetType() != typeof(EXEScopeMethod) && CurrentCommand.IsDirectlyInCode)
             {
                 if (isEXECommandReturn)
                 {
                     float speedPerAnim = AnimationData.Instance.AnimSpeed;
                     float timeModifier = 2.2f;
                     yield return new WaitForSeconds(timeModifier * speedPerAnim);
-                    // Debug.Log("[Karin] EXECommandReturn PrintStack()");  //TODOa Debug
-                    // ActivityDiagramManager.Instance.PrintStack();
                     activityDiagram.ResetDiagram();
                     activityDiagram = ActivityDiagramManager.Instance.ActivityDiagrams.Pop();
                     activityDiagram.LoadDiagram();
