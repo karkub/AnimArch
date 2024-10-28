@@ -7,62 +7,31 @@ namespace Visualization.ClassDiagram.Relations
 {
     public class ActivityRelation
     {
-        private readonly Graph _graph;        
-        private readonly String _type;
-        private readonly ActivityInDiagram _start;
-        private readonly ActivityInDiagram _end;
-        public GameObject GameObject;
-        public ActivityRelation(Graph graph, ActivityInDiagram start, ActivityInDiagram end)
+        public readonly ActivityInDiagram From;
+        public readonly ActivityInDiagram To;
+        public GameObject VisualObject;
+        public ActivityRelation(ActivityInDiagram start, ActivityInDiagram end)
         {
-            _graph = graph;
-            _type = "ASSOCIATION";
-            _start = start;
-            _end = end;
+            From = start;
+            To = end;
         }
 
-        public void Generate()
+        public void GenerateVisualObject(Graph graph)
         {
-            Debug.Log("[Karin] ActivityRelation::Generate()");
-            GameObject = InitEdge();
-            if (GameObject == null)
+            Debug.Log("[Karin] ActivityRelation::GenerateVisualObject()");
+            if (From.VisualObject == null || To.VisualObject == null)
             {
-                Debug.Log("[Karin] InitEdge() returned null");
+                Debug.LogError("[Karin] From or To VisualObject is null");
                 return;
             }
 
-            var uEdge = GameObject.GetComponent<UEdge>();
-            if (uEdge == null)
+            Debug.LogFormat("[Karin] From Position: {0}, To Position: {1}", From.VisualObject.transform.position, To.VisualObject.transform.position);
+
+            this.VisualObject = graph.AddEdge(From.VisualObject, To.VisualObject, DiagramPool.Instance.associationSDPrefab);
+            if (this.VisualObject == null)
             {
-                Debug.Log("[Karin] UEdge component not found on GameObject");
-                return;
+                Debug.LogError("[Karin] Failed to create visual object for relation");
             }
-
-            uEdge.Points = new Vector2[]
-            {
-                _start.VisualObject.transform.position,
-                _end.VisualObject.transform.position
-            };
-
-            Debug.Log("[Karin] ActivityRelation::Generate() - Edge created successfully");
         }
-
-        private GameObject InitEdge()
-        {
-            if (_start.VisualObject == null || _end.VisualObject == null)
-            {
-                Debug.Log("[Karin] Start or End VisualObject is null");
-                return null;
-            }
-
-            if (DiagramPool.Instance.associationNonePrefab == null)
-            {
-                Debug.Log("[Karin] associationNonePrefab is null");
-                return null;
-            }
-
-            return _graph.AddEdge(_start.VisualObject, _end.VisualObject,
-                DiagramPool.Instance.associationNonePrefab);
-        }
-
     }
 }

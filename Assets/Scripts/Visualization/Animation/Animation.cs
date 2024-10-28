@@ -268,12 +268,12 @@ namespace Visualization.Animation
         private void AddActivityToDiagram(string commandCode)
         {
             activityDiagram.AddActivityInDiagram(commandCode);
-            // activityDiagram.AddRelation();
+            activityDiagram.AddRelation();
         }
         public void AddFinalActivityToDiagram()
         {
             activityDiagram.AddFinalActivityInDiagram();
-            // activityDiagram.AddRelation();
+            activityDiagram.AddRelation();
         }
         private IEnumerator ResolveCreateObject(EXECommand currentCommand, bool Animate = true, bool AnimateNewObjects = true)
         {

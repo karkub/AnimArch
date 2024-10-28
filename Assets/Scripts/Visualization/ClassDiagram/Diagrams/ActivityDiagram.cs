@@ -115,7 +115,8 @@ namespace AnimArch.Visualization.Diagrams
 
                 foreach (ActivityRelation relation in Relations)
                 {
-                    relation.Generate();
+                    relation.GenerateVisualObject(graph);
+                    graph.UpdateGraph();
                 }
             }
         }
@@ -223,12 +224,19 @@ namespace AnimArch.Visualization.Diagrams
 
         public void AddRelation()
         {
-            ActivityInDiagram start = Activities[Activities.Count - 2];
-            ActivityInDiagram end = Activities[Activities.Count - 1];
-            Debug.LogFormat("[Karin] Adding relation from {0} to {1}", start.ActivityText, end.ActivityText);
-            ActivityRelation relation = new ActivityRelation(graph, start, end);
+            Debug.LogFormat("[Karin] ActivityDiagram::AddRelation()");
+            if (Activities.Count < 2)
+            {
+                Debug.LogError("[Karin] ActivityDiagram::AddRelation() - Not enough activities in diagram to create a relation.");
+                return;
+            }
+            ActivityInDiagram from = Activities[Activities.Count - 2];
+            ActivityInDiagram to = Activities[Activities.Count - 1];
+            Debug.LogFormat("[Karin] Adding relation from {0} to {1}", from.ActivityText, to.ActivityText);
+            ActivityRelation relation = new ActivityRelation(from, to);
+            relation.GenerateVisualObject(graph);
             Relations.Add(relation);
-            relation.Generate();
+            graph.UpdateGraph();
         }
 
 
@@ -241,5 +249,6 @@ namespace AnimArch.Visualization.Diagrams
             }
             Debug.Log("[Karin] -------- END ActivityDiagram::PrintDiagram()");
         }
+
     }
 }
