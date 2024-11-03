@@ -10141,7 +10141,7 @@ MonoBehaviour:
     type: 3}
   activityInitialPrefab: {fileID: 1226358218867430, guid: 3434456bbd7bff840bc4aa3762c2b4ea,
     type: 3}
-  activityFinalPrefab: {fileID: 1226358218867430, guid: 1be686612295d7949a1be32ca1e1dbb3,
+  activityFinalPrefab: {fileID: 1226358218867430, guid: 77eacb9905398694da8cea685ec5a490,
     type: 3}
   classAttributePrefab: {fileID: 3261782976684401946, guid: a71e905c2fd88e14fafcf1cf1c3d1655,
     type: 3}
