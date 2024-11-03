@@ -14,7 +14,6 @@ namespace Visualization.Animation
 
         public override IEnumerator PerformRequest()
         {
-            Debug.Log("[Karin] AnimationMethodScopeRequest PerformRequest");
             if (animation.activityDiagram.Activities.Count > 0) {
                 animation.activityDiagram.SaveDiagram();
                 animation.activityDiagram.ClearDiagram();

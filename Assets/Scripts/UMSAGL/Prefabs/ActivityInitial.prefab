@@ -10,9 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 224852401735766600}
   - component: {fileID: 114568245614193200}
+  - component: {fileID: 114654169875532780}
+  - component: {fileID: 114752474515285174}
   - component: {fileID: 54018352948757740}
   m_Layer: 5
-  m_Name: ActivityInitialNode
+  m_Name: ActivityInitial
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37,7 +39,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114568245614193200
 MonoBehaviour:
@@ -51,6 +53,61 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3cd2339f7e695e4fbf2a8c804b6a89f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114654169875532780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1226358218867430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b68da0dcaa20fb43a878d4b9ed58a3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114752474515285174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1226358218867430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1c73421490d37348863dfad679cb4a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  triggerHighlighAction:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 114654169875532780}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: HighlightBackground
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  triggerUnhighlighAction:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 114654169875532780}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: UnhighlightBackground
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  IsObject: 0
 --- !u!54 &54018352948757740
 Rigidbody:
   m_ObjectHideFlags: 0

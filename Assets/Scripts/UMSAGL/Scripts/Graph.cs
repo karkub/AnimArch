@@ -123,7 +123,7 @@ namespace UMSAGL.Scripts
             uEdge.GraphEdge = edge;
             _graph.Edges.Add(edge);
             // We cannot wait (i.e. use UpdateGraph()), or the edge will be drawn too late
-            LayoutHelpers.RouteAndLabelEdges(_graph, _settings, _graph.Edges); //TODOa toto nefunguje    
+            LayoutHelpers.RouteAndLabelEdges(_graph, _settings, _graph.Edges);
             RedrawEdges();
             return go;
         }

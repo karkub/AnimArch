@@ -17,9 +17,9 @@ namespace AnimArch.Visualization.Diagrams
         public List<ActivityInDiagram> Activities { get; private set; }
         public List<ActivityRelation> Relations { get; private set; }
 
-        private float initialActivityPositionX;
-        private float initialActivityPositionZ;
-        private float activityOffsetY = 70;
+        private float initialActivityPositionX; //TODOa asi zbytocne
+        private float initialActivityPositionZ; //TODOa asi zbytocne
+        private float activityOffsetY = 70; //TODOa asi zbytocne
         private void Awake()
         {
             DiagramPool.Instance.ActivityDiagram = this;
@@ -102,21 +102,19 @@ namespace AnimArch.Visualization.Diagrams
                     {
                         GenerateInitialActivity(Activities[i]);
                     }
-                    //else if (i == Activities.Count - 1)
-                    //{
-                     //   GenerateFinalActivity(Activities[i]);
-                    //}
+                    // else if (i == Activities.Count - 1)
+                    // {
+                    //    GenerateFinalActivity(Activities[i]);
+                    // }
                     else
                     {
                         GenerateActivity(Activities[i]);
                     }
                 }
-                RepositionActivities();
 
                 foreach (ActivityRelation relation in Relations)
                 {
                     relation.GenerateVisualObject(graph);
-                    graph.UpdateGraph();
                 }
             }
         }
@@ -128,30 +126,32 @@ namespace AnimArch.Visualization.Diagrams
             var node = graph.AddNode();
             node.GetComponent<Clickable>().IsObject = true;
             node.SetActive(true);
-            node.name = Activity.ActivityText;
+            node.name = Activity.ActivityText.Trim();
             var header = node.transform.Find("Background/Header");
 
             // Printing the values into diagram
             header.GetComponent<TextMeshProUGUI>().text = node.name;
 
-            //Add Class to Dictionary
             Activity.VisualObject = node;
+            graph.Layout();
         }
 
         private void GenerateInitialActivity(ActivityInDiagram Activity)
         {
             graph.nodePrefab = DiagramPool.Instance.activityInitialPrefab;
             var node = graph.AddNode();
+
             Activity.VisualObject = node;
-            initialActivityPositionX = node.transform.position.x;
-            initialActivityPositionZ = node.transform.position.z;
+            graph.Layout();
         }
 
         private void GenerateFinalActivity(ActivityInDiagram Activity)
         {
             graph.nodePrefab = DiagramPool.Instance.activityFinalPrefab;
             var node = graph.AddNode();
+
             Activity.VisualObject = node;
+            graph.Layout();
         }
 
         public void AddActivityInDiagram(string variableName)
@@ -167,7 +167,6 @@ namespace AnimArch.Visualization.Diagrams
                 VisualObject = null
             };
             AddVisualPartOfActivity(activityInDiagram);
-            RepositionActivities();
         }
 
         private void AddInitialActivityInDiagram()
@@ -188,7 +187,6 @@ namespace AnimArch.Visualization.Diagrams
                 VisualObject = null
             };
             AddVisualPartOfActivity(finalActivityInDiagram, "final");
-            RepositionActivities();
         }
 
         private void AddVisualPartOfActivity(ActivityInDiagram Activity, string typeOfActivity = "classic")
@@ -206,10 +204,9 @@ namespace AnimArch.Visualization.Diagrams
                     GenerateActivity(Activity);
                     break;
             }
-            // graph.Layout(); // TODOa
         }
 
-        public void RepositionActivities()
+        public void RepositionActivities() // TODOa asi zbytocne lebo aj tak su pod sebou?
         {
             Debug.Log("[Karin] ActivityDiagram::RepositionActivities()");
             int i = 0;
@@ -224,19 +221,17 @@ namespace AnimArch.Visualization.Diagrams
 
         public void AddRelation()
         {
-            Debug.LogFormat("[Karin] ActivityDiagram::AddRelation()");
             if (Activities.Count < 2)
             {
                 Debug.LogError("[Karin] ActivityDiagram::AddRelation() - Not enough activities in diagram to create a relation.");
                 return;
             }
+
             ActivityInDiagram from = Activities[Activities.Count - 2];
             ActivityInDiagram to = Activities[Activities.Count - 1];
-            Debug.LogFormat("[Karin] Adding relation from {0} to {1}", from.ActivityText, to.ActivityText);
             ActivityRelation relation = new ActivityRelation(from, to);
             relation.GenerateVisualObject(graph);
             Relations.Add(relation);
-            graph.UpdateGraph();
         }
 
 

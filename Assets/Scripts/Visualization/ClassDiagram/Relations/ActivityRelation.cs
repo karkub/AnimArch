@@ -25,10 +25,9 @@ namespace Visualization.ClassDiagram.Relations
                 return;
             }
 
-            Debug.LogFormat("[Karin] From Position: {0}, To Position: {1}", From.VisualObject.transform.position, To.VisualObject.transform.position);
-
-            this.VisualObject = graph.AddEdge(From.VisualObject, To.VisualObject, DiagramPool.Instance.associationSDPrefab);
-            if (this.VisualObject == null)
+            Debug.LogFormat("[Karin] From: {0}, To: {1}", From.ActivityText, To.ActivityText);
+            VisualObject = graph.AddEdge(From.VisualObject, To.VisualObject, DiagramPool.Instance.associationSDPrefab);
+            if (VisualObject == null)
             {
                 Debug.LogError("[Karin] Failed to create visual object for relation");
             }
