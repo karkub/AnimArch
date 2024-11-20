@@ -86,7 +86,7 @@ namespace Visualization.Animation
         }
         private void AnimateActivityDiagram()
         {
-            animation.AddFinalActivityToDiagram();
+            animation.activityDiagram.AddFinalActivityInDiagram();
             animation.isEXECommandReturn = true;
         }
     }

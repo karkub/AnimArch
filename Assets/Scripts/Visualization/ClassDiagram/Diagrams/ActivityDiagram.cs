@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UMSAGL.Scripts;
@@ -17,9 +18,10 @@ namespace AnimArch.Visualization.Diagrams
         public List<ActivityInDiagram> Activities { get; private set; }
         public List<ActivityRelation> Relations { get; private set; }
 
-        private float initialActivityPositionX; //TODOa asi zbytocne
-        private float initialActivityPositionZ; //TODOa asi zbytocne
-        private float activityOffsetY = 70; //TODOa asi zbytocne
+        private int activityOffsetX = 500;
+        private int activityOffsetY = -150;
+        private int maxIndentationLevelY = 0;
+
         private void Awake()
         {
             DiagramPool.Instance.ActivityDiagram = this;
@@ -61,7 +63,7 @@ namespace AnimArch.Visualization.Diagrams
         public void LoadDiagram()
         {
             CreateGraph();
-            //Generate UI objects displaying the diagram
+            // Generate UI objects displaying the diagram
             graph.transform.position = new Vector3(0, 0, 2 * offsetZ);
             Generate();
         }
@@ -96,19 +98,22 @@ namespace AnimArch.Visualization.Diagrams
             Debug.LogFormat("[Karin] Activities.Count = {0}", Activities.Count);
             if (Activities != null && Activities.Count > 0)
             {
-                for (int i = 0; i < Activities.Count; i++)
+                foreach (ActivityInDiagram activity in Activities)
                 {
-                    if (i == 0)
+                    switch (activity.ActivityText)
                     {
-                        GenerateInitialActivity(Activities[i]);
-                    }
-                    // else if (i == Activities.Count - 1)
-                    // {
-                    //    GenerateFinalActivity(Activities[i]);
-                    // }
-                    else
-                    {
-                        GenerateActivity(Activities[i]);
+                        case "Initial Activity":
+                            GenerateInitialActivity(activity);
+                            break;
+                        case "Final Activity":
+                            GenerateFinalActivity(activity);
+                            break;
+                        case "Decision Node":
+                            GenerateDecisionActivity(activity);
+                            break;
+                        default:
+                            GenerateActivity(activity);
+                            break;
                     }
                 }
 
@@ -121,19 +126,17 @@ namespace AnimArch.Visualization.Diagrams
 
         private void GenerateActivity(ActivityInDiagram Activity)
         {
-            //Setting up
             graph.nodePrefab = DiagramPool.Instance.activityPrefab;
             var node = graph.AddNode();
             node.GetComponent<Clickable>().IsObject = true;
             node.SetActive(true);
             node.name = Activity.ActivityText.Trim();
             var header = node.transform.Find("Background/Header");
-
-            // Printing the values into diagram
             header.GetComponent<TextMeshProUGUI>().text = node.name;
 
             Activity.VisualObject = node;
-            graph.Layout();
+            RepositionActivity(Activity);
+            // graph.Layout();
         }
 
         private void GenerateInitialActivity(ActivityInDiagram Activity)
@@ -142,7 +145,8 @@ namespace AnimArch.Visualization.Diagrams
             var node = graph.AddNode();
 
             Activity.VisualObject = node;
-            graph.Layout();
+            RepositionActivity(Activity);
+            // graph.Layout();
         }
 
         private void GenerateFinalActivity(ActivityInDiagram Activity)
@@ -151,10 +155,21 @@ namespace AnimArch.Visualization.Diagrams
             var node = graph.AddNode();
 
             Activity.VisualObject = node;
-            graph.Layout();
+            RepositionActivity(Activity);
+            // graph.Layout();
         }
 
-        public void AddActivityInDiagram(string variableName)
+        private void GenerateDecisionActivity(ActivityInDiagram Activity)
+        {
+            graph.nodePrefab = DiagramPool.Instance.activityDecisionPrefab;
+            var node = graph.AddNode();
+
+            Activity.VisualObject = node;
+            RepositionActivity(Activity);
+            // graph.Layout();
+        }
+
+        public void AddActivityInDiagram(string variableName, int indentationLevelX, int indentationLevelY)
         {
             if (Activities.Count == 0)
             {
@@ -164,9 +179,14 @@ namespace AnimArch.Visualization.Diagrams
             ActivityInDiagram activityInDiagram = new ActivityInDiagram
             {
                 ActivityText = variableName,
+                IndentationLevelX = indentationLevelX,
+                IndentationLevelY = indentationLevelY,
                 VisualObject = null
             };
-            AddVisualPartOfActivity(activityInDiagram);
+
+            maxIndentationLevelY = Math.Max(maxIndentationLevelY, indentationLevelY);
+            AddVisualPartOfActivity(activityInDiagram, "classic");
+            // AddRelation();
         }
 
         private void AddInitialActivityInDiagram()
@@ -174,9 +194,12 @@ namespace AnimArch.Visualization.Diagrams
             ActivityInDiagram initialActivityInDiagram = new ActivityInDiagram
             {
                 ActivityText = "Initial Activity",
-                VisualObject = null
+                IndentationLevelX = 0,
+                IndentationLevelY = 0,
+                VisualObject = null,
             };
             AddVisualPartOfActivity(initialActivityInDiagram, "initial");
+            // AddRelation();
         }
 
         public void AddFinalActivityInDiagram()
@@ -184,12 +207,36 @@ namespace AnimArch.Visualization.Diagrams
             ActivityInDiagram finalActivityInDiagram = new ActivityInDiagram
             {
                 ActivityText = "Final Activity",
+                IndentationLevelX = 0,
+                IndentationLevelY = maxIndentationLevelY + 1,
                 VisualObject = null
             };
             AddVisualPartOfActivity(finalActivityInDiagram, "final");
+            AddRelation();
         }
 
-        private void AddVisualPartOfActivity(ActivityInDiagram Activity, string typeOfActivity = "classic")
+        public void AddDecisionActivityInDiagram(int indentationLevelX, int indentationLevelY, string decisionType, string conditionText = "")
+        {
+            if (Activities.Count == 0)
+            {
+                AddInitialActivityInDiagram();
+            }
+
+            ActivityInDiagram decisionActivityInDiagram = new ActivityInDiagram
+            {
+                ActivityText = "Decision Node",
+                ActivityType = decisionType,
+                IndentationLevelX = indentationLevelX,
+                IndentationLevelY = indentationLevelY,
+                ConditionText = conditionText,
+                VisualObject = null
+            };
+            maxIndentationLevelY = Math.Max(maxIndentationLevelY, indentationLevelY);
+            AddVisualPartOfActivity(decisionActivityInDiagram, "decision");
+            // AddRelation();
+        }
+
+        private void AddVisualPartOfActivity(ActivityInDiagram Activity, string typeOfActivity)
         {
             Activities.Add(Activity);
             switch (typeOfActivity)
@@ -200,26 +247,24 @@ namespace AnimArch.Visualization.Diagrams
                 case "final":
                     GenerateFinalActivity(Activity);
                     break;
+                case "decision":
+                    GenerateDecisionActivity(Activity);
+                    break;
                 default:
                     GenerateActivity(Activity);
                     break;
             }
         }
 
-        public void RepositionActivities() // TODOa asi zbytocne lebo aj tak su pod sebou?
+        public void RepositionActivity(ActivityInDiagram Activity)
         {
-            Debug.Log("[Karin] ActivityDiagram::RepositionActivities()");
-            int i = 0;
-            foreach (ActivityInDiagram activityInDiagram in Activities)
-            {
-                activityInDiagram.VisualObject.transform.SetPositionAndRotation(
-                    new Vector3(initialActivityPositionX, -i * activityOffsetY, initialActivityPositionZ),
-                    Quaternion.identity);
-                i++;
-            }
+            Activity.VisualObject.transform.localPosition = new Vector3(
+                Activity.IndentationLevelX * activityOffsetX, 
+                Activity.IndentationLevelY * activityOffsetY, 
+                0);
         }
 
-        public void AddRelation()
+        private void AddRelation()
         {
             if (Activities.Count < 2)
             {
@@ -233,6 +278,61 @@ namespace AnimArch.Visualization.Diagrams
             relation.GenerateVisualObject(graph);
             Relations.Add(relation);
         }
+        public void AddRelations()
+        {
+            PrintActivitiesinDiagram();
+            if (Activities.Count < 2)
+            {
+                Debug.LogError("[Karin] ActivityDiagram::AddRelation() - Not enough activities in diagram to create a relation.");
+                return;
+            }
+            for (int i = 0; i < Activities.Count - 1; i++)
+            {
+                ActivityInDiagram from = Activities[i];
+                ActivityInDiagram to = Activities[i + 1];
+
+                if (from.ActivityType == "CONDITION_START")
+                {
+                    try {
+                        ActivityInDiagram toIf = Activities.Find(x => from.IndentationLevelX == x.IndentationLevelX && from.IndentationLevelY + 1 == x.IndentationLevelY);
+                        ActivityRelation relation1 = new ActivityRelation(from, toIf);
+                        relation1.GenerateVisualObject(graph);
+                        Relations.Add(relation1);
+
+                        ActivityInDiagram toElse = Activities.Find(x => from.IndentationLevelX + 1 == x.IndentationLevelX && from.IndentationLevelY + 1 == x.IndentationLevelY);
+                        ActivityRelation relation2 = new ActivityRelation(from, toElse);
+                        relation2.GenerateVisualObject(graph);
+                        Relations.Add(relation2);
+                    } catch (Exception e) {
+                        Debug.LogError("[Karin] ActivityDiagram::AddRelations() - CONDITION_START - Exception");
+                        Debug.LogError(e);
+                    }
+                }
+                else if (to.ActivityType == "CONDITION_END")
+                {
+                    try {
+                        ActivityInDiagram fromIf = Activities.FindLast(x => x.IndentationLevelX == to.IndentationLevelX && x.IndentationLevelY < to.IndentationLevelY);
+                        ActivityRelation relation1 = new ActivityRelation(fromIf, to);
+                        relation1.GenerateVisualObject(graph);
+                        Relations.Add(relation1);
+
+                        ActivityInDiagram fromElse = Activities.FindLast(x => x.IndentationLevelX - 1 == to.IndentationLevelX && x.IndentationLevelY < to.IndentationLevelY);
+                        ActivityRelation relation2 = new ActivityRelation(fromElse, to);
+                        relation2.GenerateVisualObject(graph);
+                        Relations.Add(relation2);
+                    } catch (Exception e) {
+                        Debug.LogError("[Karin] ActivityDiagram::AddRelations() - CONDITION_END - Exception");
+                        Debug.LogError(e);
+                    }
+                }
+                else if (from.IndentationLevelX == to.IndentationLevelX)
+                {
+                    ActivityRelation relation = new ActivityRelation(from, to);
+                    relation.GenerateVisualObject(graph);
+                    Relations.Add(relation);
+                }
+            }
+        }
 
 
         public void PrintActivitiesinDiagram()
@@ -240,7 +340,7 @@ namespace AnimArch.Visualization.Diagrams
             Debug.Log("[Karin] -------- ActivityDiagram::PrintDiagram()");
             foreach (ActivityInDiagram Activity in Activities)
             {
-                Debug.LogFormat("[Karin] {0}", Activity.ActivityText);
+                Debug.LogFormat("[Karin] {0}, X = {1}, Y = {2}", Activity.ActivityText, Activity.IndentationLevelX, Activity.IndentationLevelY);
             }
             Debug.Log("[Karin] -------- END ActivityDiagram::PrintDiagram()");
         }

@@ -18,15 +18,13 @@ namespace Visualization.ClassDiagram.Relations
 
         public void GenerateVisualObject(Graph graph)
         {
-            Debug.Log("[Karin] ActivityRelation::GenerateVisualObject()");
             if (From.VisualObject == null || To.VisualObject == null)
             {
                 Debug.LogError("[Karin] From or To VisualObject is null");
                 return;
             }
 
-            Debug.LogFormat("[Karin] From: {0}, To: {1}", From.ActivityText, To.ActivityText);
-            VisualObject = graph.AddEdge(From.VisualObject, To.VisualObject, DiagramPool.Instance.associationSDPrefab);
+            VisualObject = graph.AddEdge(From.VisualObject, To.VisualObject, DiagramPool.Instance.activityFlowPrefab);
             if (VisualObject == null)
             {
                 Debug.LogError("[Karin] Failed to create visual object for relation");
