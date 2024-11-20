@@ -10139,9 +10139,11 @@ MonoBehaviour:
     type: 3}
   activityPrefab: {fileID: 1226358218867430, guid: 29ea50781798cac44b9a0005a201fa77,
     type: 3}
-  activityInitialPrefab: {fileID: 1226358218867430, guid: 3434456bbd7bff840bc4aa3762c2b4ea,
+  activityInitialPrefab: {fileID: 1226358218867430, guid: 85135105f87475f4288bf7b61fca8bd9,
     type: 3}
-  activityFinalPrefab: {fileID: 1226358218867430, guid: 77eacb9905398694da8cea685ec5a490,
+  activityFinalPrefab: {fileID: 1226358218867430, guid: 25a3050da589adb45ae461a9e769f137,
+    type: 3}
+  activityDecisionPrefab: {fileID: 1226358218867430, guid: 13d6f4defb16a594dbbe3a38dc434ac7,
     type: 3}
   classAttributePrefab: {fileID: 3261782976684401946, guid: a71e905c2fd88e14fafcf1cf1c3d1655,
     type: 3}
@@ -10156,6 +10158,8 @@ MonoBehaviour:
   associationSDPrefab: {fileID: 1523548488617654, guid: 8846a04a1bcd19640a8399f4ee850ef7,
     type: 3}
   associationDSPrefab: {fileID: 2080456151626043265, guid: e368c883cd4df7b4986be9f046c4ef23,
+    type: 3}
+  activityFlowPrefab: {fileID: 1523548488617654, guid: afed307fc2b44d447a4ba322bb54beec,
     type: 3}
   dependsPrefab: {fileID: 1333350112338376, guid: 6d9b1c5866816974fa13e912dc4117c2,
     type: 3}

@@ -350,7 +350,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 200
   m_MinHeight: 80
-  m_PreferredWidth: -1
+  m_PreferredWidth: 450
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -366,7 +366,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 200, y: 80, z: 5}
+  m_Size: {x: 450, y: 80, z: 5}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &114466928306324720
 MonoBehaviour:
@@ -444,7 +444,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
