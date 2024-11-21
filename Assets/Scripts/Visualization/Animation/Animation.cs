@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -239,14 +239,19 @@ namespace Visualization.Animation
             VisitorCommandToString visitor = new VisitorCommandToString();
             CurrentCommand.Accept(visitor);
             string commandCode = visitor.GetCommandString();
-            Debug.LogFormat("[Karin] zaciatok AnimateCommand code: {0}", commandCode);
             
             if (CurrentCommand.GetType() == typeof(EXEScopeMethod))
             {
+                if (activityDiagram.Activities.Count > 0)
+                {
+                    activityDiagram.SaveDiagram();
+                    activityDiagram.ClearDiagram();
+                }
                 Debug.Log("[Karin] EXEScopeMethod vo vonkajsej");
                 int indentationLevelX = 0;
                 int indentationLevelY = 0;
                 animateActivityInDiagram(CurrentCommand, indentationLevelX, indentationLevelY);
+                activityDiagram.AddFinalActivityInDiagram();
                 activityDiagram.AddRelations();
             }
             // <= Karin - Activity Diagram

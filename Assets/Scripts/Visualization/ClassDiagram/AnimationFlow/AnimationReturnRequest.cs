@@ -54,7 +54,7 @@ namespace Visualization.Animation
         public override IEnumerator PerformRequest()
         {
             yield return UnhighlightClassAndObject();
-            AnimateActivityDiagram();
+            // AnimateActivityDiagram(); //TODOa asi netreba
 
             Done = true;
         }
@@ -84,10 +84,10 @@ namespace Visualization.Animation
                 yield return new WaitForSeconds(AnimationData.Instance.AnimSpeed * timeModifier);
             }
         }
-        private void AnimateActivityDiagram()
-        {
-            animation.activityDiagram.AddFinalActivityInDiagram();
-            animation.isEXECommandReturn = true;
-        }
+        // private void AnimateActivityDiagram()  //TODOa asi netreba
+        // {
+        //     animation.activityDiagram.AddFinalActivityInDiagram();
+        //     animation.isEXECommandReturn = true;
+        // }
     }
 }

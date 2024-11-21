@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -17,10 +17,10 @@ namespace AnimArch.Visualization.Diagrams
         public Graph graph;
         public List<ActivityInDiagram> Activities { get; private set; }
         public List<ActivityRelation> Relations { get; private set; }
+        private int maxIndentationLevelY = 0;
 
         private int activityOffsetX = 500;
         private int activityOffsetY = -150;
-        private int maxIndentationLevelY = 0;
 
         private void Awake()
         {
@@ -58,6 +58,7 @@ namespace AnimArch.Visualization.Diagrams
             }
             Activities = new List<ActivityInDiagram>();
             Relations = new List<ActivityRelation>();
+            maxIndentationLevelY = 0;
         }
 
         public void LoadDiagram()
@@ -80,6 +81,7 @@ namespace AnimArch.Visualization.Diagrams
             ActivityDiagram newActivityDiagram = new ActivityDiagram();
             newActivityDiagram.Activities = new List<ActivityInDiagram>(Activities);
             newActivityDiagram.Relations = new List<ActivityRelation>(Relations);
+            newActivityDiagram.maxIndentationLevelY = maxIndentationLevelY;
             return newActivityDiagram;
         }
 
@@ -335,7 +337,7 @@ namespace AnimArch.Visualization.Diagrams
         }
 
 
-        public void PrintActivitiesinDiagram()
+        public void PrintActivitiesInDiagram()
         {
             Debug.Log("[Karin] -------- ActivityDiagram::PrintDiagram()");
             foreach (ActivityInDiagram Activity in Activities)

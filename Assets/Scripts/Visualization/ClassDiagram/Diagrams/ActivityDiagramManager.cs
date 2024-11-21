@@ -37,7 +37,7 @@ namespace AnimArch.Visualization.Diagrams
             foreach (var activityDiagram in ActivityDiagrams)
             {
                 Debug.LogFormat("[Karin] activityDiagram.PrintDiagram() index = {0}", i);
-                activityDiagram.PrintActivitiesinDiagram();
+                activityDiagram.PrintActivitiesInDiagram();
                 i++;
             }
             Debug.Log("[Karin] ~~~~~ END ActivityDiagramManager::PrintStack()");
