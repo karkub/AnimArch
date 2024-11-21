@@ -295,12 +295,12 @@ namespace AnimArch.Visualization.Diagrams
                 {
                     try {
                         ActivityInDiagram toIf = Activities.Find(x => from.IndentationLevelX == x.IndentationLevelX && from.IndentationLevelY + 1 == x.IndentationLevelY);
-                        ActivityRelation relation1 = new ActivityRelation(from, toIf);
+                        ActivityRelation relation1 = new ActivityRelation(from, toIf, from.ConditionText);
                         relation1.GenerateVisualObject(graph);
                         Relations.Add(relation1);
 
                         ActivityInDiagram toElse = Activities.Find(x => from.IndentationLevelX + 1 == x.IndentationLevelX && from.IndentationLevelY + 1 == x.IndentationLevelY);
-                        ActivityRelation relation2 = new ActivityRelation(from, toElse);
+                        ActivityRelation relation2 = new ActivityRelation(from, toElse, "else");
                         relation2.GenerateVisualObject(graph);
                         Relations.Add(relation2);
                     } catch (Exception e) {

@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UMSAGL.Scripts;
 using UnityEngine;
 using Visualization.ClassDiagram.ComponentsInDiagram;
@@ -9,11 +10,13 @@ namespace Visualization.ClassDiagram.Relations
     {
         public readonly ActivityInDiagram From;
         public readonly ActivityInDiagram To;
+        public string Label;
         public GameObject VisualObject;
-        public ActivityRelation(ActivityInDiagram start, ActivityInDiagram end)
+        public ActivityRelation(ActivityInDiagram start, ActivityInDiagram end, string label = "")
         {
             From = start;
             To = end;
+            Label = label;
         }
 
         public void GenerateVisualObject(Graph graph)
@@ -28,7 +31,14 @@ namespace Visualization.ClassDiagram.Relations
             if (VisualObject == null)
             {
                 Debug.LogError("[Karin] Failed to create visual object for relation");
+                return;
+            } 
+            var label = VisualObject.transform.Find("Label/Text");
+            if (Label != "")
+            {
+                label.GetComponent<TextMeshProUGUI>().text = Label;
             }
+            
         }
     }
 }
