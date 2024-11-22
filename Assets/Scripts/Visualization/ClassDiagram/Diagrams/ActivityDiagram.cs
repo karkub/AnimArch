@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -188,7 +188,6 @@ namespace AnimArch.Visualization.Diagrams
 
             maxIndentationLevelY = Math.Max(maxIndentationLevelY, indentationLevelY);
             AddVisualPartOfActivity(activityInDiagram, "classic");
-            // AddRelation();
         }
 
         private void AddInitialActivityInDiagram()
@@ -201,7 +200,6 @@ namespace AnimArch.Visualization.Diagrams
                 VisualObject = null,
             };
             AddVisualPartOfActivity(initialActivityInDiagram, "initial");
-            // AddRelation();
         }
 
         public void AddFinalActivityInDiagram()
@@ -214,10 +212,9 @@ namespace AnimArch.Visualization.Diagrams
                 VisualObject = null
             };
             AddVisualPartOfActivity(finalActivityInDiagram, "final");
-            AddRelation();
         }
 
-        public void AddDecisionActivityInDiagram(int indentationLevelX, int indentationLevelY, string decisionType, string conditionText = "")
+        public void AddDecisionActivityInDiagram(int indentationLevelX, int indentationLevelY, ActivityType activityType, string labelText = "")
         {
             if (Activities.Count == 0)
             {
@@ -227,15 +224,14 @@ namespace AnimArch.Visualization.Diagrams
             ActivityInDiagram decisionActivityInDiagram = new ActivityInDiagram
             {
                 ActivityText = "Decision Node",
-                ActivityType = decisionType,
+                ActivityType = activityType,
                 IndentationLevelX = indentationLevelX,
                 IndentationLevelY = indentationLevelY,
-                ConditionText = conditionText,
+                LabelText = labelText,
                 VisualObject = null
             };
             maxIndentationLevelY = Math.Max(maxIndentationLevelY, indentationLevelY);
             AddVisualPartOfActivity(decisionActivityInDiagram, "decision");
-            // AddRelation();
         }
 
         private void AddVisualPartOfActivity(ActivityInDiagram Activity, string typeOfActivity)
@@ -266,26 +262,11 @@ namespace AnimArch.Visualization.Diagrams
                 0);
         }
 
-        private void AddRelation()
-        {
-            if (Activities.Count < 2)
-            {
-                Debug.LogError("[Karin] ActivityDiagram::AddRelation() - Not enough activities in diagram to create a relation.");
-                return;
-            }
-
-            ActivityInDiagram from = Activities[Activities.Count - 2];
-            ActivityInDiagram to = Activities[Activities.Count - 1];
-            ActivityRelation relation = new ActivityRelation(from, to);
-            relation.GenerateVisualObject(graph);
-            Relations.Add(relation);
-        }
         public void AddRelations()
         {
-            PrintActivitiesinDiagram();
             if (Activities.Count < 2)
             {
-                Debug.LogError("[Karin] ActivityDiagram::AddRelation() - Not enough activities in diagram to create a relation.");
+                Debug.LogError("[Karin] Not enough activities in diagram to create a relation.");
                 return;
             }
             for (int i = 0; i < Activities.Count - 1; i++)
@@ -293,39 +274,54 @@ namespace AnimArch.Visualization.Diagrams
                 ActivityInDiagram from = Activities[i];
                 ActivityInDiagram to = Activities[i + 1];
 
-                if (from.ActivityType == "CONDITION_START")
+                if (from.ActivityType == ActivityType.Decision)
                 {
-                    try {
-                        ActivityInDiagram toIf = Activities.Find(x => from.IndentationLevelX == x.IndentationLevelX && from.IndentationLevelY + 1 == x.IndentationLevelY);
-                        ActivityRelation relation1 = new ActivityRelation(from, toIf, from.ConditionText);
-                        relation1.GenerateVisualObject(graph);
-                        Relations.Add(relation1);
+                    ActivityInDiagram toIf = Activities.Find(x => from.IndentationLevelX == x.IndentationLevelX && from.IndentationLevelY + 1 == x.IndentationLevelY);
+                    ActivityRelation relation1 = new ActivityRelation(from, toIf, from.LabelText);
+                    relation1.GenerateVisualObject(graph);
+                    Relations.Add(relation1);
 
-                        ActivityInDiagram toElse = Activities.Find(x => from.IndentationLevelX + 1 == x.IndentationLevelX && from.IndentationLevelY + 1 == x.IndentationLevelY);
-                        ActivityRelation relation2 = new ActivityRelation(from, toElse, "else");
-                        relation2.GenerateVisualObject(graph);
-                        Relations.Add(relation2);
-                    } catch (Exception e) {
-                        Debug.LogError("[Karin] ActivityDiagram::AddRelations() - CONDITION_START - Exception");
-                        Debug.LogError(e);
-                    }
+                    ActivityInDiagram toElse = Activities.Find(x => from.IndentationLevelX + 1 == x.IndentationLevelX && from.IndentationLevelY + 1 == x.IndentationLevelY);
+                    ActivityRelation relation2 = new ActivityRelation(from, toElse, "else");
+                    relation2.GenerateVisualObject(graph);
+                    Relations.Add(relation2);
                 }
-                else if (to.ActivityType == "CONDITION_END")
+                else if (to.ActivityType == ActivityType.Merge)
                 {
-                    try {
-                        ActivityInDiagram fromIf = Activities.FindLast(x => x.IndentationLevelX == to.IndentationLevelX && x.IndentationLevelY < to.IndentationLevelY);
-                        ActivityRelation relation1 = new ActivityRelation(fromIf, to);
-                        relation1.GenerateVisualObject(graph);
-                        Relations.Add(relation1);
+                    ActivityInDiagram fromIf = Activities.FindLast(x => x.IndentationLevelX == to.IndentationLevelX && x.IndentationLevelY < to.IndentationLevelY);
+                    ActivityRelation relation1 = new ActivityRelation(fromIf, to);
+                    relation1.GenerateVisualObject(graph);
+                    Relations.Add(relation1);
 
-                        ActivityInDiagram fromElse = Activities.FindLast(x => x.IndentationLevelX - 1 == to.IndentationLevelX && x.IndentationLevelY < to.IndentationLevelY);
-                        ActivityRelation relation2 = new ActivityRelation(fromElse, to);
-                        relation2.GenerateVisualObject(graph);
-                        Relations.Add(relation2);
-                    } catch (Exception e) {
-                        Debug.LogError("[Karin] ActivityDiagram::AddRelations() - CONDITION_END - Exception");
-                        Debug.LogError(e);
-                    }
+                    ActivityInDiagram fromElse = Activities.FindLast(x => x.IndentationLevelX - 1 == to.IndentationLevelX && x.IndentationLevelY < to.IndentationLevelY);
+                    ActivityRelation relation2 = new ActivityRelation(fromElse, to);
+                    relation2.GenerateVisualObject(graph);
+                    Relations.Add(relation2);
+                }
+                else if (from.ActivityType == ActivityType.Loop)
+                {
+                    string labelText = "another " + from.LabelText;
+                    ActivityRelation relation = new ActivityRelation(from, to, labelText);
+                    relation.GenerateVisualObject(graph);
+                    Relations.Add(relation);
+
+                    ActivityInDiagram loopEnd = Activities.FindLast(x => from.IndentationLevelX + 1 == x.IndentationLevelX && from.IndentationLevelY < x.IndentationLevelY);
+                    ActivityRelation relation2 = new ActivityRelation(loopEnd, from);
+                    relation2.GenerateVisualObject(graph);
+                    Relations.Add(relation2);
+                }
+                else if (from.ActivityType == ActivityType.LoopDecision)
+                {
+                    // ActivityInDiagram toIf = Activities.Find(x => from.IndentationLevelX + 1 == x.IndentationLevelX && from.IndentationLevelY + 1 == x.IndentationLevelY);
+                    ActivityInDiagram toIf = Activities.Find(x => from.IndentationLevelX + 1 == x.IndentationLevelX && from.IndentationLevelY == x.IndentationLevelY);
+                    ActivityRelation relation1 = new ActivityRelation(from, toIf, "yes");
+                    relation1.GenerateVisualObject(graph);
+                    Relations.Add(relation1);
+
+                    ActivityInDiagram toElse = Activities.Find(x => from.IndentationLevelX == x.IndentationLevelX && from.IndentationLevelY + 1 == x.IndentationLevelY);
+                    ActivityRelation relation2 = new ActivityRelation(from, toElse, "no");
+                    relation2.GenerateVisualObject(graph);
+                    Relations.Add(relation2);
                 }
                 else if (from.IndentationLevelX == to.IndentationLevelX)
                 {
@@ -336,13 +332,12 @@ namespace AnimArch.Visualization.Diagrams
             }
         }
 
-
         public void PrintActivitiesInDiagram()
         {
             Debug.Log("[Karin] -------- ActivityDiagram::PrintDiagram()");
             foreach (ActivityInDiagram Activity in Activities)
             {
-                Debug.LogFormat("[Karin] {0}, X = {1}, Y = {2}", Activity.ActivityText, Activity.IndentationLevelX, Activity.IndentationLevelY);
+                Debug.LogFormat("[Karin] {0}, X = {1}, Y = {2}, type = {3}", Activity.ActivityText, Activity.IndentationLevelX, Activity.IndentationLevelY, Activity.ActivityType);
             }
             Debug.Log("[Karin] -------- END ActivityDiagram::PrintDiagram()");
         }

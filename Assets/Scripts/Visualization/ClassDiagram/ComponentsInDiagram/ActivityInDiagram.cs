@@ -6,12 +6,21 @@ namespace Visualization.ClassDiagram.ComponentsInDiagram
     public class ActivityInDiagram
     {
         public string ActivityText;
-        public string ActivityType = "";
+        public ActivityType ActivityType = ActivityType.Classic;
         public int IndentationLevelX = 0;
         public int IndentationLevelY = 0;
-        public string ConditionText = "";
+        public string LabelText = "";
         public GameObject VisualObject;
 
         public ActivityInDiagram() { }
+    }
+    
+    public enum ActivityType
+    {
+        Classic,
+        Loop,
+        LoopDecision,
+        Decision,
+        Merge,
     }
 }

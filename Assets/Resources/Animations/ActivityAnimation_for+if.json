@@ -13,7 +13,7 @@
                 {
                     "Name": "execute",
                     "Parameters": [],
-                    "Code": "create list colors of Bb;\r\ncreate object instance Green of Bb;\r\nGreen.Name=\"Green\"\r\n; add Green to colors;\r\ncreate object instance Red of Bb;\r\nRed.Name=\"Red\";\r\nadd Red to colors;\r\nfor each color in colors\r\nwrite(\"color =\");\r\nwrite(color.Name);\r\nend for;\r\nwrite(\"end\");"
+                    "Code": "create list colors of Bb;\r\ncreate object instance Green of Bb;\r\nGreen.Name=\"Green\"\r\n; add Green to colors;\r\ncreate object instance Red of Bb;\r\nRed.Name=\"Red\";\r\nadd Red to colors;\r\nfor each color in colors\r\nif (color.Name == \"Red\")\n\twrite(\"RED\");\n(else\n\twrite(\"not red but\")\n\twrite(color.Name);)\nend if;\r\nend for;\r\nwrite(\"end\");"
                 }
             ]
         },

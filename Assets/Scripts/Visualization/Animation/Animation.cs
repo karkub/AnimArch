@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -261,6 +261,8 @@ namespace Visualization.Animation
 
         private void animateActivityInDiagram(EXECommand originalCommand, int indentationLevelX, int indentationLevelY)
         {
+            Debug.LogFormat("[Karin] animateActivityInDiagram originalCommand type: {0}", originalCommand.GetType());
+
             if (originalCommand.GetType() != typeof(EXEScopeMethod) && originalCommand.IsDirectlyInCode)
             {
                 if (isEXECommandReturn)
@@ -270,23 +272,30 @@ namespace Visualization.Animation
                     activityDiagram = ActivityDiagramManager.Instance.ActivityDiagrams.Pop();
                     activityDiagram.LoadDiagram();
                     isEXECommandReturn = false;
-                } 
-                VisitorCommandToString visitor = new VisitorCommandToString();
-                originalCommand.Accept(visitor);
-                string commandCode = visitor.GetCommandString();
-                Debug.LogFormat("[Karin] AddActivityInDiagram commandCode : {0}", commandCode);
-                activityDiagram.AddActivityInDiagram(commandCode, indentationLevelX, indentationLevelY);
+                }
+                if (originalCommand.GetType() == typeof(EXEScopeForEach))
+                {
+                    animateActivityInDiagram((EXEScopeForEach)originalCommand, indentationLevelX, indentationLevelY);
+                    
+                }
+                else if (originalCommand.GetType() == typeof(EXEScopeCondition))
+                {
+                    animateActivityInDiagram((EXEScopeCondition)originalCommand, indentationLevelX, indentationLevelY);
+                }
+                else
+                {
+                    VisitorCommandToString visitor = new VisitorCommandToString();
+                    originalCommand.Accept(visitor);
+                    string commandCode = visitor.GetCommandString();
+                    Debug.LogFormat("[Karin] AddActivityInDiagram commandCode : {0}", commandCode);
+                    activityDiagram.AddActivityInDiagram(commandCode, indentationLevelX, indentationLevelY);
+                }
             }
             else if (originalCommand.GetType() == typeof(EXEScopeMethod)) 
             {
                 EXEScopeMethod methodScope = (EXEScopeMethod)originalCommand;
                 foreach (EXECommand command in methodScope.Commands)
-                {
-                    VisitorCommandToString visitor2 = new VisitorCommandToString();
-                    command.Accept(visitor2);
-                    string commandCode = visitor2.GetCommandString();
-                    Debug.LogFormat("[Karin] methodScope.Commands commandCode : {0}", commandCode);
-                    
+                {                    
                     if (command.GetType() == typeof(EXEScopeMethod))
                     {
                         Debug.Log("[Karin] command.GetType() == typeof(EXEScopeMethod)");
@@ -294,60 +303,68 @@ namespace Visualization.Animation
                     }
                     else if (command.GetType() == typeof(EXEScopeForEach))
                     {
-                        EXEScopeForEach forEachScope = (EXEScopeForEach)command;
-                        activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY + 1, "LOOP_START");
-                        activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY + 2, "LOOP_CONDITION");
+                        Debug.Log("[Karin] command.GetType() == typeof(EXEScopeForEach)");
+                        animateActivityInDiagram((EXEScopeForEach)command, indentationLevelX, indentationLevelY + 1);
                         indentationLevelY += 2;
-                        int indentForEach = 0;
-                        foreach (EXECommand command1 in forEachScope.Commands)
-                        {
-                            indentForEach += 1;
-                            VisitorCommandToString visitor3 = new VisitorCommandToString();
-                            command1.Accept(visitor3);
-                            string commandCode1 = visitor3.GetCommandString();
-                            Debug.LogFormat("[Karin] v foreach commandCode1 : {0}", commandCode1);
-                            animateActivityInDiagram(command1, indentationLevelX, indentationLevelY + indentForEach);
-                        }
                     }
                     else if (command.GetType() == typeof(EXEScopeCondition))
                     {
-                        VisitorCommandToString visitor3 = new VisitorCommandToString();
-                        EXEScopeCondition scopeCondition = (EXEScopeCondition)command;
-                        scopeCondition.Condition.Accept(visitor3);
-                        string condition = visitor3.GetCommandString();
-
-                        activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, ++indentationLevelY, "CONDITION_START", condition);
-                        int indentIf = 0;
-                        foreach (EXECommand ifScope in scopeCondition.Commands)
-                        {
-                            Debug.Log("[Karin] Animate command code: if");
-                            indentIf += 1;
-                            animateActivityInDiagram(ifScope, indentationLevelX, indentationLevelY + indentIf);
-                        }
-                        int indentElif = 0;
-                        foreach (EXEScopeCondition elifScope in scopeCondition.ElifScopes)
-                        {
-                            Debug.Log("[Karin] Animate command code: elif");
-                            indentElif += 1;
-                            animateActivityInDiagram(elifScope, indentationLevelX + 1, indentationLevelY + indentElif);
-                        }
-                        int indentElse = 0;
-                        if (scopeCondition.ElseScope != null)
-                        {   
-                            foreach (EXECommand elseScope in scopeCondition.ElseScope.Commands)
-                            {
-                                Debug.Log("[Karin] Animate command code: elseScope");
-                                indentElse += 1;
-                                animateActivityInDiagram(elseScope, indentationLevelX + 1, indentationLevelY + indentElse); //TODOa asi nebudu dobre tie indentations
-                            }
-                        }
-                        activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY + Math.Max(indentIf, indentElse) + 1, "CONDITION_END");
+                        Debug.Log("[Karin] command.GetType() == typeof(EXEScopeCondition)");
+                        animateActivityInDiagram((EXEScopeCondition)command, indentationLevelX, ++indentationLevelY);
                     } 
                     else {
                         animateActivityInDiagram(command, indentationLevelX, ++indentationLevelY);
                     }
                 }
             }
+        }
+
+        private void animateActivityInDiagram(EXEScopeForEach forEachScope, int indentationLevelX, int indentationLevelY)
+        {
+            activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY, ActivityType.Loop, forEachScope.IteratorName);
+            activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY + 1, ActivityType.LoopDecision);
+            indentationLevelY += 1;
+            int indentForEach = 0;
+            foreach (EXECommand command1 in forEachScope.Commands)
+            {
+                // indentForEach += 1;
+                animateActivityInDiagram(command1, indentationLevelX + 1, indentationLevelY + indentForEach);
+                indentForEach += 1;
+            }
+        }
+
+        private void animateActivityInDiagram(EXEScopeCondition scopeCondition, int indentationLevelX, int indentationLevelY)
+        {
+            VisitorCommandToString visitor = new VisitorCommandToString();
+            scopeCondition.Condition.Accept(visitor);
+            string condition = visitor.GetCommandString();
+
+            activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY, ActivityType.Decision, condition);
+            int indentIf = 0;
+            foreach (EXECommand ifScope in scopeCondition.Commands)
+            {
+                Debug.Log("[Karin] Animate command code: if");
+                indentIf += 1;
+                animateActivityInDiagram(ifScope, indentationLevelX, indentationLevelY + indentIf);
+            }
+            int indentElif = 0;
+            foreach (EXEScopeCondition elifScope in scopeCondition.ElifScopes)
+            {
+                Debug.Log("[Karin] Animate command code: elif");
+                indentElif += 1;
+                animateActivityInDiagram(elifScope, indentationLevelX + 1, indentationLevelY + indentElif);
+            }
+            int indentElse = 0;
+            if (scopeCondition.ElseScope != null)
+            {
+                foreach (EXECommand elseScope in scopeCondition.ElseScope.Commands)
+                {
+                    Debug.Log("[Karin] Animate command code: elseScope");
+                    indentElse += 1;
+                    animateActivityInDiagram(elseScope, indentationLevelX + 1, indentationLevelY + indentElse); //TODOa asi nebudu dobre tie indentations
+                }
+            }
+            activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY + Math.Max(indentIf, indentElse) + 1, ActivityType.Merge);
         }
 
         public ObjectInDiagram AddObjectToDiagram(CDClassInstance newObject, string name = null, bool showNewObject = true)
