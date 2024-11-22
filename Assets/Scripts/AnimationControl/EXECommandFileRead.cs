@@ -77,9 +77,14 @@ namespace OALProgramControl
             return Success();
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandFileRead(AssignmentTarget, FileToReadFrom);
+        }
+
+        public override void Accept(Visitor v)
+        {
+            v.VisitExeCommandFileRead(this);
         }
     }
 }

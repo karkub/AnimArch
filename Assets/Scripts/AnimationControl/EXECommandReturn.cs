@@ -38,7 +38,7 @@ namespace OALProgramControl
             v.VisitExeCommandReturn(this);
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandReturn(Expression.Clone());
         }

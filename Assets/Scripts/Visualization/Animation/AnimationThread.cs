@@ -14,7 +14,7 @@ namespace Visualization.Animation
         public EXEExecutionResult ExecutionSuccess;
         protected AnimationThread ParentThread;
         protected readonly List<AnimationThread> ChildThreads;
-        private readonly int ID;
+        public readonly int ID;
 
         protected bool IsOver;
 

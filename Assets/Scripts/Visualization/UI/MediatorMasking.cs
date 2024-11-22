@@ -37,6 +37,10 @@ namespace Visualization.UI
             {
                 OnRemoveButtonClicked();
             }
+            else
+            {
+                OnClickedDefault(gameObject);
+            }
         }
 
         private void OnExpandButtonClicked()

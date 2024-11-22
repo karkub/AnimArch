@@ -11,6 +11,8 @@ namespace Visualization.UI
 
         public override void OnClicked(GameObject gameObject)
         {
+            OnClickedDefault(gameObject);
         }
+
     }
 }

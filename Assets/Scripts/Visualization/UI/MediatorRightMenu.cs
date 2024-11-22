@@ -10,7 +10,7 @@ namespace Visualization.UI
 
         public override void OnClicked(GameObject gameObject)
         {
-            throw new System.NotImplementedException();
+            OnClickedDefault(gameObject);
         }
 
         public void SetActiveRightMenu(bool active)

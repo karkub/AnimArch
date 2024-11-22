@@ -1,0 +1,37 @@
+{
+    "Code": "create object instance classA of Aa;\nclassA.execute();\n",
+    "AnimationName": "activity",
+    "StartClass": "",
+    "StartMethod": "",
+    "MethodsCodes": [
+        {
+            "Name": "Aa",
+            "Attributes": [
+                "code"
+            ],
+            "Methods": [
+                {
+                    "Name": "execute",
+                    "Parameters": [],
+                    "Code": "create list colors of Bb;\r\ncreate object instance Green of Bb;\r\nGreen.Name=\"Green\"\r\n; add Green to colors;\r\ncreate object instance Red of Bb;\r\nRed.Name=\"Red\";\r\nadd Red to colors;\r\nfor each color in colors\r\nwrite(\"color =\");\r\nwrite(color.Name);\r\nend for;\r\nwrite(\"end\");"
+                }
+            ]
+        },
+        {
+            "Name": "Bb",
+            "Attributes": [
+                "Name"
+            ],
+            "Methods": [
+                {
+                    "Name": "calculate",
+                    "Parameters": [
+                        "a",
+                        "b"
+                    ],
+                    "Code": "c = a + b;\nreturn c;"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,162 @@
+{
+  "Code": "",
+  "AnimationName": "Observer-VaccinationCase",
+  "StartClass": "Client",
+  "StartMethod": "StartCase",
+  "MethodsCodes": [
+    {
+      "Name": "Cat",
+      "SuperClass": "Observer",
+      "Attributes": [
+        "Veterinarian",
+        "IsVaccinated",
+        "Name",
+        "VaccinationDate"
+      ],
+      "Methods": [
+        {
+          "Name": "ReceiveVaccine",
+          "Parameters": [
+            "Date"
+          ],
+          "Code": "if (self.VaccinationDate ==  Date)\nself.IsVaccinated = TRUE;\r\nend if;\n\n\r\n"
+        },
+        {
+          "Name": "SetVaccinationDate",
+          "Parameters": [
+            "Date"
+          ],
+          "Code": "self.VaccinationDate = Date;"
+        }
+      ]
+    },
+    {
+      "Name": "Client",
+      "SuperClass": "",
+      "Attributes": [
+
+      ],
+      "Methods": [
+        {
+          "Name": "StartCase",
+          "Parameters": [
+            "A", "B", "C", "D"
+          ],
+          "Code": "write(A);\nwrite(B);\ncreate object instance Vet of Veterinarian;\ncreate list Vet.RegisteredAnimals of Observer;\r\ncreate object instance Husky of Dog;\r\nHusky.Name=\"Husky\"\r\nHusky.Veterinarian = Vet;\r\nHusky.IsVaccinated = FALSE;\nVet.Register(Husky, \"1.4.2022\");\r\ncreate object instance PersianCat of Cat;\r\nPersianCat.Name=\"Persian Cat\"\r\nPersianCat.Veterinarian = Vet;\r\nPersianCat.IsVaccinated = FALSE;\nVet.Register(PersianCat, \"2.4.2022\");\r\nVet.SetDate(\"1.4.2022\");\r\nVet.SetDate(\"2.4.2022\");\r"
+        }
+      ]
+    },
+    {
+      "Name": "Dog",
+      "SuperClass": "Observer",
+      "Attributes": [
+        "Veterinarian",
+        "IsVaccinated",
+        "Name",
+        "VaccinationDate"
+      ],
+      "Methods": [
+        {
+          "Name": "ReceiveVaccine",
+          "Parameters": [
+            "Date"
+          ],
+          "Code": "if (self.VaccinationDate ==  Date)\r\nself.IsVaccinated = TRUE;\r\nend if;\r"
+        },
+        {
+          "Name": "SetVaccinationDate",
+          "Parameters": [
+            "Date"
+          ],
+          "Code": "self.VaccinationDate = Date;"
+        }
+      ]
+    },
+    {
+      "Name": "Observer",
+      "SuperClass": "",
+      "Attributes": [
+
+      ],
+      "Methods": [
+        {
+          "Name": "ReceiveVaccine",
+          "Parameters": [
+            "Date"
+          ],
+          "Code": ""
+        }
+      ]
+    },
+    {
+      "Name": "Subject",
+      "SuperClass": "",
+      "Attributes": [
+
+      ],
+      "Methods": [
+        {
+          "Name": "Register",
+          "Parameters": [
+            "Obs",
+            "Date"
+          ],
+          "Code": ""
+        },
+        {
+          "Name": "Unregister",
+          "Parameters": [
+            "Obs"
+          ],
+          "Code": ""
+        },
+        {
+          "Name": "VaccinateAnimals",
+          "Parameters": [
+
+          ],
+          "Code": ""
+        }
+      ]
+    },
+    {
+      "Name": "Veterinarian",
+      "SuperClass": "Subject",
+      "Attributes": [
+        "CurrentDate",
+        "RegisteredAnimals"
+      ],
+      "Methods": [
+        {
+          "Name": "Register",
+          "Parameters": [
+            "Obs",
+            "Date"
+          ],
+          "Code": "add Obs to self.RegisteredAnimals;\r\nObs.SetVaccinationDate(Date);\r\n"
+        },
+        {
+          "Name": "Unregister",
+          "Parameters": [
+            "Obs"
+          ],
+          "Code": "remove Obs from self.RegisteredAnimals;\r\nObs.SetVaccinationDate(UNDEFINED);\r\n"
+        },
+        {
+          "Name": "VaccinateAnimals",
+          "Parameters": [
+
+          ],
+          "Code": "for each Animal in self.RegisteredAnimals\r\nAnimal.ReceiveVaccine(self.CurrentDate);\r\nend for;\r\n"
+        },
+        {
+          "Name": "SetDate",
+          "Parameters": [
+            "Date"
+          ],
+          "Code": "self.CurrentDate = Date;\r\nself.VaccinateAnimals();\r\n"
+        }
+      ]
+    }
+  ]
+}

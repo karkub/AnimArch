@@ -10,7 +10,6 @@ namespace Visualization.ClassDiagram
 public class ClassHighlightSubject : HighlightSubject
 {
     public string ClassName {set; get;}
-    public MethodInvocationInfo InvocationInfo {get; set;}
 
     public ClassHighlightSubject()
     {

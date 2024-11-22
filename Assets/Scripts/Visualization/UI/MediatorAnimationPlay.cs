@@ -49,6 +49,10 @@ namespace Visualization.UI
             {
                 OnPalleteBtnClicked();
             }
+            else
+            {
+                OnClickedDefault(gameObject);
+            }
         }
 
         private void OnSliderSelected()

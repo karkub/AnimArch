@@ -18,6 +18,10 @@ namespace Visualization.UI
             {
                 OnButtonExitClicked();
             }
+            else
+            {
+                OnClickedDefault(gameObject);
+            }
         }
 
         private void OnButtonExitClicked()

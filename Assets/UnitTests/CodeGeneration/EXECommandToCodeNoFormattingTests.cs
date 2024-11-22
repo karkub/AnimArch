@@ -15,12 +15,12 @@ public class EXECommandToCodeWithoutFormattingTests
         EXEASTNodeBase _assignedValue = new EXEASTNodeLeaf("element");
 
         EXECommand _command = new EXECommandAddingToList(_assignmentTarget, _assignedValue);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "add element to list";
@@ -36,12 +36,12 @@ public class EXECommandToCodeWithoutFormattingTests
         EXEASTNodeBase _assignedValue = new EXEASTNodeLeaf("5");
 
         EXECommand _command = new EXECommandAssignment(_assignmentTarget, _assignedValue);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "variable = 5";
@@ -53,12 +53,12 @@ public class EXECommandToCodeWithoutFormattingTests
     public void EXECommandBreak_ToCodeWithoutFormattingConversionTest() {
         // Arrange
         EXECommand _command = new EXECommandBreak();
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "break";
@@ -75,12 +75,12 @@ public class EXECommandToCodeWithoutFormattingTests
         EXEASTNodeMethodCall _callTargett = new EXEASTNodeMethodCall("function");
 
         EXECommand _command = new EXECommandCall(_callSource, _callTargett);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "firstVariable.secondVariable.function()";
@@ -92,12 +92,12 @@ public class EXECommandToCodeWithoutFormattingTests
     public void EXECommandContinue_ToCodeWithoutFormattingConversionTest() {
         // Arrange
         EXECommand _command = new EXECommandContinue();
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "continue";
@@ -119,12 +119,12 @@ public class EXECommandToCodeWithoutFormattingTests
         };
 
         EXECommand _command = new EXECommandCreateList("ListType", _callSource, _elementList);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "create list firstVariable.secondVariable of ListType { firstElement, secondElement, thirdElement }";
@@ -139,12 +139,12 @@ public class EXECommandToCodeWithoutFormattingTests
         _callSource.AddElement(new EXEASTNodeLeaf("InstanceName"));
 
         EXECommand _command = new EXECommandQueryCreate("ClassName", _callSource);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "create object instance InstanceName of ClassName";
@@ -157,12 +157,12 @@ public class EXECommandToCodeWithoutFormattingTests
         // Arrange
         EXEASTNodeBase _deletedValue = new EXEASTNodeLeaf("variable");
         EXECommand _command = new EXECommandQueryDelete(_deletedValue);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "delete object instance variable";
@@ -179,15 +179,15 @@ public class EXECommandToCodeWithoutFormattingTests
         EXEASTNodeBase _prompt = new EXEASTNodeLeaf("prompt");
 
         EXECommand _command = new EXECommandRead("assignmentType", _callSource, _prompt);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
-        string _expectedOutput = "firstVariable.secondVariable = assignmentType (read( prompt ))"; // not sure if this is how the result should look, bud originally it was `firstVariable.secondVariable = assignmentTypeprompt))` and this seems better according to grammar, but feel free to change it
+        string _expectedOutput = "firstVariable.secondVariable = assignmentType(read(prompt))"; // not sure if this is how the result should look, bud originally it was `firstVariable.secondVariable = assignmentTypeprompt))` and this seems better according to grammar, but feel free to change it
 
         Assert.AreEqual(_expectedOutput, _actualOutput);
     }
@@ -199,12 +199,12 @@ public class EXECommandToCodeWithoutFormattingTests
         EXEASTNodeBase _list = new EXEASTNodeLeaf("list");
 
         EXECommand _command = new EXECommandRemovingFromList(_list, _element);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "remove element from list";
@@ -218,12 +218,12 @@ public class EXECommandToCodeWithoutFormattingTests
         EXEASTNodeBase _returnValue = new EXEASTNodeLeaf("value");
 
         EXECommand _command = new EXECommandReturn(_returnValue);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "return value";
@@ -240,12 +240,12 @@ public class EXECommandToCodeWithoutFormattingTests
         };
 
         EXECommand _command = new EXECommandWrite(_args);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         visitor.DeactivateSimpleFormatting();
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "write(arg1, arg2)";

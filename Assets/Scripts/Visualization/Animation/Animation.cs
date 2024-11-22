@@ -25,27 +25,30 @@ namespace Visualization.Animation
     //Controls the entire animation process
     public class Animation : Singleton<Animation>
     {
-        private ClassDiagram.Diagrams.ClassDiagram classDiagram;
-        private ObjectDiagram objectDiagram;
+        public ClassDiagram.Diagrams.ClassDiagram classDiagram { get; private set;}
+        public ObjectDiagram objectDiagram { get; private set;}
+        public ActivityDiagram activityDiagram { get; set; }
         public Color classColor;
         public Color methodColor;
         public Color relationColor;
         public GameObject LineFill;
-        private int BarrierSize;
-        private int CurrentBarrierFill;
         public HighlightEdgeState edgeHighlighter;
         [HideInInspector] public bool AnimationIsRunning = false;
         [HideInInspector] public bool isPaused = false;
         [HideInInspector] public bool standardPlayMode = true;
         public bool nextStep = false;
         private bool prevStep = false;
+        public bool isEXECommandReturn = false;
+
         private List<GameObject> Fillers;
-        private ConsoleScheduler consoleScheduler;
+        public ConsoleScheduler consoleScheduler;
+        private AnimationScheduler highlightScheduler;
 
         public string startClassName;
         public string startMethodName;
+        public Dictionary<string, List<EXEVariable>> startMethodParameters = new Dictionary<string, List<EXEVariable>>();
 
-        private const float AnimationSpeedCoefficient = 0.2f;
+        public const float AnimationSpeedCoefficient = 0.2f;
 
         [HideInInspector] private OALProgram currentProgramInstance = new OALProgram();
         [HideInInspector] public OALProgram CurrentProgramInstance { get { return currentProgramInstance; } }
@@ -56,25 +59,13 @@ namespace Visualization.Animation
         {
             classDiagram = GameObject.Find("ClassDiagram").GetComponent<ClassDiagram.Diagrams.ClassDiagram>();
             objectDiagram = GameObject.Find("ObjectDiagram").GetComponent<ObjectDiagram>();
+            activityDiagram = GameObject.Find("ActivityDiagram").GetComponent<ActivityDiagram>();
             standardPlayMode = true;
-            edgeHighlighter = HighlightImmediate.GetInstance();
+            edgeHighlighter = HighlightImmediateState.GetInstance();
         }
 
-
-        // Main Couroutine for compiling the OAL of Animation script and then starting the visualisation of Animation
-        public IEnumerator Animate()
+        private void ParseAnimationMethods()
         {
-            Fillers = new List<GameObject>();
-
-            if (AnimationIsRunning)
-            {
-                yield break;
-            }
-
-            AnimationIsRunning = true;
-
-            UI.MenuManager.Instance.HideErrorPanelOnStopButton();
-
             Anim selectedAnimation = AnimationData.Instance.selectedAnim;
 
             List<AnimClass> MethodsCodes = selectedAnimation.GetMethodsCodesList(); //Filip
@@ -86,19 +77,26 @@ namespace Visualization.Animation
                 foreach (AnimMethod methodItem in classItem.Methods)
                 {
                     CDMethod Method = Class.GetMethodByName(methodItem.Name);
+                    if (Method == null)
+                    {
+                        continue;
+                    }
 
                     EXEScopeMethod MethodBody = OALParserBridge.Parse(methodItem.Code);
                     Method.ExecutableCode = MethodBody;
                 }
             }
+        }
 
+        private CDMethod FindInitialMethod()
+        {
             CDClass startClass = CurrentProgramInstance.ExecutionSpace.getClassByName(startClassName);
             if (startClass == null)
             {
                 AnimationIsRunning = false;
                 isPaused = true;
                 UI.MenuManager.Instance.ShowNotSelectedPanel("class");
-                yield break;
+                return null;
             }
 
             CDMethod startMethod = startClass.GetMethodByName(startMethodName);
@@ -107,223 +105,274 @@ namespace Visualization.Animation
                 AnimationIsRunning = false;
                 isPaused = true;
                 UI.MenuManager.Instance.ShowNotSelectedPanel("method");
-                yield break;
+                return null;
             }
 
+            return startMethod;
+        }
+
+        private EXEScopeMethod FindInitialMethodCode()
+        {
             //najdeme startMethod z daneho class stringu a method stringu, ak startMethod.ExecutableCode je null tak return null alebo yield break
             EXEScopeMethod MethodExecutableCode = CurrentProgramInstance.ExecutionSpace.getClassByName(startClassName)
                 .GetMethodByName(startMethodName).ExecutableCode;
             if (MethodExecutableCode == null)
             {
                 Debug.Log("Warning, EXEScopeMethod of selected Method is null");
-                yield break;
+                return null;
             }
 
             CurrentProgramInstance.SuperScope = MethodExecutableCode; //StartMethod.ExecutableCode
             //OALProgram.Instance.SuperScope = OALParserBridge.Parse(Code); //Method.ExecutableCode dame namiesto OALParserBridge.Parse(Code) pre metodu ktora bude zacinat
-            UI.MenuManager.Instance.RefreshSourceCodePanel(MethodExecutableCode);
 
-            Debug.Log("Abt to execute program");
+            return MethodExecutableCode;
+        }
 
-            string currentClassName = startClassName;
-            string currentMethodName = startMethodName;
-
+        private CDClassInstance CreateInitialInstance(EXEScopeMethod MethodExecutableCode)
+        {
             CDClassInstance startingInstance = MethodExecutableCode.MethodDefinition.OwningClass.CreateClassInstance();
             MethodExecutableCode.OwningObject = new EXEValueReference(startingInstance);
-            objectDiagram.ShowObject(AddObjectToDiagram(startingInstance));
 
-            MethodExecutableCode.InitializeVariables(currentProgramInstance);
+            return startingInstance;
+        }
+
+        private void AssignInitialVariables(EXEScopeMethod MethodExecutableCode)
+        {
+            MethodExecutableCode.InitializeVariables(startMethodParameters.ContainsKey(startMethodName) ?
+                startMethodParameters[startMethodName] :
+                new List<EXEVariable>());
+        }
+
+        private void HighlightInitialMethod(CDMethod startMethod, CDClassInstance startingInstance)
+        {
+            Fillers = new List<GameObject>();
+            objectDiagram.ShowObject(AddObjectToDiagram(startingInstance));
 
             Class caller = classDiagram.FindClassByName(startClassName).ParsedClass;
             Method callerMethod = classDiagram.FindMethodByName(startClassName, startMethodName);
 
             MethodInvocationInfo CallerCall = MethodInvocationInfo.CreateCallerOnlyInstance(startMethod, startingInstance);
             MethodInvocationInfo CalledCall = MethodInvocationInfo.CreateCalledOnlyInstance(startMethod, startingInstance);
-            assignCallInfoToAllHighlightSubjects(caller, callerMethod, CallerCall, CallerCall.CallerMethod);
+            assignCallInfoToAllHighlightSubjects(caller, callerMethod, null, CallerCall, CallerCall.CallerMethod);
             callerMethod.HighlightObjectSubject.InvocationInfo = CalledCall;
 
             caller.HighlightSubject.IncrementHighlightLevel();
             callerMethod.HighlightSubject.IncrementHighlightLevel();
             callerMethod.HighlightObjectSubject.IncrementHighlightLevel();
+        }
 
+        private void InitializeSchedulers()
+        {
             consoleScheduler = new ConsoleScheduler();
+            highlightScheduler = new AnimationScheduler();
             StartCoroutine(consoleScheduler.Start(this));
+        }
+
+        private void TerminateSchedulers()
+        {
+            consoleScheduler.Terminate();
+            highlightScheduler.Terminate();
+        }
+
+        private void SetupAnimation(CDMethod startMethod, EXEScopeMethod MethodExecutableCode)
+        {
+            UI.MenuManager.Instance.HideErrorPanelOnStopButton();
+            UI.MenuManager.Instance.RefreshSourceCodePanel(MethodExecutableCode);
+
+            Debug.Log("Abt to execute program");
+
+            CDClassInstance startingInstance = CreateInitialInstance(MethodExecutableCode);
+            AssignInitialVariables(MethodExecutableCode);
+
+            HighlightInitialMethod(startMethod, startingInstance);
+
+            InitializeSchedulers();
+        }
+
+        private IEnumerator TeardownAnimation()
+        {
+            TerminateSchedulers();
+            yield return new WaitUntil(() => highlightScheduler.IsOver());
+            Debug.Log("Over");
+        }
+
+        // Main Couroutine for compiling the OAL of Animation script and then starting the visualisation of Animation
+        public IEnumerator Animate()
+        {
+            if (AnimationIsRunning)
+            {
+                yield break;
+            }
+
+            AnimationIsRunning = true;
+
+            ParseAnimationMethods();
+
+            CDMethod startMethod = FindInitialMethod();
+            if (startMethod == null)
+            {
+                yield break;
+            }
+
+            EXEScopeMethod MethodExecutableCode = FindInitialMethodCode();
+            if (MethodExecutableCode == null)
+            {
+                yield break;
+            }
+
+            SetupAnimation(startMethod, MethodExecutableCode);
 
             AnimationThread SuperThread = new AnimationThread(currentProgramInstance.CommandStack, currentProgramInstance, this);
             yield return StartCoroutine(SuperThread.Start());
 
-            consoleScheduler.Terminate();
-            Debug.Log("Over");
+            yield return TeardownAnimation();
             AnimationIsRunning = false;
         }
 
         public IEnumerator AnimateCommand(EXECommand CurrentCommand, AnimationThread AnimationThread, bool Animate = true, bool AnimateNewObjects = true)
         {
-            if (CurrentCommand.GetType() == typeof(EXECommandCall))
-            {
-                EXECommandCall exeCommandCall = (EXECommandCall)CurrentCommand;
+            AnimationRequest request = AnimationRequestFactory.Create(CurrentCommand, AnimationThread, Animate, AnimateNewObjects);
+            highlightScheduler.Enqueue(request);
+            yield return new WaitUntil(() => request.IsDone());
 
-                if (Animate)
+            // Karin - Activity Diagram =>
+            VisitorCommandToString visitor = new VisitorCommandToString();
+            CurrentCommand.Accept(visitor);
+            string commandCode = visitor.GetCommandString();
+            
+            if (CurrentCommand.GetType() == typeof(EXEScopeMethod))
+            {
+                if (activityDiagram.Activities.Count > 0)
                 {
-                    MethodInvocationInfo methodCallInfo = exeCommandCall.CallInfo;
-
-                    if (methodCallInfo != null)
-                    {
-                        BarrierSize = 1;
-                        CurrentBarrierFill = 0;
-
-                        objectDiagram.AddRelation(methodCallInfo.CallerObject, methodCallInfo.CalledObject, "ASSOCIATION");
-
-                        StartCoroutine(ResolveCallFunct(methodCallInfo));
-
-                        yield return StartCoroutine(BarrierFillCheck());
-                    }
+                    activityDiagram.SaveDiagram();
+                    activityDiagram.ClearDiagram();
                 }
-
-                UI.MenuManager.Instance.RefreshSourceCodePanel(exeCommandCall.InvokedMethod);
+                Debug.Log("[Karin] EXEScopeMethod vo vonkajsej");
+                int indentationLevelX = 0;
+                int indentationLevelY = 0;
+                animateActivityInDiagram(CurrentCommand, indentationLevelX, indentationLevelY);
+                activityDiagram.AddFinalActivityInDiagram();
+                activityDiagram.AddRelations();
             }
-            else if (CurrentCommand.GetType() == typeof(EXECommandReturn))
-            {
-                EXECommandReturn exeCommandReturn = (EXECommandReturn)CurrentCommand;
-
-                if (Animate)
-                {
-                    EXEScopeMethod exeScopeMethod = exeCommandReturn.GetCurrentMethodScope();
-
-                    if (exeScopeMethod != null)
-                    {
-                        CDMethod calledMethod = exeScopeMethod.MethodDefinition;
-                        EXEScopeMethod exeScopeCaller = AnimationThread.CurrentMethod;
-                        CDMethod callerMethod = exeScopeCaller?.MethodDefinition;
-
-                        if
-                        (
-                            exeScopeCaller != null && callerMethod !=  null &&
-                            exeScopeCaller.OwningObject != null && exeScopeCaller.OwningObject is EXEValueReference &&
-                            exeScopeMethod.OwningObject != null && exeScopeMethod.OwningObject is EXEValueReference
-                        )
-                        {
-                            CDClass caller = callerMethod.OwningClass;
-                            CDClass called = calledMethod.OwningClass;
-                            CDRelationship relation = CurrentProgramInstance.RelationshipSpace.GetRelationshipByClasses(caller.Name, called.Name);
-
-                            CDClassInstance callerInstance = (exeScopeCaller.OwningObject as EXEValueReference).ClassInstance;
-                            CDClassInstance calledInstance = (exeScopeMethod.OwningObject as EXEValueReference).ClassInstance;
-
-                            StartCoroutine(ResolveReturn(new MethodInvocationInfo(callerMethod, calledMethod, relation, callerInstance, calledInstance)));
-                        }
-                        else if
-                        (
-                            exeScopeCaller == null &&
-                            exeScopeMethod.OwningObject != null && exeScopeMethod.OwningObject is EXEValueReference
-                        )
-                        {
-                            CDClassInstance calledInstance = (exeScopeMethod.OwningObject as EXEValueReference).ClassInstance;
-
-                            StartCoroutine(ResolveReturn(MethodInvocationInfo.CreateCalledOnlyInstance(calledMethod, calledInstance)));
-                        }
-                    }
-                }
-
-                //UI.MenuManager.Instance.AnimateSourceCodeAtMethodStart(exeCommandReturn.InvokedMethod); // TODO -> should this happen?
-            }
-            else if (CurrentCommand.GetType() == typeof(EXECommandQueryCreate))
-            {
-                BarrierSize = 1;
-                CurrentBarrierFill = 0;
-
-                if (Animate)
-                {
-                    StartCoroutine(ResolveCreateObject(CurrentCommand, true, AnimateNewObjects));
-                    yield return StartCoroutine(BarrierFillCheck());
-                }
-                else
-                {
-                    yield return ResolveCreateObject(CurrentCommand, false, AnimateNewObjects);
-                }
-            }
-            else if (CurrentCommand.GetType() == typeof(EXECommandAssignment))
-            {
-                ResolveAssignment(CurrentCommand);
-            }
-            else if (CurrentCommand.GetType() == typeof(EXECommandAddingToList))
-            {
-                EXECommandAddingToList addingToList = (EXECommandAddingToList)CurrentCommand;
-                CDClassInstance listOwnerInstance = addingToList.GetAssignmentTargetOwner();
-                CDClassInstance appendedInstance = addingToList.GetAppendedElementInstance();
-
-                if (listOwnerInstance != null)
-                {
-                    if (appendedInstance != null)
-                    {
-                        objectDiagram.AddRelation(listOwnerInstance, appendedInstance, "ASSOCIATION");
-                        objectDiagram.UpdateAttributeValues(listOwnerInstance);
-                    }
-                    else
-                    {
-                        ResolveAssignment(listOwnerInstance);
-                    }
-                }
-            }
-            else if (CurrentCommand.GetType().Equals(typeof(EXECommandRead)))
-            {
-                EXECommandRead readCommand = CurrentCommand as EXECommandRead;
-
-                ConsoleRequestRead consoleRequest = new ConsoleRequestRead(readCommand.PromptText);
-                consoleScheduler.Enqueue(consoleRequest);
-                yield return new WaitUntil(() => consoleRequest.Done);
-
-                AnimationThread.ExecutionSuccess
-                    = ((EXECommandRead)CurrentCommand).AssignReadValue(consoleRequest.ReadValue, CurrentProgramInstance);
-            }
-            else if (CurrentCommand.GetType().Equals(typeof(EXECommandWrite)))
-            {
-                EXECommandWrite readCommand = CurrentCommand as EXECommandWrite;
-
-                ConsoleRequestWrite consoleRequest = new ConsoleRequestWrite(readCommand.PromptText);
-                consoleScheduler.Enqueue(consoleRequest);
-                yield return new WaitUntil(() => consoleRequest.Done);
-            }
-            else if (CurrentCommand.GetType().Equals(typeof(EXECommandWait)))
-            {
-                if (Animate)
-                {
-                    EXECommandWait waitCommand = CurrentCommand as EXECommandWait;
-                    EXEValueReal secondsToWaitValue = waitCommand.WaitTime.EvaluationResult.ReturnedOutput as EXEValueReal;
-                    float secondsToWait = (float)secondsToWaitValue.Value;
-
-                    yield return new WaitForSeconds(secondsToWait);
-                }
-            }
-            else
-            {
-                if (Animate)
-                {
-                    float speedPerAnim = AnimationData.Instance.AnimSpeed;
-                    yield return new WaitForSeconds(AnimationSpeedCoefficient * speedPerAnim);
-                }
-            }
+            // <= Karin - Activity Diagram
 
             yield return new WaitUntil(() => !isPaused);
         }
 
-        private void ResolveAssignment(EXECommand currentCommand)
+        private void animateActivityInDiagram(EXECommand originalCommand, int indentationLevelX, int indentationLevelY)
         {
-            EXECommandAssignment assignment = (EXECommandAssignment)currentCommand;
-            CDClassInstance classInstance = assignment.GetAssignmentTargetOwner();
-            ResolveAssignment(classInstance);
-        }
-        private void ResolveAssignment(CDClassInstance classInstance)
-        {
-            if (classInstance == null) return;
+            Debug.LogFormat("[Karin] animateActivityInDiagram originalCommand type: {0}", originalCommand.GetType());
 
-            objectDiagram.UpdateAttributeValues(classInstance);
+            if (originalCommand.GetType() != typeof(EXEScopeMethod) && originalCommand.IsDirectlyInCode)
+            {
+                if (isEXECommandReturn)
+                {
+                    Debug.Log("[Karin] isEXECommandReturn v rekurzii");
+                    activityDiagram.ResetDiagram();
+                    activityDiagram = ActivityDiagramManager.Instance.ActivityDiagrams.Pop();
+                    activityDiagram.LoadDiagram();
+                    isEXECommandReturn = false;
+                }
+                if (originalCommand.GetType() == typeof(EXEScopeForEach))
+                {
+                    animateActivityInDiagram((EXEScopeForEach)originalCommand, indentationLevelX, indentationLevelY);
+                    
+                }
+                else if (originalCommand.GetType() == typeof(EXEScopeCondition))
+                {
+                    animateActivityInDiagram((EXEScopeCondition)originalCommand, indentationLevelX, indentationLevelY);
+                }
+                else
+                {
+                    VisitorCommandToString visitor = new VisitorCommandToString();
+                    originalCommand.Accept(visitor);
+                    string commandCode = visitor.GetCommandString();
+                    Debug.LogFormat("[Karin] AddActivityInDiagram commandCode : {0}", commandCode);
+                    activityDiagram.AddActivityInDiagram(commandCode, indentationLevelX, indentationLevelY);
+                }
+            }
+            else if (originalCommand.GetType() == typeof(EXEScopeMethod)) 
+            {
+                EXEScopeMethod methodScope = (EXEScopeMethod)originalCommand;
+                foreach (EXECommand command in methodScope.Commands)
+                {                    
+                    if (command.GetType() == typeof(EXEScopeMethod))
+                    {
+                        Debug.Log("[Karin] command.GetType() == typeof(EXEScopeMethod)");
+                        animateActivityInDiagram(command, indentationLevelX, indentationLevelY);
+                    }
+                    else if (command.GetType() == typeof(EXEScopeForEach))
+                    {
+                        Debug.Log("[Karin] command.GetType() == typeof(EXEScopeForEach)");
+                        animateActivityInDiagram((EXEScopeForEach)command, indentationLevelX, indentationLevelY + 1);
+                        indentationLevelY += 2;
+                    }
+                    else if (command.GetType() == typeof(EXEScopeCondition))
+                    {
+                        Debug.Log("[Karin] command.GetType() == typeof(EXEScopeCondition)");
+                        animateActivityInDiagram((EXEScopeCondition)command, indentationLevelX, ++indentationLevelY);
+                    } 
+                    else {
+                        animateActivityInDiagram(command, indentationLevelX, ++indentationLevelY);
+                    }
+                }
+            }
         }
-        private ObjectInDiagram AddObjectToDiagram(CDClassInstance newObject, string name = null, bool showNewObject = true)
+
+        private void animateActivityInDiagram(EXEScopeForEach forEachScope, int indentationLevelX, int indentationLevelY)
+        {
+            activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY, ActivityType.Loop, forEachScope.IteratorName);
+            activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY + 1, ActivityType.LoopDecision);
+            indentationLevelY += 1;
+            int indentForEach = 0;
+            foreach (EXECommand command1 in forEachScope.Commands)
+            {
+                // indentForEach += 1;
+                animateActivityInDiagram(command1, indentationLevelX + 1, indentationLevelY + indentForEach);
+                indentForEach += 1;
+            }
+        }
+
+        private void animateActivityInDiagram(EXEScopeCondition scopeCondition, int indentationLevelX, int indentationLevelY)
+        {
+            VisitorCommandToString visitor = new VisitorCommandToString();
+            scopeCondition.Condition.Accept(visitor);
+            string condition = visitor.GetCommandString();
+
+            activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY, ActivityType.Decision, condition);
+            int indentIf = 0;
+            foreach (EXECommand ifScope in scopeCondition.Commands)
+            {
+                Debug.Log("[Karin] Animate command code: if");
+                indentIf += 1;
+                animateActivityInDiagram(ifScope, indentationLevelX, indentationLevelY + indentIf);
+            }
+            int indentElif = 0;
+            foreach (EXEScopeCondition elifScope in scopeCondition.ElifScopes)
+            {
+                Debug.Log("[Karin] Animate command code: elif");
+                indentElif += 1;
+                animateActivityInDiagram(elifScope, indentationLevelX + 1, indentationLevelY + indentElif);
+            }
+            int indentElse = 0;
+            if (scopeCondition.ElseScope != null)
+            {
+                foreach (EXECommand elseScope in scopeCondition.ElseScope.Commands)
+                {
+                    Debug.Log("[Karin] Animate command code: elseScope");
+                    indentElse += 1;
+                    animateActivityInDiagram(elseScope, indentationLevelX + 1, indentationLevelY + indentElse); //TODOa asi nebudu dobre tie indentations
+                }
+            }
+            activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY + Math.Max(indentIf, indentElse) + 1, ActivityType.Merge);
+        }
+
+        public ObjectInDiagram AddObjectToDiagram(CDClassInstance newObject, string name = null, bool showNewObject = true)
         {
             ObjectInDiagram objectInDiagram = objectDiagram.AddObjectInDiagram(name, newObject, showNewObject);
             return objectInDiagram;
         }
+        
         private IEnumerator ResolveCreateObject(EXECommand currentCommand, bool Animate = true, bool AnimateNewObjects = true)
         {
             EXECommandQueryCreate createCommand = (EXECommandQueryCreate)currentCommand;
@@ -334,9 +383,9 @@ namespace Visualization.Animation
             string targetVariableName = null;
             if (createCommand.AssignmentTarget != null)
             {
-                VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+                VisitorCommandToString visitor = new VisitorCommandToString();
                 createCommand.AssignmentTarget.Accept(visitor);
-                targetVariableName = visitor.GetCommandStringAndResetStateNow();
+                targetVariableName = visitor.GetCommandString();
             }
 
             if (AnimateNewObjects)
@@ -401,10 +450,10 @@ namespace Visualization.Animation
                             if (prevStep)
                             {
                                 if (step > 0) step--;
-                                step = UnhighlightObjectCreationStepAnimation(step, createdObject.OwningClass.Name, objectInDiagram, relation);
+                                step = UnhighlightObjectCreationStepAnimation(step, createdObject.OwningClass.Name, objectInDiagram);
 
                                 if (step > -1) step--;
-                                step = UnhighlightObjectCreationStepAnimation(step, createdObject.OwningClass.Name, objectInDiagram, relation);
+                                step = UnhighlightObjectCreationStepAnimation(step, createdObject.OwningClass.Name, objectInDiagram);
                             }
 
                             yield return new WaitForFixedUpdate();
@@ -422,8 +471,6 @@ namespace Visualization.Animation
             {
                 AddObjectToDiagram(createdObject, targetVariableName, false);
             }
-                
-            IncrementBarrier();
         }
 
         private IEnumerator AnimateFillInterGraph(InterGraphRelation relation)
@@ -432,7 +479,7 @@ namespace Visualization.Animation
             yield return new WaitForSeconds(AnimationData.Instance.AnimSpeed);
         }
 
-        private static InterGraphRelation FindInterGraphRelation(long instanceId)
+        public static InterGraphRelation FindInterGraphRelation(long instanceId)
         {
             InterGraphRelation relation = null;
             foreach (var interGraphRelation in DiagramPool.Instance.RelationsClassToObject)
@@ -446,8 +493,7 @@ namespace Visualization.Animation
             return relation;
         }
 
-        private int UnhighlightObjectCreationStepAnimation(int step, string className, ObjectInDiagram od,
-            InterGraphRelation relation)
+        public int UnhighlightObjectCreationStepAnimation(int step, string className, ObjectInDiagram od)
         {
             if (step == 1) step = 2;
             switch (step)
@@ -456,23 +502,13 @@ namespace Visualization.Animation
                     HighlightClass(className, false);
                     break;
                 case 2:
-                    relation.UnHighlight();
+                    //relation.UnHighlight();
                     break;
                 case 3:
                     break;
             }
 
             return step;
-        }
-
-        public void IncrementBarrier()
-        {
-            this.CurrentBarrierFill++;
-        }
-
-        public IEnumerator BarrierFillCheck()
-        {
-            yield return new WaitUntil(() => CurrentBarrierFill >= BarrierSize);
         }
 
         public void StartAnimation()
@@ -524,21 +560,23 @@ namespace Visualization.Animation
 
             if (edge != null)
             {
+                EdgeHighlightSubject.EdgesDrawingFinishedFlag finishedFlag = classDiagram.FindEdgeInfo(Call.Relation.RelationshipName).HighlightSubject.finishedFlag;
                 if (edge.CompareTag("Generalization") || edge.CompareTag("Implements") ||
                     edge.CompareTag("Realisation"))
                 {
+                    finishedFlag.InitDrawingFinishedFlag();
                     HighlightEdge(Call.Relation.RelationshipName, true, Call);
                     yield return new WaitForSeconds(AnimationData.Instance.AnimSpeed / 2);
                 }
                 else
                 {
                     yield return FillNewFiller(classDiagram.FindOwnerOfRelation(Call.Relation.RelationshipName),
-                        Call.CalledMethod.OwningClass.Name, edge, Call);
+                        Call.CalledMethod.OwningClass.Name, edge, Call, finishedFlag);
                 }
             }
         }
 
-        private object FillNewFiller(string ownerOfRelation, string calledClassName, GameObject edge, MethodInvocationInfo Call)
+        private object FillNewFiller(string ownerOfRelation, string calledClassName, GameObject edge, MethodInvocationInfo Call, EdgeHighlightSubject.EdgesDrawingFinishedFlag finishedEdges)
         {
             GameObject newFiller = Instantiate(LineFill);
             Fillers.Add(newFiller);
@@ -563,16 +601,19 @@ namespace Visualization.Animation
 
 
             Func<bool> highlightEdgeCallback = () => {
-                HighlightEdge(Call.Relation.RelationshipName, true, Call);
-                Destroy(lf1.gameObject);
-                Destroy(lf.gameObject);
+                finishedEdges.IncrementFlag();
+                if (finishedEdges.IsDrawingFinished())
+                {
+                    HighlightEdge(Call.Relation.RelationshipName, true, Call);
+                    Destroy(lf1.gameObject);
+                    Destroy(lf.gameObject);
+                }
                 return false;
             };
 
 
-            lf1.StartCoroutine(lf1.AnimateFlow(objectRelation.GameObject.GetComponent<UILineRenderer>().Points, false, null, true));
-
-            return lf.StartCoroutine(lf.AnimateFlow(edge.GetComponent<UILineRenderer>().Points, flip, highlightEdgeCallback));
+            lf1.StartCoroutine(lf1.AnimateFlow(objectRelation.GameObject.GetComponent<UILineRenderer>().Points, false, highlightEdgeCallback, true));
+            return lf.StartCoroutine(lf.AnimateFlow(edge.GetComponent<UILineRenderer>().Points, flip, highlightEdgeCallback, false));
         }
 
         private GameObject classGameObject(string className)
@@ -816,49 +857,14 @@ namespace Visualization.Animation
             }
         }
 
-        private void assignCallInfoToAllHighlightSubjects(Class c, Method m, MethodInvocationInfo Call, CDMethod method) {
+        public static void assignCallInfoToAllHighlightSubjects(Class c, Method m, RelationInDiagram relation, MethodInvocationInfo Call, CDMethod method) {
             c.HighlightSubject.ClassName = method.OwningClass.Name;
-            c.HighlightSubject.InvocationInfo = Call;
             m.HighlightSubject.MethodName = method.Name;
             m.HighlightSubject.ClassName = method.OwningClass.Name;
             m.HighlightObjectSubject.InvocationInfo = Call;
-        }
-
-        // Couroutine used to Resolve one OALCall consisting of Caller class, caller method, edge, called class, called method
-        // Same coroutine is called for play or step mode
-        public IEnumerator ResolveCallFunct(MethodInvocationInfo Call)
-        {
-            Debug.Log(Call.ToString());
-
-            Class called = classDiagram.FindClassByName(Call.CalledMethod.OwningClass.Name).ParsedClass;
-            Method calledMethod = classDiagram.FindMethodByName(Call.CalledMethod.OwningClass.Name, Call.CalledMethod.Name);
-
-            assignCallInfoToAllHighlightSubjects(called, calledMethod, Call, Call.CalledMethod);
-
-            calledMethod.HighlightObjectSubject.IncrementHighlightLevel();
-            called.HighlightSubject.IncrementHighlightLevel();
-            calledMethod.HighlightSubject.IncrementHighlightLevel();
-            yield return new WaitForSeconds(AnimationData.Instance.AnimSpeed * 1.25f);
-
-            IncrementBarrier();
-        }
-
-        public IEnumerator ResolveReturn(MethodInvocationInfo callInfo)
-        {
-            float timeModifier = 1f;
-
-            Class called = classDiagram.FindClassByName(callInfo.CalledMethod.OwningClass.Name).ParsedClass;
-            Method calledMethod = classDiagram.FindMethodByName(callInfo.CalledMethod.OwningClass.Name, callInfo.CalledMethod.Name);
-            assignCallInfoToAllHighlightSubjects(called, calledMethod, callInfo, callInfo.CalledMethod);
-
-            calledMethod.HighlightSubject.DecrementHighlightLevel();
-            calledMethod.HighlightObjectSubject.DecrementHighlightLevel();
-
-            called.HighlightSubject.DecrementHighlightLevel();
-
-            if (standardPlayMode)
+            if (relation != null)
             {
-                yield return new WaitForSeconds(AnimationData.Instance.AnimSpeed * timeModifier);
+                relation.HighlightSubject.InvocationInfo = Call;
             }
         }
 
@@ -955,6 +961,16 @@ namespace Visualization.Animation
         {
             nextStep = true;
             prevStep = true;
+        }
+
+        public void SetEdgeHighlighter(HighlightEdgeState newState)
+        {
+            edgeHighlighter = newState; 
+        }
+
+        public HighlightEdgeState GetEdgeHighlighter()
+        {
+            return edgeHighlighter;
         }
     }
 }

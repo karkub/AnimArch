@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace OALProgramControl
 {
-    public class EXECommandAddingToList : EXECommand
+    public class EXECommandAddingToList : EXECommandListOperation
     {
         public EXEASTNodeBase Array { get; }
         public EXEASTNodeBase AddedElement { get; }
@@ -15,33 +15,29 @@ namespace OALProgramControl
             this.AddedElement = addedElement;
         }
 
-        protected override EXEExecutionResult Execute(OALProgram OALProgram)
+        public override EXEExecutionResult EvaluateItem(OALProgram OALProgram)
         {
-            EXEExecutionResult evaluationResultOfAddedElement = this.AddedElement.Evaluate(this.SuperScope, OALProgram);
+           return this.AddedElement.Evaluate(this.SuperScope, OALProgram);
+        }
 
-            if (!HandleRepeatableASTEvaluation(evaluationResultOfAddedElement))
+
+        public override EXEExecutionResult EvaluateArray(OALProgram OALProgram, out bool success)
+        {
+            EXEExecutionResult arrayEvaluationResult = this.Array.Evaluate(this.SuperScope, OALProgram);
+            success = false;
+
+            if (!HandleRepeatableASTEvaluation(arrayEvaluationResult))
             {
-                return evaluationResultOfAddedElement;
+                return arrayEvaluationResult;
             }
 
-            EXEExecutionResult evaluationResultOfArray = this.Array.Evaluate(this.SuperScope, OALProgram);
+            success = true;
+            return arrayEvaluationResult;  
+        }
 
-            if (!HandleRepeatableASTEvaluation(evaluationResultOfArray))
-            {
-                return evaluationResultOfArray;
-            }
-
-            EXEExecutionResult elementAppendmentResult
-                = evaluationResultOfArray
-                    .ReturnedOutput
-                    .AppendElement(evaluationResultOfAddedElement.ReturnedOutput, OALProgram.ExecutionSpace);
-
-            if (!HandleSingleShotASTEvaluation(elementAppendmentResult))
-            {
-                return elementAppendmentResult;
-            }
-
-            return Success();
+        public override EXEExecutionResult PerformOperation(OALProgram OALProgram, EXEExecutionResult arrayEvaluationResult, EXEExecutionResult itemEvaluationResult)
+        {
+            return arrayEvaluationResult.ReturnedOutput.AppendElement(itemEvaluationResult.ReturnedOutput, OALProgram.ExecutionSpace);
         }
 
         public override void Accept(Visitor v)
@@ -49,7 +45,7 @@ namespace OALProgramControl
             v.VisitExeCommandAddingToList(this);
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandAddingToList(this.Array.Clone(), this.AddedElement.Clone());
         }

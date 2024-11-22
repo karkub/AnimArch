@@ -15,11 +15,11 @@ public class EXECommandToCodeFormattedTests
         EXEASTNodeBase _assignedValue = new EXEASTNodeLeaf("element");
 
         EXECommand _command = new EXECommandAddingToList(_assignmentTarget, _assignedValue);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "add element to list;\n";
@@ -35,11 +35,11 @@ public class EXECommandToCodeFormattedTests
         EXEASTNodeBase _assignedValue = new EXEASTNodeLeaf("5");
 
         EXECommand _command = new EXECommandAssignment(_assignmentTarget, _assignedValue);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "variable = 5;\n";
@@ -51,11 +51,11 @@ public class EXECommandToCodeFormattedTests
     public void EXECommandBreak_ToCodeFormattedConversionTest() {
         // Arrange
         EXECommand _command = new EXECommandBreak();
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "break;\n";
@@ -72,11 +72,11 @@ public class EXECommandToCodeFormattedTests
         EXEASTNodeMethodCall _callTargett = new EXEASTNodeMethodCall("function");
 
         EXECommand _command = new EXECommandCall(_callSource, _callTargett);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "firstVariable.secondVariable.function();\n";
@@ -88,11 +88,11 @@ public class EXECommandToCodeFormattedTests
     public void EXECommandContinue_ToCodeFormattedConversionTest() {
         // Arrange
         EXECommand _command = new EXECommandContinue();
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "continue;\n";
@@ -114,11 +114,11 @@ public class EXECommandToCodeFormattedTests
         };
 
         EXECommand _command = new EXECommandCreateList("ListType", _callSource, _elementList);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "create list firstVariable.secondVariable of ListType { firstElement, secondElement, thirdElement };\n";
@@ -133,11 +133,11 @@ public class EXECommandToCodeFormattedTests
         _callSource.AddElement(new EXEASTNodeLeaf("InstanceName"));
 
         EXECommand _command = new EXECommandQueryCreate("ClassName", _callSource);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "create object instance InstanceName of ClassName;\n";
@@ -150,11 +150,11 @@ public class EXECommandToCodeFormattedTests
         // Arrange
         EXEASTNodeBase _deletedValue = new EXEASTNodeLeaf("variable");
         EXECommand _command = new EXECommandQueryDelete(_deletedValue);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "delete object instance variable;\n";
@@ -171,14 +171,14 @@ public class EXECommandToCodeFormattedTests
         EXEASTNodeBase _prompt = new EXEASTNodeLeaf("prompt");
 
         EXECommand _command = new EXECommandRead("assignmentType", _callSource, _prompt);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
-        string _expectedOutput = "firstVariable.secondVariable = assignmentType (read( prompt ));\n"; // not sure if this is how the result should look, bud originally it was `firstVariable.secondVariable = assignmentTypeprompt))` and this seems better according to grammar, but feel free to change it
+        string _expectedOutput = "firstVariable.secondVariable = assignmentType(read(prompt));\n"; // not sure if this is how the result should look, bud originally it was `firstVariable.secondVariable = assignmentTypeprompt))` and this seems better according to grammar, but feel free to change it
 
         Assert.AreEqual(_expectedOutput, _actualOutput);
     }
@@ -190,11 +190,11 @@ public class EXECommandToCodeFormattedTests
         EXEASTNodeBase _list = new EXEASTNodeLeaf("list");
 
         EXECommand _command = new EXECommandRemovingFromList(_list, _element);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "remove element from list;\n";
@@ -208,11 +208,11 @@ public class EXECommandToCodeFormattedTests
         EXEASTNodeBase _returnValue = new EXEASTNodeLeaf("value");
 
         EXECommand _command = new EXECommandReturn(_returnValue);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "return value;\n";
@@ -229,11 +229,11 @@ public class EXECommandToCodeFormattedTests
         };
 
         EXECommand _command = new EXECommandWrite(_args);
-        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+        VisitorCommandToString visitor = new VisitorCommandToString();
 
         // Act
         _command.Accept(visitor);
-        string _actualOutput = visitor.GetCommandStringAndResetStateNow();
+        string _actualOutput = visitor.GetCommandString();
 
         // Assert
         string _expectedOutput = "write(arg1, arg2);\n";

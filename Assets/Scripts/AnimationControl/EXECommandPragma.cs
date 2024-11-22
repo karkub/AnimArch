@@ -31,9 +31,14 @@ namespace OALProgramControl
             return Success();
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandPragma(Pragma);
+        }
+
+        public override void Accept(Visitor v)
+        {
+            v.VisitExeCommandPragma(this);
         }
     }
 }

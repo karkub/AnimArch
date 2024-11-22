@@ -9,11 +9,11 @@ namespace OALProgramControl
 {
     public class MethodInvocationInfo
     {
-        public CDMethod CallerMethod { get; private set; }
-        public CDMethod CalledMethod { get; private set; }
-        public CDRelationship Relation { get; private set; }
-        public CDClassInstance CallerObject { get; private set; }
-        public CDClassInstance CalledObject { get; private set; }
+        public CDMethod CallerMethod { get; protected set; }
+        public CDMethod CalledMethod { get; protected set; }
+        public CDRelationship Relation { get; protected set; }
+        public CDClassInstance CallerObject { get; protected set; }
+        public CDClassInstance CalledObject { get; protected set; }
 
         public bool HasCaller
         {
@@ -51,7 +51,7 @@ namespace OALProgramControl
             this.CallerObject = callerObject;
             this.CalledObject = calledObject;
         }
-        private MethodInvocationInfo()
+        protected MethodInvocationInfo()
         {}
 
         public static MethodInvocationInfo CreateCallerOnlyInstance(CDMethod callerMethod, CDClassInstance callerObject) {

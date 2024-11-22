@@ -9,9 +9,14 @@ namespace OALProgramControl
 
         public EXECommandFileAppend(EXEASTNodeBase stringToWrite, EXEASTNodeBase fileToWriteTo) : base(stringToWrite, fileToWriteTo) { }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandFileAppend(StringToWrite.Clone(), FileToWriteTo.Clone());
+        }
+
+        public override void Accept(Visitor v)
+        {
+            v.VisitExeCommandFileAppend(this);
         }
     }
 }

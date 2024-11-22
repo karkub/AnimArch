@@ -12,6 +12,9 @@ namespace Visualization.ClassDiagram
         public GameObject classPrefab;
         public GameObject objectPrefab;
         public GameObject activityPrefab;
+        public GameObject activityInitialPrefab;
+        public GameObject activityFinalPrefab;
+        public GameObject activityDecisionPrefab;
         public GameObject classAttributePrefab;
         public GameObject classMethodPrefab;
         public GameObject parameterMethodPrefab;
@@ -19,6 +22,7 @@ namespace Visualization.ClassDiagram
         public GameObject associationFullPrefab;
         public GameObject associationSDPrefab;
         public GameObject associationDSPrefab;
+        public GameObject activityFlowPrefab;
         public GameObject dependsPrefab;
         public GameObject generalizationPrefab;
         public GameObject implementsPrefab;

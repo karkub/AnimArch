@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OALProgramControl
 {
-    public class EXECommandRemovingFromList : EXECommand
+    public class EXECommandRemovingFromList : EXECommandListOperation
     {
         public EXEASTNodeBase Array { get; }
         public EXEASTNodeBase Item { get; }
@@ -14,32 +14,29 @@ namespace OALProgramControl
             this.Array = array;
             this.Item = item;
         }
-
-        protected override EXEExecutionResult Execute(OALProgram OALProgram)
+        public override EXEExecutionResult EvaluateItem(OALProgram OALProgram)
         {
-            EXEExecutionResult itemEvaluationResult = this.Item.Evaluate(this.SuperScope, OALProgram);
+            return this.Item.Evaluate(this.SuperScope, OALProgram);
+        }
 
-            if (!HandleRepeatableASTEvaluation(itemEvaluationResult))
-            {
-                return itemEvaluationResult;
-            }
-
+         public override EXEExecutionResult EvaluateArray(OALProgram OALProgram, out bool success)
+         {
             EXEExecutionResult arrayEvaluationResult = this.Array.Evaluate(this.SuperScope, OALProgram);
+            success = false;
 
-            if (!HandleRepeatableASTEvaluation(arrayEvaluationResult))
+             if (!HandleRepeatableASTEvaluation(arrayEvaluationResult))
             {
                 return arrayEvaluationResult;
             }
 
-            EXEExecutionResult itemRemovalResult
-                = arrayEvaluationResult.ReturnedOutput.RemoveElement(itemEvaluationResult.ReturnedOutput, OALProgram.ExecutionSpace);
+            success = true;
+            return arrayEvaluationResult;
+        }
 
-            if (!HandleSingleShotASTEvaluation(itemRemovalResult))
-            {
-                return itemRemovalResult;
-            }
 
-            return Success();
+        public override EXEExecutionResult PerformOperation(OALProgram OALProgram, EXEExecutionResult arrayEvaluationResult, EXEExecutionResult itemEvaluationResult)
+        {
+            return arrayEvaluationResult.ReturnedOutput.RemoveElement(itemEvaluationResult.ReturnedOutput, OALProgram.ExecutionSpace);
         }
 
         public override void Accept(Visitor v)
@@ -47,7 +44,7 @@ namespace OALProgramControl
             v.VisitExeCommandRemovingFromList(this);
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandRemovingFromList(this.Array.Clone() as EXEASTNodeAccessChain, this.Item.Clone());
         }

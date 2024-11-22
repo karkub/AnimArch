@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using UnityEditor;
 using UnityEngine;
 
@@ -25,7 +26,7 @@ namespace OALProgramControl
                 throw new ArgumentException(string.Format("\"{0}\" is not a valid real value.", value));
             }
 
-            this.Value = decimal.Parse(value);
+            this.Value = decimal.Parse(value, CultureInfo.InvariantCulture);
         }
         public EXEValueReal(decimal value)
         {

@@ -10,7 +10,7 @@ namespace OALProgramControl
     public class EXECommandWrite : EXECommand
     {
         public List<EXEASTNodeBase> Arguments { get; }
-        public string PromptText { get; private set; }
+        public string PromptText { get; set; }
         public EXECommandWrite() : this(new List<EXEASTNodeBase>()) {}
         public EXECommandWrite(List<EXEASTNodeBase> Arguments)
         {
@@ -31,12 +31,14 @@ namespace OALProgramControl
             }
 
             string result = string.Join(", ", this.Arguments.Select(argument => {
-                        VisitorCommandToString visitor = VisitorCommandToString.BorrowAVisitor();
+                        VisitorCommandToString visitor = new VisitorCommandToString();
                         argument.EvaluationResult.ReturnedOutput.Accept(visitor);
-                        return visitor.GetCommandStringAndResetStateNow();
+                        return visitor.GetCommandString();
             }));
 
             this.PromptText = result;
+            
+            MenuManager.Instance.Strategy.Write(result);
 
             return Success();
         }
@@ -46,7 +48,7 @@ namespace OALProgramControl
             v.VisitExeCommandWrite(this);
         }
 
-        public override EXECommand CreateClone()
+        protected override EXECommand CreateCloneCustom()
         {
             return new EXECommandWrite(Arguments.Select(argument => argument.Clone()).ToList());
         }

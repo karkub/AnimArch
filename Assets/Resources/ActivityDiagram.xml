@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+  <xmi:Documentation />
+  <xmi:Model>
+    <ownedParameter name="a" type="int" xmi:id="EAID_088A5D9D_1D43_49de_896B_53A4899E6FA140ea70ef-51ac-4400-a6e7-196ba14cbf35int a" />
+    <ownedParameter name="b" type="int" xmi:id="EAID_088A5D9D_1D43_49de_896B_53A4899E6FA140ea70ef-51ac-4400-a6e7-196ba14cbf35int b" />
+  </xmi:Model>
+  <xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+    <elements>
+      <element xmi:Type="uml:Package" name="SAVETEST" scope="public" />
+      <element xmi:type="uml:Class" name="Aa" xmi:idref="EAID_041AC64A_87A7_40a5_ADAE_8DE558065C4D">
+        <attributes>
+          <attribute xmi:idref="EAID_64480663_F18F_4720_8039_13576D81FDC7" name="code">
+            <properties type="string" />
+          </attribute>
+        </attributes>
+        <operations>
+          <operation xmi:idref="EAID_51F56B2B_0E89_4667_939E_21ADB2B008D6" name="execute">
+            <type type="string" />
+          </operation>
+        </operations>
+      </element>
+      <element xmi:type="uml:Class" name="Bb" xmi:idref="EAID_088A5D9D_1D43_49de_896B_53A4899E6FA1">
+        <attributes>
+          <attribute xmi:idref="6e9e57fe-2d01-4980-88b3-ff7334bd9d68" name="Name">
+            <properties type="string" />
+          </attribute>
+        </attributes>
+        <operations>
+          <operation xmi:idref="40ea70ef-51ac-4400-a6e7-196ba14cbf35" name="calculate">
+            <type type="int" />
+            <parameters>
+              <parameter />
+              <parameter xmi:idref="EAID_088A5D9D_1D43_49de_896B_53A4899E6FA140ea70ef-51ac-4400-a6e7-196ba14cbf35int a" name="a">
+                <properties type="int" />
+              </parameter>
+              <parameter xmi:idref="EAID_088A5D9D_1D43_49de_896B_53A4899E6FA140ea70ef-51ac-4400-a6e7-196ba14cbf35int b" name="b">
+                <properties type="int" />
+              </parameter>
+            </parameters>
+          </operation>
+        </operations>
+      </element>
+    </elements>
+    <connectors>
+      <connector xmi:idref="ABAggregation">
+        <source>
+          <model type="Class" name="Aa" />
+        </source>
+        <target>
+          <model type="Class" name="Bb" />
+        </target>
+        <properties ea_type="Aggregation" direction="Source -> Destination" />
+      </connector>
+    </connectors>
+    <primitivetypes />
+    <diagrams>
+      <diagram>
+        <model localID="1" />
+        <elements>
+          <element subject="EAID_041AC64A_87A7_40a5_ADAE_8DE558065C4D" geometry="Left=257;Top=30;Right=468;Bottom=113;" />
+          <element subject="EAID_088A5D9D_1D43_49de_896B_53A4899E6FA1" geometry="Left=378;Top=177;Right=490;Bottom=247;" />
+        </elements>
+      </diagram>
+    </diagrams>
+  </xmi:Extension>
+</xmi:XMI>
