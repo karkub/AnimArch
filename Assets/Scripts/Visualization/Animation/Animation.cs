@@ -38,7 +38,6 @@ namespace Visualization.Animation
         [HideInInspector] public bool standardPlayMode = true;
         public bool nextStep = false;
         private bool prevStep = false;
-        public bool isEXECommandReturn = false;
 
         private List<GameObject> Fillers;
         public ConsoleScheduler consoleScheduler;
@@ -245,15 +244,18 @@ namespace Visualization.Animation
                 if (activityDiagram.Activities.Count > 0)
                 {
                     activityDiagram.SaveDiagram();
-                    activityDiagram.ClearDiagram();
+                    activityDiagram = new ActivityDiagram();
+                    activityDiagram.CreateGraph();
                 }
                 Debug.Log("[Karin] EXEScopeMethod vo vonkajsej");
                 int indentationLevelX = 0;
                 int indentationLevelY = 0;
+                activityDiagram.AddInitialActivityInDiagram();
                 animateActivityInDiagram(CurrentCommand, indentationLevelX, indentationLevelY);
                 activityDiagram.AddFinalActivityInDiagram();
                 activityDiagram.AddRelations();
             }
+            // dalsia vetva ak exe command return a existuje dalsi command 
             // <= Karin - Activity Diagram
 
             yield return new WaitUntil(() => !isPaused);
@@ -265,14 +267,6 @@ namespace Visualization.Animation
 
             if (originalCommand.GetType() != typeof(EXEScopeMethod) && originalCommand.IsDirectlyInCode)
             {
-                if (isEXECommandReturn)
-                {
-                    Debug.Log("[Karin] isEXECommandReturn v rekurzii");
-                    activityDiagram.ResetDiagram();
-                    activityDiagram = ActivityDiagramManager.Instance.ActivityDiagrams.Pop();
-                    activityDiagram.LoadDiagram();
-                    isEXECommandReturn = false;
-                }
                 if (originalCommand.GetType() == typeof(EXEScopeForEach))
                 {
                     animateActivityInDiagram((EXEScopeForEach)originalCommand, indentationLevelX, indentationLevelY);

@@ -6,7 +6,7 @@ namespace Visualization.ClassDiagram.ComponentsInDiagram
     public class ActivityInDiagram
     {
         public string ActivityText;
-        public ActivityType ActivityType = ActivityType.Classic;
+        public ActivityType ActivityType;
         public int IndentationLevelX = 0;
         public int IndentationLevelY = 0;
         public string LabelText = "";
@@ -17,7 +17,9 @@ namespace Visualization.ClassDiagram.ComponentsInDiagram
     
     public enum ActivityType
     {
+        Initial,
         Classic,
+        Final,
         Loop,
         LoopDecision,
         Decision,
