@@ -276,6 +276,10 @@ namespace Visualization.Animation
                 {
                     animateActivityInDiagram((EXEScopeCondition)originalCommand, indentationLevelX, indentationLevelY);
                 }
+                else if (originalCommand.GetType() == typeof(EXEScopeLoopWhile))
+                {
+                    animateActivityInDiagram((EXEScopeLoopWhile)originalCommand, indentationLevelX, indentationLevelY);
+                }
                 else
                 {
                     VisitorCommandToString visitor = new VisitorCommandToString();
@@ -301,6 +305,13 @@ namespace Visualization.Animation
                         animateActivityInDiagram((EXEScopeForEach)command, indentationLevelX, indentationLevelY + 1);
                         indentationLevelY += 2;
                     }
+                    else if (command.GetType() == typeof(EXEScopeLoopWhile))
+                    {
+                        Debug.Log("[Karin] command.GetType() == typeof(EXEScopeLoopWhile)");
+                        animateActivityInDiagram((EXEScopeLoopWhile)command, indentationLevelX, indentationLevelY + 1);
+                        indentationLevelX += 1;
+                        indentationLevelY += 1;
+                    }
                     else if (command.GetType() == typeof(EXEScopeCondition))
                     {
                         Debug.Log("[Karin] command.GetType() == typeof(EXEScopeCondition)");
@@ -324,6 +335,21 @@ namespace Visualization.Animation
                 // indentForEach += 1;
                 animateActivityInDiagram(command1, indentationLevelX + 1, indentationLevelY + indentForEach);
                 indentForEach += 1;
+            }
+        }
+        private void animateActivityInDiagram(EXEScopeLoopWhile whileScope, int indentationLevelX, int indentationLevelY)
+        {
+            VisitorCommandToString visitor = new VisitorCommandToString();
+            whileScope.Condition.Accept(visitor);
+            string condition = visitor.GetCommandString();
+
+            activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY, ActivityType.Decision, condition);
+            indentationLevelY += 1;
+            int indentWhile = 0;
+            foreach (EXECommand command1 in whileScope.Commands)
+            {
+                animateActivityInDiagram(command1, indentationLevelX, indentationLevelY + indentWhile);
+                indentWhile += 1;
             }
         }
 
