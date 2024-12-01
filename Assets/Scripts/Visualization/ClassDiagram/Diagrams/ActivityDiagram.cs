@@ -269,7 +269,7 @@ namespace AnimArch.Visualization.Diagrams
                         relation1.GenerateVisualObject(graph);
                         Relations.Add(relation1);
 
-                        ActivityInDiagram fromElse = Activities.FindLast(x => x.IndentationLevelX - 1 == to.IndentationLevelX && x.IndentationLevelY < to.IndentationLevelY);
+                        ActivityInDiagram fromElse = Activities.FindLast(x => x.IndentationLevelX - 1 == to.IndentationLevelX && x.IndentationLevelY <= to.IndentationLevelY);
                         ActivityRelation relation2 = new ActivityRelation(fromElse, to);
                         relation2.GenerateVisualObject(graph);
                         Relations.Add(relation2);

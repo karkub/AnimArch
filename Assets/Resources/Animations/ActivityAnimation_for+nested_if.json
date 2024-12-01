@@ -13,13 +13,15 @@
                 {
                     "Name": "execute",
                     "Parameters": [],
-                    "Code": "a=1;\nif (a > 2)\n\twrite(\"a > 2\");\n(else\n\twrite(\"a <= 2\");\n\twrite(\":(\");)\nend if;\nwrite(\"end\");"
+                    "Code": "create list numbers of int;\nadd 1 to numbers;\nadd 2 to numbers;\nadd 3 to numbers;\nadd 4 to numbers;\nfor each number in numbers\nwrite(\"number is\");\nif (number == 1)\nwrite(\"1, yay!\");\nelse\nwrite(\"not 1\");\nif (number == 2)\nwrite(\"== 2\");\nelif (number == 3)\nwrite(\"== 3\");\nelse\nwrite(\"> 3\");\nend if;\nend if;\nend for;\nwrite(\"end\");"
                 }
             ]
         },
         {
             "Name": "Bb",
-            "Attributes": [],
+            "Attributes": [
+                "Name"
+            ],
             "Methods": [
                 {
                     "Name": "calculate",
@@ -27,7 +29,7 @@
                         "a",
                         "b"
                     ],
-                    "Code": "c=a+b;\nreturn c;"
+                    "Code": "c = a + b;\nreturn c;"
                 }
             ]
         }

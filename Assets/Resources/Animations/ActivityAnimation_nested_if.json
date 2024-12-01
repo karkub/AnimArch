@@ -13,13 +13,15 @@
                 {
                     "Name": "execute",
                     "Parameters": [],
-                    "Code": "a=1;\nif (a > 2)\n\twrite(\"a > 2\");\n(else\n\twrite(\"a <= 2\");\n\twrite(\":(\");)\nend if;\nwrite(\"end\");"
+                    "Code": "number=1;\nif (number < 3)\nwrite(\"<3\");\nelif (number == 4)\nwrite(\"four\");\nelse\nwrite(\">4\");\nend if;\nnumber=5;\nif (number < 3)\nwrite(\"<3\");\nelif (number == 4)\nwrite(\"four\");\nelse\nwrite(\">4\");\nend if;\nwrite(\"end\");"
                 }
             ]
         },
         {
             "Name": "Bb",
-            "Attributes": [],
+            "Attributes": [
+                "Name"
+            ],
             "Methods": [
                 {
                     "Name": "calculate",
@@ -27,7 +29,7 @@
                         "a",
                         "b"
                     ],
-                    "Code": "c=a+b;\nreturn c;"
+                    "Code": "c = a + b;\nreturn c;"
                 }
             ]
         }
