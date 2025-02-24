@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 114967163975592646}
   - component: {fileID: 222133241926040180}
   - component: {fileID: 114593078288020512}
-  - component: {fileID: 6467086312345068307}
   m_Layer: 0
   m_Name: AssociationSD
   m_TagString: Untagged
@@ -56,6 +55,7 @@ MonoBehaviour:
   endCap: {fileID: 1018393394884562, guid: 5f27d2a82ed325f459afdb75a1cadaab, type: 3}
   deleteButton: {fileID: 6251318437781553612, guid: 0af9a63443d46fa478102c15c61f1519,
     type: 3}
+  label: {fileID: 6251318437781553612, guid: 8954ccd4fdfdc214186f5f553be5e750, type: 3}
   dashed: 0
   segmentLength: 10
 --- !u!222 &222133241926040180
@@ -101,15 +101,3 @@ MonoBehaviour:
   LineJoins: 0
   BezierMode: 0
   drivenExternally: 0
---- !u!114 &6467086312345068307
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1523548488617654}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e69faff38e8fe34a95911500128663d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

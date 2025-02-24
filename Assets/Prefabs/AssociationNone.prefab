@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 730728316413197353}
   - component: {fileID: 624116400653823131}
   - component: {fileID: 732818189996171983}
-  - component: {fileID: 5909803747359831548}
   m_Layer: 0
   m_Name: AssociationNone
   m_TagString: Untagged
@@ -56,6 +55,7 @@ MonoBehaviour:
   endCap: {fileID: 0}
   deleteButton: {fileID: 6251318437781553612, guid: 0af9a63443d46fa478102c15c61f1519,
     type: 3}
+  label: {fileID: 6251318437781553612, guid: 8954ccd4fdfdc214186f5f553be5e750, type: 3}
   dashed: 0
   segmentLength: 10
 --- !u!222 &624116400653823131
@@ -101,15 +101,3 @@ MonoBehaviour:
   LineJoins: 0
   BezierMode: 0
   drivenExternally: 0
---- !u!114 &5909803747359831548
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 844717564252624985}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e69faff38e8fe34a95911500128663d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
