@@ -241,19 +241,28 @@ namespace Visualization.Animation
             
             if (CurrentCommand.GetType() == typeof(EXEScopeMethod))
             {
-                if (activityDiagram.Activities.Count > 0)
+                if (ActivityDiagramManager.Instance.ActivityDiagrams.Count() > 0)
                 {
-                    activityDiagram.SaveDiagram();
                     activityDiagram = new ActivityDiagram();
                     activityDiagram.CreateGraph();
                 }
-                Debug.Log("[Karin] EXEScopeMethod vo vonkajsej");
                 int indentationLevelX = 0;
                 int indentationLevelY = 0;
                 activityDiagram.AddInitialActivityInDiagram();
                 animateActivityInDiagram(CurrentCommand, indentationLevelX, indentationLevelY);
                 activityDiagram.AddFinalActivityInDiagram();
                 activityDiagram.AddRelations();
+                activityDiagram.SaveDiagram();
+
+            }
+            else if (CurrentCommand.GetType() == typeof(EXECommandReturn))
+            {
+                if (ActivityDiagramManager.Instance.ActivityDiagrams.Count() > 1)
+                {
+                    activityDiagram.ResetDiagram();
+                    ActivityDiagramManager.Instance.ActivityDiagrams.Pop();
+                    ActivityDiagramManager.Instance.PrintDiagamsInStack();
+                }
             }
             // dalsia vetva ak exe command return a existuje dalsi command 
             // <= Karin - Activity Diagram
@@ -263,8 +272,7 @@ namespace Visualization.Animation
 
         private void animateActivityInDiagram(EXECommand originalCommand, int indentationLevelX, int indentationLevelY)
         {
-            Debug.LogFormat("[Karin] animateActivityInDiagram originalCommand type: {0}", originalCommand.GetType());
-
+            // Debug.LogFormat("[Karin] animateActivityInDiagram originalCommand type: {0}", originalCommand.GetType());
             if (originalCommand.GetType() != typeof(EXEScopeMethod) && originalCommand.IsDirectlyInCode)
             {
                 if (originalCommand.GetType() == typeof(EXEScopeForEach))
@@ -285,7 +293,7 @@ namespace Visualization.Animation
                     VisitorCommandToString visitor = new VisitorCommandToString();
                     originalCommand.Accept(visitor);
                     string commandCode = visitor.GetCommandString();
-                    Debug.LogFormat("[Karin] AddActivityInDiagram commandCode : {0}", commandCode);
+                    // Debug.LogFormat("[Karin] AddActivityInDiagram commandCode : {0}", commandCode);
                     activityDiagram.AddActivityInDiagram(commandCode, indentationLevelX, indentationLevelY);
                 }
             }
@@ -296,25 +304,25 @@ namespace Visualization.Animation
                 {                    
                     if (command.GetType() == typeof(EXEScopeMethod))
                     {
-                        Debug.Log("[Karin] command.GetType() == typeof(EXEScopeMethod)");
+                        // Debug.Log("[Karin] command.GetType() == typeof(EXEScopeMethod)");
                         animateActivityInDiagram(command, indentationLevelX, indentationLevelY);
                     }
                     else if (command.GetType() == typeof(EXEScopeForEach))
                     {
-                        Debug.Log("[Karin] command.GetType() == typeof(EXEScopeForEach)");
+                        // Debug.Log("[Karin] command.GetType() == typeof(EXEScopeForEach)");
                         animateActivityInDiagram((EXEScopeForEach)command, indentationLevelX, indentationLevelY + 1);
                         indentationLevelY += 2;
                     }
                     else if (command.GetType() == typeof(EXEScopeLoopWhile))
                     {
-                        Debug.Log("[Karin] command.GetType() == typeof(EXEScopeLoopWhile)");
+                        // Debug.Log("[Karin] command.GetType() == typeof(EXEScopeLoopWhile)");
                         animateActivityInDiagram((EXEScopeLoopWhile)command, indentationLevelX, indentationLevelY + 1);
                         indentationLevelX += 1;
                         indentationLevelY += 1;
                     }
                     else if (command.GetType() == typeof(EXEScopeCondition))
                     {
-                        Debug.Log("[Karin] command.GetType() == typeof(EXEScopeCondition)");
+                        // Debug.Log("[Karin] command.GetType() == typeof(EXEScopeCondition)");
                         int newIndent = animateActivityInDiagram((EXEScopeCondition)command, indentationLevelX, ++indentationLevelY);
                         indentationLevelY += newIndent + 1;
                     }
@@ -368,7 +376,7 @@ namespace Visualization.Animation
             int indentElseY = 0;
             foreach (EXECommand ifScope in scopeCondition.Commands)
             {
-                Debug.Log("[Karin] Animate command code: if");
+                // Debug.Log("[Karin] Animate command code: if");
                 indentIf += 1;
                 animateActivityInDiagram(ifScope, indentationLevelX, indentationLevelY + indentIf);
             }
@@ -376,7 +384,7 @@ namespace Visualization.Animation
             {
                 foreach (EXEScopeCondition elifScope in scopeCondition.ElifScopes)
                 {
-                    Debug.Log("[Karin] Animate command code: elif");
+                    // Debug.Log("[Karin] Animate command code: elif");
                     indentElif += 1;
                     animateActivityInDiagram(elifScope, indentationLevelX + 1, indentationLevelY + indentElif);
                 }
@@ -387,7 +395,7 @@ namespace Visualization.Animation
             {
                 foreach (EXECommand elseScope in scopeCondition.ElseScope.Commands)
                 {
-                    Debug.Log("[Karin] Animate command code: elseScope");
+                    // Debug.Log("[Karin] Animate command code: elseScope");
                     indentElseY += 1;
                     animateActivityInDiagram(elseScope, indentationLevelX + 1 + indentElseX, indentationLevelY + indentElseY);
                 }

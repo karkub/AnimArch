@@ -315,12 +315,10 @@ namespace AnimArch.Visualization.Diagrams
 
         public void PrintActivitiesInDiagram()
         {
-            Debug.Log("[Karin] -------- ActivityDiagram::PrintDiagram()");
             foreach (ActivityInDiagram Activity in Activities)
             {
-                Debug.LogFormat("[Karin] {0}, X = {1}, Y = {2}, type = {3}", Activity.ActivityText, Activity.IndentationLevelX, Activity.IndentationLevelY, Activity.ActivityType);
+                Debug.LogFormat("[Karin] {0}, X = {1}, Y = {2}", Activity.ActivityText, Activity.IndentationLevelX, Activity.IndentationLevelY);
             }
-            Debug.Log("[Karin] -------- END ActivityDiagram::PrintDiagram()");
         }
 
     }

@@ -14,7 +14,6 @@ namespace AnimArch.Visualization.Diagrams
         private ActivityDiagramManager()
         {
             ActivityDiagrams = new Stack<ActivityDiagram>();
-            DiagramPool.Instance.ActivityDiagram = new ActivityDiagram();
         }
 
         public static ActivityDiagramManager Instance
@@ -31,16 +30,16 @@ namespace AnimArch.Visualization.Diagrams
 
         public void PrintDiagamsInStack()
         {
-            Debug.Log("[Karin] ~~~~~ ActivityDiagramManager::PrintStack()");
-            Debug.LogFormat("[Karin] ActivityDiagrams.Count {0}", ActivityDiagrams.Count);
+            Debug.LogFormat("[Karin] ~~~~~ Print All Activity Diagrams, count: {0}", ActivityDiagrams.Count);
             int i=0;
             foreach (var activityDiagram in ActivityDiagrams)
             {
-                Debug.LogFormat("[Karin] activityDiagram.PrintDiagram() index = {0}", i);
+                Debug.LogFormat("[Karin]      ---- Print Activities In Diagram {0}", i);
                 activityDiagram.PrintActivitiesInDiagram();
+                Debug.Log("[Karin]      ------------------------");
                 i++;
             }
-            Debug.Log("[Karin] ~~~~~ END ActivityDiagramManager::PrintStack()");
+            Debug.Log("[Karin] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         }
 
     }
