@@ -262,6 +262,29 @@ namespace AnimArch.Visualization.Diagrams
                         relation2.GenerateVisualObject(graph);
                         Relations.Add(relation2);
                     }
+                    else if (from.ActivityType == ActivityType.WhileDecision)
+                    {
+                        ActivityInDiagram toIf = Activities.Find(x => from.IndentationLevelX + 1 == x.IndentationLevelX && from.IndentationLevelY + 1 == x.IndentationLevelY);
+                        ActivityRelation relation1 = new ActivityRelation(from, toIf, "[" + from.LabelText + "]");
+                        relation1.GenerateVisualObject(graph);
+                        Relations.Add(relation1);
+
+                        ActivityInDiagram toElse = Activities.Find(x => from.IndentationLevelX == x.IndentationLevelX && from.IndentationLevelY + 1 == x.IndentationLevelY);
+                        ActivityRelation relation2 = new ActivityRelation(from, toElse, "else");
+                        relation2.GenerateVisualObject(graph);
+                        Relations.Add(relation2);
+                    }
+                    else if (to.ActivityType == ActivityType.WhileDecision)
+                    {
+                        ActivityRelation relation1 = new ActivityRelation(from, to);
+                        relation1.GenerateVisualObject(graph);
+                        Relations.Add(relation1);
+
+                        ActivityInDiagram fromActivity = Activities.FindLast(x => to.IndentationLevelX + 1 == x.IndentationLevelX && to.IndentationLevelY < x.IndentationLevelY);
+                        ActivityRelation relation2 = new ActivityRelation(fromActivity, to);
+                        relation2.GenerateVisualObject(graph);
+                        Relations.Add(relation2);
+                    }
                     else if (to.ActivityType == ActivityType.Merge)
                     {
                         ActivityInDiagram fromIf = Activities.FindLast(x => x.IndentationLevelX == to.IndentationLevelX && x.IndentationLevelY < to.IndentationLevelY);

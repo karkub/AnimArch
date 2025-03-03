@@ -261,8 +261,8 @@ namespace Visualization.Animation
                 {
                     activityDiagram.ResetDiagram();
                     ActivityDiagramManager.Instance.ActivityDiagrams.Pop();
-                    ActivityDiagramManager.Instance.PrintDiagamsInStack();
                 }
+                ActivityDiagramManager.Instance.PrintDiagamsInStack();
             }
             // dalsia vetva ak exe command return a existuje dalsi command 
             // <= Karin - Activity Diagram
@@ -317,7 +317,6 @@ namespace Visualization.Animation
                     {
                         // Debug.Log("[Karin] command.GetType() == typeof(EXEScopeLoopWhile)");
                         animateActivityInDiagram((EXEScopeLoopWhile)command, indentationLevelX, indentationLevelY + 1);
-                        indentationLevelX += 1;
                         indentationLevelY += 1;
                     }
                     else if (command.GetType() == typeof(EXEScopeCondition))
@@ -352,7 +351,8 @@ namespace Visualization.Animation
             whileScope.Condition.Accept(visitor);
             string condition = visitor.GetCommandString();
 
-            activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY, ActivityType.Decision, condition);
+            activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY, ActivityType.WhileDecision, condition);
+            indentationLevelX += 1;
             indentationLevelY += 1;
             int indentWhile = 0;
             foreach (EXECommand command1 in whileScope.Commands)

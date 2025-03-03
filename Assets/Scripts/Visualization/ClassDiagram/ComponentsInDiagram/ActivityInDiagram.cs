@@ -22,6 +22,7 @@ namespace Visualization.ClassDiagram.ComponentsInDiagram
         Final,
         Loop,
         LoopDecision,
+        WhileDecision,
         Decision,
         Merge,
     }
