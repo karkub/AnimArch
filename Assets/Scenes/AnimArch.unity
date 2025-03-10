@@ -10145,6 +10145,8 @@ MonoBehaviour:
     type: 3}
   activityDecisionPrefab: {fileID: 1226358218867430, guid: 13d6f4defb16a594dbbe3a38dc434ac7,
     type: 3}
+  activityMergePrefab: {fileID: 1226358218867430, guid: 344b4f18a8bcded47b35fa99a5cec004,
+    type: 3}
   classAttributePrefab: {fileID: 3261782976684401946, guid: a71e905c2fd88e14fafcf1cf1c3d1655,
     type: 3}
   classMethodPrefab: {fileID: 3261782976684401946, guid: b3cccdbc4704aed4789d6dd9d1944ae7,
@@ -20640,7 +20642,6 @@ MonoBehaviour:
   isPaused: 0
   standardPlayMode: 0
   nextStep: 0
-  isEXECommandReturn: 0
   startClassName: 
   startMethodName: 
   SuperSpeed: 0
