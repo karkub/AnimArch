@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -101,14 +101,17 @@ namespace AnimArch.Visualization.Diagrams
                         case ActivityType.Initial:
                             GenerateInitialActivity(activity);
                             break;
-                        case ActivityType.Classic:
-                            GenerateActivity(activity);
+                        case ActivityType.Merge:
+                            GenerateMergeActivity(activity);
+                            break;
+                        case ActivityType.Decision:
+                            GenerateDecisionActivity(activity);
                             break;
                         case ActivityType.Final:
                             GenerateFinalActivity(activity);
                             break;
                         default:
-                            GenerateDecisionActivity(activity);
+                            GenerateActivity(activity); 
                             break;
                     }
                 }
@@ -188,6 +191,22 @@ namespace AnimArch.Visualization.Diagrams
             return decisionActivityInDiagram;
         }
 
+        public ActivityInDiagram AddMergeActivityInDiagram(int indentationLevelX, int indentationLevelY) 
+        {
+            ActivityInDiagram mergeActivityInDiagram = new ActivityInDiagram
+            {
+                ActivityText = "Merge Node",
+                ActivityType = ActivityType.Merge,
+                IndentationLevelX = indentationLevelX,
+                IndentationLevelY = indentationLevelY,
+                VisualObject = null
+            };
+            Activities.Add(mergeActivityInDiagram);
+            GenerateMergeActivity(mergeActivityInDiagram);
+
+            return mergeActivityInDiagram;
+        }
+
 
         private void GenerateActivity(ActivityInDiagram Activity)
         {
@@ -224,6 +243,15 @@ namespace AnimArch.Visualization.Diagrams
         private void GenerateDecisionActivity(ActivityInDiagram Activity)
         {
             graph.nodePrefab = DiagramPool.Instance.activityDecisionPrefab;
+            var node = graph.AddNode();
+
+            Activity.VisualObject = node;
+            RepositionActivity(Activity);
+        }
+
+        private void GenerateMergeActivity(ActivityInDiagram Activity)
+        {
+            graph.nodePrefab = DiagramPool.Instance.activityMergePrefab;
             var node = graph.AddNode();
 
             Activity.VisualObject = node;
