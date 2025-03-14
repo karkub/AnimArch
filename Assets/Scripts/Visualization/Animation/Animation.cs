@@ -373,15 +373,15 @@ namespace Visualization.Animation
             ActivityInDiagram mergeActivity = activityDiagram.AddMergeActivityInDiagram(indentationLevelX, indentationLevelY);
             ActivityInDiagram decisionActivity = activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY + 1);
             activityDiagram.AddRelation(lastActivity, mergeActivity);
-            activityDiagram.AddRelation(mergeActivity, decisionActivity, "while " + condition);
+            activityDiagram.AddRelation(mergeActivity, decisionActivity);
             lastActivity = decisionActivity;
-            this.activityRelationLabel = "[true]";
+            this.activityRelationLabel = "while " + condition;
             foreach (EXECommand command1 in whileScope.Commands)
             {
                 lastActivity = animateActivityInDiagram(command1, indentationLevelX + 1, lastActivity.IndentationLevelY + 1, lastActivity);
             }
             activityDiagram.AddRelation(lastActivity, mergeActivity);
-            this.activityRelationLabel = "[false]";
+            this.activityRelationLabel = "else";
             return decisionActivity; 
         }
 
@@ -424,14 +424,17 @@ namespace Visualization.Animation
                     lastActivity = animateActivityInDiagram(elseBranch, this.lastDecisionNode.IndentationLevelX + 1, lastActivity.IndentationLevelY + 1, lastActivity);
                 }
             }
-            int maxIndentationY = lastActivity.IndentationLevelY;
+            int indentationY = lastActivity.IndentationLevelY + 1;
             if (this.lastMergeNode != null && lastActivity != this.lastMergeNode)
             {
-                maxIndentationY = Math.Max(maxIndentationY, this.lastMergeNode.IndentationLevelY);
                 activityDiagram.AddRelation(lastActivity, this.lastMergeNode);
                 lastActivity = this.lastMergeNode;
             }
-            ActivityInDiagram mergeNode = activityDiagram.AddMergeActivityInDiagram(indentationLevelX, maxIndentationY + 1);
+            if (lastActivity.ActivityType == ActivityType.Merge)
+            {
+                indentationY = lastActivity.IndentationLevelY;
+            }
+            ActivityInDiagram mergeNode = activityDiagram.AddMergeActivityInDiagram(indentationLevelX, indentationY);
             this.lastMergeNode = mergeNode;
             activityDiagram.AddRelation(lastActivityIf, mergeNode);
             if (lastActivity != lastActivityIf && lastActivity != mergeNode)
