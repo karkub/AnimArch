@@ -9,7 +9,6 @@ namespace Visualization.ClassDiagram.ComponentsInDiagram
         public ActivityType ActivityType;
         public int IndentationLevelX = 0;
         public int IndentationLevelY = 0;
-        public string LabelText = "";
         public GameObject VisualObject;
 
         public ActivityInDiagram() { }
@@ -20,9 +19,6 @@ namespace Visualization.ClassDiagram.ComponentsInDiagram
         Initial,
         Classic,
         Final,
-        Loop,
-        LoopDecision,
-        WhileDecision,
         Decision,
         Merge,
     }
