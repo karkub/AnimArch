@@ -209,6 +209,7 @@ namespace Visualization.Animation
 
             AnimationIsRunning = true;
 
+            EXEScopeMethod.CommandIDSeed = 1;
             ParseAnimationMethods();
 
             CDMethod startMethod = FindInitialMethod();
@@ -234,6 +235,10 @@ namespace Visualization.Animation
 
         public IEnumerator AnimateCommand(EXECommand CurrentCommand, AnimationThread AnimationThread, bool Animate = true, bool AnimateNewObjects = true)
         {
+            //VisitorCommandToString v = new VisitorCommandToString();
+            //CurrentCommand.Accept(v);
+            //Debug.Log($"[LR] CommandID: {CurrentCommand.CommandID}, {CurrentCommand.GetType().Name}, {v.GetCommandString()}");
+
             AnimationRequest request = AnimationRequestFactory.Create(CurrentCommand, AnimationThread, Animate, AnimateNewObjects);
             highlightScheduler.Enqueue(request);
             yield return new WaitUntil(() => request.IsDone());

@@ -6,6 +6,8 @@ namespace OALProgramControl
 {
     public class EXEScopeMethod : EXEScope
     {
+        public static long CommandIDSeed { get; set; } = 1;
+
         public CDMethod MethodDefinition;
         public IReturnCollector MethodCallOrigin;
         public EXEValueBase OwningObject;
@@ -18,6 +20,8 @@ namespace OALProgramControl
             this.MethodDefinition = methodDefinition;
             this.MethodCallOrigin = null;
             this.OwningObject = null;
+
+            this.SetCommandID();
         }
         public override bool SubmitReturn(EXEValueBase returnedValue, OALProgram programInstance)
         {
@@ -38,7 +42,10 @@ namespace OALProgramControl
         }
         protected override EXEExecutionResult Execute(OALProgram OALProgram)
         {
-            AddCommandsToStack(new List<EXECommand>() { new EXECommandReturn(null)});
+            EXECommand returnCommand = new EXECommandReturn(null);
+            returnCommand.SetCommandID();
+
+            AddCommandsToStack(new List<EXECommand>() { returnCommand });
             AddCommandsToStack(this.Commands);
             return Success();
         }
@@ -48,6 +55,11 @@ namespace OALProgramControl
             v.VisitExeScopeMethod(this);
         }
 
+        public override void AddCommand(EXECommand Command)
+        {
+            base.AddCommand(Command);
+            Command.SetCommandID();
+        }
         protected override EXEScope CreateDuplicateScope()
         {
             return new EXEScopeMethod(this.MethodDefinition);
