@@ -142,5 +142,25 @@ namespace OALProgramControl
 
             return executionResult.IsSuccess;
         }
+
+        public override bool Equals(object obj)
+        {
+            // Debug.Log("[Karin] EXECommand.Equals");
+            if (obj == null || this.GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            EXECommand other = (EXECommand)obj;
+            return IsActive == other.IsActive &&
+                   IsDirectlyInCode == other.IsDirectlyInCode &&
+                   EqualityComparer<EXEScopeBase>.Default.Equals(SuperScope, other.SuperScope) &&
+                   EqualityComparer<EXEExecutionStack>.Default.Equals(CommandStack, other.CommandStack);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(IsActive, IsDirectlyInCode, SuperScope, CommandStack);
+        }
     }
 }

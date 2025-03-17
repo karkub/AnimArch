@@ -9,6 +9,7 @@ namespace Visualization.ClassDiagram.ComponentsInDiagram
         public ActivityType ActivityType;
         public int IndentationLevelX = 0;
         public int IndentationLevelY = 0;
+        public EXECommand Command = null;
         public GameObject VisualObject;
 
         public ActivityInDiagram() { }
