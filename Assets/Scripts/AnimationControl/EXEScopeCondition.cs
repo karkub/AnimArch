@@ -108,5 +108,19 @@ namespace OALProgramControl
                 ElseScope == null ? null : (EXEScope)ElseScope.CreateClone()
             );
         }
+
+        public override void SetCommandID()
+        {
+            base.SetCommandID();
+            foreach (EXECommand command in ElifScopes)
+            {
+                command.SetCommandID();
+            }
+            
+            if (ElseScope != null)
+            {
+                ElseScope.SetCommandID();
+            }
+        }
     }
 }
