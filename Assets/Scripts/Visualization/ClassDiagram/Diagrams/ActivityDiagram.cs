@@ -73,9 +73,8 @@ namespace AnimArch.Visualization.Diagrams
 
         public void SaveDiagram()
         {
-            // Debug.Log("[Karin] ActivityDiagram::SaveDiagram() PUSH");
             ActivityDiagramManager.Instance.ActivityDiagrams.Push(this);
-            // ActivityDiagramManager.Instance.PrintDiagamsInStack(); //TODOa
+            ActivityDiagramManager.Instance.PrintDiagamsInStack();
         }
 
         public Graph CreateGraph()
@@ -138,7 +137,7 @@ namespace AnimArch.Visualization.Diagrams
             return activityInDiagram;
         }
 
-        public ActivityInDiagram AddInitialActivityInDiagram()
+        public ActivityInDiagram AddInitialActivityInDiagram(EXECommand command)
         {
             ActivityInDiagram initialActivityInDiagram = new ActivityInDiagram
             {
@@ -146,6 +145,7 @@ namespace AnimArch.Visualization.Diagrams
                 ActivityType = ActivityType.Initial,
                 IndentationLevelX = 0,
                 IndentationLevelY = 0,
+                Command = command,
                 VisualObject = null,
             };
             Activities.Add(initialActivityInDiagram);
@@ -170,7 +170,7 @@ namespace AnimArch.Visualization.Diagrams
             return finalActivityInDiagram;
         }
 
-        public ActivityInDiagram AddDecisionActivityInDiagram(int indentationLevelX, int indentationLevelY) 
+        public ActivityInDiagram AddDecisionActivityInDiagram(int indentationLevelX, int indentationLevelY, EXECommand command) 
         {
             ActivityInDiagram decisionActivityInDiagram = new ActivityInDiagram
             {
@@ -178,6 +178,7 @@ namespace AnimArch.Visualization.Diagrams
                 ActivityType = ActivityType.Decision,
                 IndentationLevelX = indentationLevelX,
                 IndentationLevelY = indentationLevelY,
+                Command = command,
                 VisualObject = null
             };
             Activities.Add(decisionActivityInDiagram);
@@ -186,7 +187,7 @@ namespace AnimArch.Visualization.Diagrams
             return decisionActivityInDiagram;
         }
 
-        public ActivityInDiagram AddMergeActivityInDiagram(int indentationLevelX, int indentationLevelY) 
+        public ActivityInDiagram AddMergeActivityInDiagram(int indentationLevelX, int indentationLevelY, EXECommand command) 
         {
             ActivityInDiagram mergeActivityInDiagram = new ActivityInDiagram
             {
@@ -194,6 +195,7 @@ namespace AnimArch.Visualization.Diagrams
                 ActivityType = ActivityType.Merge,
                 IndentationLevelX = indentationLevelX,
                 IndentationLevelY = indentationLevelY,
+                Command = command,
                 VisualObject = null
             };
             Activities.Add(mergeActivityInDiagram);
@@ -263,36 +265,21 @@ namespace AnimArch.Visualization.Diagrams
 
         public void AddRelation(ActivityInDiagram from, ActivityInDiagram to, string labelText="")
         {
-            // Debug.LogFormat("[Karin] AddRelation from {0} to {1}; from[{2}, {3}], to[{4}, {5}]", from.ActivityText, to.ActivityText, from.IndentationLevelX, from.IndentationLevelY, to.IndentationLevelX, to.IndentationLevelY);
+            Debug.LogFormat("[Karin] AddRelation from {0} to {1}; from[{2}, {3}], to[{4}, {5}]", from.ActivityText, to.ActivityText, from.IndentationLevelX, from.IndentationLevelY, to.IndentationLevelX, to.IndentationLevelY);
             ActivityRelation relation = new ActivityRelation(from, to, labelText);
             relation.GenerateVisualObject(graph);
             Relations.Add(relation);
         }
 
-        public ActivityInDiagram GetActivityInDiagram(EXECommand command)
+        public List<ActivityInDiagram> GetActivitiesInDiagram(EXECommand command)
         {
-            Debug.LogFormat("[Karin] GetActivityInDiagram for command: {0}", command.GetType());
-            foreach (ActivityInDiagram activity in Activities)
-            {
-                Debug.LogFormat("******************** [Karin] Activity: {0}, Command: {1} *****************************", activity.ActivityText, activity.Command);
-            }
-
-            List<ActivityInDiagram> activities = Activities.FindAll(activity => command.Equals(activity.Command));
-            //List<ActivityInDiagram> activities = Activities.FindAll(activity => command == activity.Command);
-            if (activities.Count > 1)
-            {
-                Debug.LogErrorFormat("[Karin] More than one activity found for command {0}", command);
-                foreach (ActivityInDiagram activity in activities)
-                {
-                    Debug.LogErrorFormat("[Karin] Activity: {0}", activity.ActivityText);
-                }
-            }
-            return activities.Count > 0 ? activities[0] : null;
+            List<ActivityInDiagram> activities = Activities.FindAll(activity => command.CommandID.Equals(activity.Command?.CommandID));
+            return activities;
         }
 
         public List<ActivityRelation> GetActivityRelations(EXECommand command)
         {
-            List<ActivityRelation> relations = Relations.FindAll(relation => command == relation.From.Command);
+            List<ActivityRelation> relations = Relations.FindAll(relation => command.CommandID.Equals(relation.To.Command?.CommandID));
             return relations;
         }
 
@@ -300,7 +287,7 @@ namespace AnimArch.Visualization.Diagrams
         {
             foreach (ActivityInDiagram Activity in Activities)
             {
-                Debug.LogFormat("[Karin] {0}, X = {1}, Y = {2}, Command = {3}", Activity.ActivityText, Activity.IndentationLevelX, Activity.IndentationLevelY, Activity.Command);
+                Debug.LogFormat("[Karin] {0}, X = {1}, Y = {2}, Command = {3}, CommandId = {4}, SuperScope = {5}", Activity.ActivityText, Activity.IndentationLevelX, Activity.IndentationLevelY, Activity.Command, Activity.Command?.CommandID, Activity.Command?.SuperScope);
             }
         }
 

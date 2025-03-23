@@ -20,14 +20,24 @@ namespace UMSAGL.Scripts
 			GetComponentInChildren<Outline>().enabled = true;
 		}
 
+		public void HighlightBackground(Color color)
+		{
+			highlightBackground(color);
+		}
+
 		public void HighlightBackground()
+		{
+			highlightBackground(Animation.Instance.classColor);
+		}
+
+		private void highlightBackground(Color color)
 		{
 			// if (highlight == 0)
 			// {
-				RectTransform rc = GetComponent<RectTransform>();
-				rc.DOScaleX(1.08f, 0.5f);
-				rc.DOScaleY(1.08f, 0.5f);
-				GetComponentInChildren<Image>().color = Animation.Instance.classColor;
+			RectTransform rc = GetComponent<RectTransform>();
+			rc.DOScaleX(1.08f, 0.5f);
+			rc.DOScaleY(1.08f, 0.5f);
+			GetComponentInChildren<Image>().color = color;
 			//}
 			// highlight++;
 		}
@@ -37,7 +47,17 @@ namespace UMSAGL.Scripts
 			GetComponentInChildren<Outline>().enabled = false;
 		}
 
+		public void UnhighlightBackground(Color color)
+		{
+			unhighlightBackground(color);
+		}
+
 		public void UnhighlightBackground()
+		{
+			unhighlightBackground(defaultColor);
+		}
+
+		private void unhighlightBackground(Color color)
 		{
 			// if (highlight>0)
 			// 	highlight--;
@@ -46,7 +66,7 @@ namespace UMSAGL.Scripts
 				RectTransform rc = GetComponent<RectTransform>();
 				rc.DOScaleX(1f, 0.5f);
 				rc.DOScaleY(1f, 0.5f);
-				GetComponentInChildren<Image>().color = defaultColor;
+				GetComponentInChildren<Image>().color = color;
 			// }
 		}
 

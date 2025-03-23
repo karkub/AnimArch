@@ -146,7 +146,7 @@ namespace OALProgramControl
             return executionResult.IsSuccess;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object obj) //TODOa asi netreba
         {
             // Debug.Log("[Karin] EXECommand.Equals");
             if (obj == null || this.GetType() != obj.GetType())
