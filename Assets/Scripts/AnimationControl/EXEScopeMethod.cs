@@ -20,10 +20,7 @@ namespace OALProgramControl
             return method;
         }
 
-        protected EXEScopeMethod() : this(null)
-        {
-            this.SetCommandID();
-        }
+        protected EXEScopeMethod() : this(null) { }
         protected EXEScopeMethod(CDMethod methodDefinition) : base()
         {
             this.MethodDefinition = methodDefinition;
@@ -65,7 +62,10 @@ namespace OALProgramControl
         public override void AddCommand(EXECommand Command)
         {
             base.AddCommand(Command);
-            Command.SetCommandID();
+            if (Command.CommandID <= 0)
+            {
+                Command.SetCommandID();
+            }
         }
         protected override EXEScope CreateDuplicateScope()
         {

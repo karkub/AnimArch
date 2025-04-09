@@ -169,7 +169,9 @@ namespace OALProgramControl
         public virtual void SetCommandID()
         {
             CommandID = EXEScopeMethod.CommandIDSeed++;
-            Debug.Log($"[Karin] SetCommandID: {this.GetType()}; CommandID - {CommandID}");
+            VisitorCommandToString v = new VisitorCommandToString();
+            this.Accept(v);
+            Debug.Log($"[Karin] SetCommandID: {this.GetType()}; CommandID - {CommandID}; Code: {v.GetCommandString()}");     
         }
 
         public virtual EXECommand FindByCommandID(long CommandID)
