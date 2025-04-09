@@ -25,7 +25,7 @@ namespace OALProgramControl
             {
                 if (_ExecutableCode == null)
                 {
-                    _ExecutableCode = new EXEScopeMethod(this);
+                    _ExecutableCode = EXEScopeMethod.Create(this);
                 }
 
                 return (EXEScopeMethod)_ExecutableCode.CreateClone();

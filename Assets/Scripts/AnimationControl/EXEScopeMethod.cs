@@ -12,16 +12,23 @@ namespace OALProgramControl
         public IReturnCollector MethodCallOrigin;
         public EXEValueBase OwningObject;
 
-        public EXEScopeMethod() : this(null)
+        public static EXEScopeMethod Create() => Create(null);
+        public static EXEScopeMethod Create(CDMethod methodDefinition = null)
         {
+            EXEScopeMethod method = new EXEScopeMethod(methodDefinition);
+            method.SetCommandID();
+            return method;
         }
-        public EXEScopeMethod(CDMethod methodDefinition) : base()
+
+        protected EXEScopeMethod() : this(null)
+        {
+            this.SetCommandID();
+        }
+        protected EXEScopeMethod(CDMethod methodDefinition) : base()
         {
             this.MethodDefinition = methodDefinition;
             this.MethodCallOrigin = null;
             this.OwningObject = null;
-
-            this.SetCommandID();
         }
         public override bool SubmitReturn(EXEValueBase returnedValue, OALProgram programInstance)
         {

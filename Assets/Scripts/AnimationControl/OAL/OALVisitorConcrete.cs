@@ -928,7 +928,7 @@ namespace AnimationControl.OAL
         // A series of commands
         public override object VisitLines([NotNull] OALParser.LinesContext context)
         {
-            EXEScopeMethod methodScope = new EXEScopeMethod();
+            EXEScopeMethod methodScope = EXEScopeMethod.Create();
 
             object parsedChild = null;
 
