@@ -47,6 +47,7 @@ namespace Visualization.Animation
         private ActivityInDiagram lastMergeNode;
         private ActivityInDiagram finalActivity;
         private String activityRelationLabel = "";
+        private ActivityInDiagram lastHighlightedActivity = null;
         private EXECommand lastCommand;
 
         public string startClassName;
@@ -240,16 +241,28 @@ namespace Visualization.Animation
             //VisitorCommandToString v = new VisitorCommandToString();
             //CurrentCommand.Accept(v);
             //Debug.Log($"[LR] CommandID: {CurrentCommand.CommandID}, {CurrentCommand.GetType().Name}, {v.GetCommandString()}");
+            
+            // Karin - Activity Diagram =>
+            VisitorCommandToString visitor = new VisitorCommandToString();
+            CurrentCommand.Accept(visitor);
+            string commandCode = visitor.GetCommandString();
+            Debug.LogErrorFormat("[Karin] ZACIATOK commandCode: {0}, type: {1}, id: {2}, superScope: {3}, superScopeID: {4}, ", commandCode, CurrentCommand.GetType(), CurrentCommand.CommandID, CurrentCommand.SuperScope.GetType(), CurrentCommand.SuperScope.CommandID);
+
+            // Debug.Log("[Karin] FindByCommandID");
+            EXECommand CurrentCommandCopy = CurrentCommand.GetCurrentMethodScope().MethodDefinition.ExecutableCode.FindByCommandID(CurrentCommand.CommandID); // TODOa nefunguje
+            if (CurrentCommandCopy == null)
+            {
+                Debug.LogError($"[Karin] BBB Command with ID {CurrentCommand.CommandID} - command code {commandCode} not found in the current method scope.");
+            }
+            else 
+            {
+                CurrentCommand = CurrentCommandCopy;
+            }
 
             AnimationRequest request = AnimationRequestFactory.Create(CurrentCommand, AnimationThread, Animate, AnimateNewObjects);
             highlightScheduler.Enqueue(request);
             yield return new WaitUntil(() => request.IsDone());
 
-            // Karin - Activity Diagram =>
-            VisitorCommandToString visitor = new VisitorCommandToString();
-            CurrentCommand.Accept(visitor);
-            string commandCode = visitor.GetCommandString();
-            Debug.LogErrorFormat("[Karin] ZACIATOK commandCode: {0}, type: {1}, id: {2}", commandCode, CurrentCommand.GetType(), CurrentCommand.CommandID);
             if (CurrentCommand.GetType() == typeof(EXEScopeMethod))
             {
                 if (ActivityDiagramManager.Instance.ActivityDiagrams.Count() > 0)
@@ -281,38 +294,71 @@ namespace Visualization.Animation
                 if (CurrentCommand.GetType() == typeof(EXEScopeForEach) || CurrentCommand.GetType() == typeof(EXEScopeLoopWhile))
                 {
                     Debug.LogFormat("[Karin] EXEScopeForEach || EXEScopeLoopWhile");
-                    unhighlightActivitiesForCommand(CurrentCommand);
-                    // unhiglightRelations(CurrentCommand); //TODOa asi spravit unhighlight all relations
+                    unhighlightActivity(CurrentCommand);
+                    unhighlightRelation(CurrentCommand);
                 }
-                if (lastCommand != null && lastCommand.GetType() == typeof(EXEScopeCondition) && CurrentCommand.SuperScope != lastCommand.SuperScope)
-                {
-                    Debug.LogFormat($"[Karin] predosly bol EXEScopeCondition a ine SuperScope, current scope= {CurrentCommand.SuperScope}, last scope= {lastCommand.SuperScope}");
-                    if (((EXEScopeCondition)lastCommand).ElifScopes.Count > 0 && ((EXEScopeCondition)lastCommand).ElifScopes.Contains(CurrentCommand) || ((EXEScopeCondition)lastCommand).ElseScope.Commands.Contains(CurrentCommand))
-                    {
-                        Debug.LogFormat("[Karin] ElifScopes contains current command");
-                        foreach (EXECommand elifCommand in ((EXEScopeCondition)lastCommand).ElifScopes)
-                        {
-                            List<ActivityInDiagram> elifActivities = activityDiagram.GetActivitiesInDiagram(elifCommand);
-                            if (elifActivities == null || elifActivities.Count == 0)
-                            {
-                                continue;
-                            }
-                            Debug.LogFormat("[Karin] highlight elif decision");
-                            ActivityInDiagram activity = elifActivities.Find(a => a.ActivityType == ActivityType.Decision);
-                            highlightActivity(activity);
-                        }   
-                    }
 
-                    List<ActivityInDiagram> activities = activityDiagram.GetActivitiesInDiagram(lastCommand);
+                // if (CurrentCommand.SuperScope.GetType() == typeof(EXEScopeCondition))
+                // {
+                //     ActivityDiagramManager.Instance.PrintDiagamsInStack();
+                //     Debug.LogFormat("[Karin] SuperScope je EXEScopeCondition");
+                //     Debug.LogFormat("[Karin] currentId: {0}, currentType: {1}, superScopeId: {2}, superScopeType: {3}", CurrentCommand.CommandID, CurrentCommand.GetType(), CurrentCommand.SuperScope.CommandID, CurrentCommand.SuperScope.GetType());
+                //     // highlightActivity(CurrentCommand.SuperScope);
+                // }
+
+
+                // if (lastCommand != null && lastCommand.GetType() == typeof(EXEScopeCondition) && CurrentCommand.SuperScope != lastCommand.SuperScope)
+                // {
+                //     Debug.Log("[Karin] highligh decision? idk");
+                //     Debug.LogFormat($"[Karin] predosly bol EXEScopeCondition a ine SuperScope, current scope= {CurrentCommand.SuperScope}, last scope= {lastCommand.SuperScope}");
+                //     if (((EXEScopeCondition)lastCommand).ElifScopes.Count > 0 && ((EXEScopeCondition)lastCommand).ElifScopes.Contains(CurrentCommand) || ((EXEScopeCondition)lastCommand).ElseScope.Commands.Contains(CurrentCommand))
+                //     {
+                //         Debug.LogFormat("[Karin] ElifScopes contains current command");
+                //         foreach (EXECommand elifCommand in ((EXEScopeCondition)lastCommand).ElifScopes)
+                //         {
+                //             List<ActivityInDiagram> elifActivities = activityDiagram.GetActivitiesInDiagram(elifCommand);
+                //             if (elifActivities == null || elifActivities.Count == 0)
+                //             {
+                //                 continue;
+                //             }
+                //             Debug.LogFormat("[Karin] highlight elif decision");
+                //             ActivityInDiagram activity = elifActivities.Find(a => a.ActivityType == ActivityType.Decision);
+                //             highlightActivity(activity);
+                //         }   
+                //     }
+                // }
+
+
+                if (lastCommand != null && lastCommand.SuperScope.GetType() == typeof(EXEScopeCondition) && CurrentCommand.SuperScope != lastCommand.SuperScope)
+                {
+                    List<ActivityInDiagram> activities = activityDiagram.GetActivitiesInDiagram(lastCommand.SuperScope);
                     Debug.LogFormat("[Karin] highlight posledneho mergu");
                     if (activities != null && activities.Count > 0)
                     {
                         ActivityInDiagram activity = activities.Find(a => a.ActivityType == ActivityType.Merge);
+                        if (lastHighlightedActivity != null)
+                        {
+                            highlightRelation(lastHighlightedActivity, activity);
+                        }
                         highlightActivity(activity);
                     }
-
                 }
-                highlightActivitiesForCommand(CurrentCommand);
+
+                highlightActivity(CurrentCommand); // highligh current command 
+                if (CurrentCommand.SuperScope.GetType() == typeof(EXEScopeForEach) && CurrentCommand.CommandID.Equals(((EXEScopeForEach)CurrentCommand.SuperScope).Commands.Last().CommandID))
+                {
+                    ActivityInDiagram mergeNode = activityDiagram.GetActivitiesInDiagram(CurrentCommand.SuperScope).Find(a => a.ActivityType == ActivityType.Merge);
+                    if (lastHighlightedActivity != null)
+                    {
+                        highlightRelation(lastHighlightedActivity, mergeNode);
+                    }
+                }
+
+                // highlightActivitiesForCommand(CurrentCommand);
+                // if (lastHighlightedActivity != null)
+                // {
+                //     highlightRelation(lastHighlightedActivity, CurrentCommand);
+                // }                
                 // highlightRelations(CurrentCommand);
             }
 
@@ -329,9 +375,10 @@ namespace Visualization.Animation
             originalCommand.Accept(v);
             string cc = v.GetCommandString();
             Debug.LogErrorFormat("[Karin] originalCommand type: {0}, command text: {1}", originalCommand.GetType(), cc);
+        
             if (originalCommand.GetType() != typeof(EXEScopeMethod) && originalCommand.IsDirectlyInCode)
             {
-                // Debug.Log("[Karin] branch 1");
+                Debug.Log("[Karin] branch 1");
                 if (originalCommand.GetType() == typeof(EXEScopeForEach))
                 {
                     // Debug.Log("[Karin] EXEScopeForEach branch 1");
@@ -347,7 +394,7 @@ namespace Visualization.Animation
                     // Debug.Log("[Karin] EXEScopeLoopWhile branch 1");
                     lastActivity = animateActivityInDiagram((EXEScopeLoopWhile)originalCommand, indentationLevelX, indentationLevelY, lastActivity);
                 }
-                else
+                else //TODOa
                 {
                     // Debug.Log("[Karin] else branch 1"); 
                     VisitorCommandToString visitor = new VisitorCommandToString();
@@ -367,6 +414,7 @@ namespace Visualization.Animation
                 {
                     lastDecisionNode = null;
                     lastMergeNode = null;
+
                     if (command.GetType() == typeof(EXEScopeMethod))
                     {
                         // Debug.Log("[Karin] EXEScopeMethod branch 2");
@@ -387,7 +435,8 @@ namespace Visualization.Animation
                         // Debug.Log("[Karin] EXEScopeCondition branch 2");
                         lastActivity = animateActivityInDiagram((EXEScopeCondition)command, indentationLevelX, lastActivity.IndentationLevelY + 1, lastActivity);
                     }
-                    else {
+                    else //TODOa
+                    {
                         // Debug.Log("[Karin] else branch 2");
                         lastActivity = animateActivityInDiagram(command, indentationLevelX, lastActivity.IndentationLevelY + 1, lastActivity);
                     }
@@ -439,12 +488,12 @@ namespace Visualization.Animation
 
         private ActivityInDiagram animateActivityInDiagram(EXEScopeCondition conditionCommand, int indentationLevelX, int indentationLevelY, ActivityInDiagram lastActivity)
         {
-            Debug.LogError("[Karin] Animate command code: condition");
+            // Debug.LogError("[Karin] Animate command code: condition");
 
             VisitorCommandToString v = new VisitorCommandToString();
             conditionCommand.Accept(v);
             string cc = v.GetCommandString();
-            Debug.LogErrorFormat("[Karin] originalCommand type: {0}, command text: {1}", conditionCommand.GetType(), cc);
+            // Debug.LogErrorFormat("[Karin] originalCommand type: {0}, command text: {1}", conditionCommand.GetType(), cc);
 
             ActivityInDiagram decisionNode = activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY, conditionCommand);
             activityDiagram.AddRelation(lastActivity, decisionNode, this.activityRelationLabel);
@@ -459,7 +508,7 @@ namespace Visualization.Animation
 
             foreach (EXECommand ifBranch in conditionCommand.Commands)
             {
-                Debug.Log("[Karin] Animate command code: if");
+                // Debug.Log("[Karin] Animate command code: if");
                 lastActivity = animateActivityInDiagram(ifBranch, indentationLevelX, lastActivity.IndentationLevelY + 1, lastActivity);
             }
             ActivityInDiagram lastActivityIf = lastActivity;
@@ -469,7 +518,7 @@ namespace Visualization.Animation
                 foreach (EXEScopeCondition elifBranch in conditionCommand.ElifScopes)
                 {
                     this.activityRelationLabel = "else";
-                    Debug.Log($"[Karin] {cc} Animate command code: elif");
+                    // Debug.Log($"[Karin] {cc} Animate command code: elif");
                     lastActivity = animateActivityInDiagram(elifBranch, ++indentationLevelX, this.lastDecisionNode.IndentationLevelY + 1, this.lastDecisionNode);
                     elifMergeNodes.Add(lastActivity);
                 }
@@ -480,37 +529,38 @@ namespace Visualization.Animation
                 lastActivity = this.lastDecisionNode;
                 foreach (EXECommand elseBranch in conditionCommand.ElseScope.Commands)
                 {
-                    Debug.Log("[Karin] Animate command code: elseScope");
+                    // Debug.Log("[Karin] Animate command code: elseScope");
                     lastActivity = animateActivityInDiagram(elseBranch, this.lastDecisionNode.IndentationLevelX + 1, lastActivity.IndentationLevelY + 1, lastActivity);
                 }
                 lastActivityElse = lastActivity;
             }    
-            ActivityInDiagram mergeNode = activityDiagram.AddMergeActivityInDiagram(decisionNode.IndentationLevelX, lastActivity.IndentationLevelY + 1, conditionCommand);
+            int maxIndentationY = Math.Max(elifMergeNodes.Count > 0 ? elifMergeNodes.Max(x => x.IndentationLevelY) : 0, lastActivity.IndentationLevelY);
+            ActivityInDiagram mergeNode = activityDiagram.AddMergeActivityInDiagram(decisionNode.IndentationLevelX, maxIndentationY + 1, conditionCommand);
             if (lastActivityElse != null && lastActivityElse != this.lastMergeNode)
             {
                 if (this.lastMergeNode != null)
                 {
-                    Debug.Log("[Karin] Add relation from last activity in else branch to main merge node");
+                    // Debug.Log("[Karin] Add relation from last activity in else branch to main merge node");
                     activityDiagram.AddRelation(lastActivityElse, this.lastMergeNode); // add relation from last activity in else branch to main merge node
                 }
                 else 
                 {
-                    Debug.Log("[Karin] Add relation from last activity in else branch to main merge node");
+                    // Debug.Log("[Karin] Add relation from last activity in else branch to main merge node");
                     activityDiagram.AddRelation(lastActivityElse, mergeNode); // add relation from last activity in else branch to merge node
                 }
             }
             this.lastMergeNode = mergeNode;
             if (lastActivity.ActivityType == ActivityType.Merge)
             {
-                Debug.Log("[Karin] Add relation from previous merge node to merge node");
+                // Debug.Log("[Karin] Add relation from previous merge node to merge node");
                 activityDiagram.AddRelation(lastActivity, this.lastMergeNode); // add relation from previous merge node to merge node
             }
-            Debug.Log("[Karin] Add relation from last activity in else branch to main merge node");
+            // Debug.Log("[Karin] Add relation from last activity in else branch to main merge node");
             activityDiagram.AddRelation(lastActivityIf, this.lastMergeNode); // add relation from last activity in if branch to merge node
             
             if (lastActivityElse != null)
             {
-                Debug.Log("[Karin] Add relation from last activity in else branch to main merge node");
+                // Debug.Log("[Karin] Add relation from last activity in else branch to main merge node");
                 foreach (ActivityInDiagram elifMergeNode in elifMergeNodes) // add relations from merge nodes in elif branches to main merge node
                 {
                     activityDiagram.AddRelation(elifMergeNode, this.lastMergeNode);
@@ -520,27 +570,41 @@ namespace Visualization.Animation
             return mergeNode;
         }
 
-        private void highlightActivitiesForCommand(EXECommand command)
+        private void highlightActivity(EXECommand command)
         {
-            Debug.LogFormat("[Karin] som v metode highlightActivityForCommand; command type = {0}, id = {1} ", command.GetType(), command.CommandID);
+            // Debug.LogFormat("[Karin] som v metode highlightActivityForCommand; command type = {0}, id = {1} ", command.GetType(), command.CommandID);
             List<ActivityInDiagram> activities = activityDiagram.GetActivitiesInDiagram(command);
+    
             if (activities == null || activities.Count == 0)
             {
                 Debug.LogError("[Karin] No activities found to highlight.");
                 return;
             }
-
-            if (command.GetType() == typeof(EXEScopeCondition))
+            foreach (ActivityInDiagram activity in activities)
             {
-                highlightActivity(activities[0]);
+                // Debug.LogFormat("[Karin] najdena aktivita; activity type = {0}, text = {1} ", activity.ActivityType, activity.ActivityText);
             }
-            else
+            if (command.GetType() == typeof(EXEScopeForEach) || command.GetType() == typeof(EXEScopeLoopWhile)) // highlight decision aj merge v loopoch
             {
-                foreach (ActivityInDiagram activity in activities)
+                ActivityInDiagram mergeActivity = activities.Find(a => a.ActivityType == ActivityType.Merge);
+                ActivityInDiagram decisionActivity = activities.Find(a => a.ActivityType == ActivityType.Decision);
+                if (lastHighlightedActivity != null)
                 {
-                    // Debug.LogFormat("[Karin] Nasla sa activity pre command: {0}, A.Text: {1}, A.Type: {2}, A.CommandId: {3}", command.GetType(), activity.ActivityText, activity.ActivityType, activity.Command.CommandID);
-                    highlightActivity(activity);
+                    highlightRelation(lastHighlightedActivity, mergeActivity);
                 }
+                highlightActivity(mergeActivity);
+                highlightRelation(mergeActivity, decisionActivity);
+                highlightActivity(decisionActivity);
+            }
+            else // highlight decision v ife / initial / final / classic 
+            {
+                // Debug.Log("[Karin] highlight decision v ife / initial / final / classic ");
+
+                if (lastHighlightedActivity != null)
+                {
+                    highlightRelation(lastHighlightedActivity, activities[0]);
+                }
+                highlightActivity(activities[0]);
             }
         }
 
@@ -549,65 +613,39 @@ namespace Visualization.Animation
             GameObject activityGo = activity.VisualObject;
             if (activity.ActivityType == ActivityType.Classic)
             {
-                Debug.Log("[Karin] Highlight activity classic");
+                // Debug.Log("[Karin] Highlight activity classic");
                 activityGo.GetComponent<BackgroundHighlighter>().HighlightBackground();
             }
             else
             {
-                Debug.Log("[Karin] Highlight activity decision / merge / initial / final");
+                // Debug.Log("[Karin] Highlight activity decision / merge / initial / final");
                 activityGo.GetComponent<BackgroundHighlighter>().HighlightBackground(relationColor);
             }
             activity.IsHighlighted = true;
+            lastHighlightedActivity = activity;
         }
 
-        // private void unhighlightActivities(EXECommand command)
-        // {
-        //     Debug.Log("[Karin] Unhighlight activity");
-        //     List<ActivityInDiagram> activities = activityDiagram.GetActivitiesInDiagram(command);
-        //     if (activities == null || activities.Count == 0)
-        //     {
-        //         Debug.LogError("[Karin] No activities found to unhighlight.");
-        //         return;
-        //     }
-        //     foreach (ActivityInDiagram activity in activities)
-        //     {
-        //         if (activity.IsHighlighted)
-        //         {
-        //             GameObject activityGo = activity.VisualObject;
-        //             if (activity.ActivityType == ActivityType.Classic)
-        //             {
-        //                 Debug.Log("[Karin] Unhighlight activity: " + activity.ActivityText);
-        //                 activityGo.GetComponent<BackgroundHighlighter>().UnhighlightBackground();
-        //             }
-        //             else
-        //             {
-        //                 Debug.Log("[Karin] Unhighlight activity decision / merge / initial / final");
-        //                 activityGo.GetComponent<BackgroundHighlighter>().UnhighlightBackground(Color.black);
-        //             }
-        //             activity.IsHighlighted = false;
-        //         }
-        //     }
-        // }
-
-        private void unhighlightActivitiesForCommand(EXECommand command)
+        private void unhighlightActivity(EXECommand command)
         {
-            Debug.Log("[Karin] unhighlight all activities for command: " + command);
+            // Debug.Log("[Karin] unhighlight all activities for command: " + command);
             if (command is EXEScope scope) 
             {
+                // Debug.Log("[Karin] unhighlight , is EXEScope");
                 if (command is EXEScopeCondition condition)
                 {
+                    // Debug.Log("[Karin] unhighlight , is EXEScopeCondition");
                     foreach (EXECommand subCommand in condition.ElifScopes)
                     {
-                        unhighlightActivitiesForCommand(subCommand);
+                        unhighlightActivity(subCommand);
                     }
                     if (condition.ElseScope != null)
                     {
-                        unhighlightActivitiesForCommand(condition.ElseScope);
+                        unhighlightActivity(condition.ElseScope);
                     }
                 }
                 foreach (EXECommand subCommand in scope.Commands)
                 {
-                    unhighlightActivitiesForCommand(subCommand);
+                    unhighlightActivity(subCommand);
                 }
             }
             List<ActivityInDiagram> activities = activityDiagram.GetActivitiesInDiagram(command);
@@ -630,46 +668,205 @@ namespace Visualization.Animation
             GameObject activityGo = activity.VisualObject;
             if (activity.ActivityType == ActivityType.Classic)
             {
-                Debug.Log("[Karin] Unhighlight activity classic " + activity.ActivityText);
+                // Debug.Log("[Karin] Unhighlight activity classic " + activity.ActivityText);
                 activityGo.GetComponent<BackgroundHighlighter>().UnhighlightBackground();
             }
             else
             {
-                Debug.Log("[Karin] Unhighlight activity decision / merge / initial / final");
+                // Debug.Log("[Karin] Unhighlight activity decision / merge / initial / final");
                 activityGo.GetComponent<BackgroundHighlighter>().UnhighlightBackground(Color.black);
             }
             activity.IsHighlighted = false;
+            lastHighlightedActivity = null;
+        }
+        
+        // private void highlightRelation(EXECommand fromCommand, EXECommand toCommand)
+        // {
+        //     Debug.Log("[Karin] Highlight relations from command: " + fromCommand + " to command: " + toCommand);
+        //     ActivityRelation relation = activityDiagram.GetActivityRelation(fromCommand, toCommand);
+        //     if (relation == null)
+        //     {
+        //         Debug.LogError("[Karin] No relation found to highlight.");
+        //         return;
+        //     }
+        //     Debug.Log("[Karin] Highlight relation: " + relation);
+        //     GameObject edge = relation.VisualObject;
+        //     if (edge != null)
+        //     {
+        //         edge.GetComponent<UEdge>().ChangeColor(relationColor);
+        //         edge.GetComponent<UILineRenderer>().LineThickness = 8;
+        //         relation.IsHighlighted = true;
+        //     }
+        // }
+
+        // private void highlightRelation(ActivityInDiagram fromActivity, EXECommand toCommand)
+        // {
+        //     Debug.Log("[Karin] Highlight relations from activity: " + fromActivity + " to command: " + toCommand);
+        //     ActivityRelation relation = activityDiagram.GetActivityRelation(fromActivity, toCommand);
+        //     if (relation == null)
+        //     {
+        //         Debug.LogError("[Karin] No relation found to highlight.");
+        //         return;
+        //     }
+        //     Debug.Log("[Karin] Highlight relation: " + relation);
+        //     GameObject edge = relation.VisualObject;
+        //     if (edge != null)
+        //     {
+        //         edge.GetComponent<UEdge>().ChangeColor(relationColor);
+        //         edge.GetComponent<UILineRenderer>().LineThickness = 8;
+        //         relation.IsHighlighted = true;
+        //     }
+        // }
+
+        // private void highlightRelation(EXECommand fromCommand, ActivityInDiagram toActivity)
+        // {
+        //     Debug.Log("[Karin] Highlight relations from command: " + fromCommand + " to activity: " + toActivity);
+        //     ActivityRelation relation = activityDiagram.GetActivityRelation(fromCommand, toActivity);
+        //     if (relation == null)
+        //     {
+        //         Debug.LogError("[Karin] No relation found to highlight.");
+        //         return;
+        //     }
+        //     Debug.Log("[Karin] Highlight relation: " + relation);
+        //     GameObject edge = relation.VisualObject;
+        //     if (edge != null)
+        //     {
+        //         edge.GetComponent<UEdge>().ChangeColor(relationColor);
+        //         edge.GetComponent<UILineRenderer>().LineThickness = 8;
+        //         relation.IsHighlighted = true;
+        //     }
+        // }
+        
+        private void highlightRelation(ActivityInDiagram fromActivity, ActivityInDiagram toActivity)
+        {
+            // Debug.Log("[Karin] Highlight relations from activity: " + fromActivity.ActivityText + " to activity: " + toActivity.ActivityText);
+            ActivityRelation relation = activityDiagram.GetActivityRelation(fromActivity, toActivity);
+            if (relation == null)
+            {
+                Debug.LogError("[Karin] No relation found to highlight.");
+                return;
+            }
+            GameObject edge = relation.VisualObject;
+            if (edge != null)
+            {
+                // Debug.Log("[Karin] Highlighting relation");
+                edge.GetComponent<UEdge>().ChangeColor(relationColor);
+                edge.GetComponent<UILineRenderer>().LineThickness = 8;
+                relation.IsHighlighted = true;
+            }
         }
 
-        private void highlightRelations(EXECommand command)
+        // private void highlightRelations(EXECommand command)
+        // {
+        //     Debug.Log("[Karin] Highlight relations from command: " + command);
+        //     List<ActivityRelation> relations = activityDiagram.GetActivityRelations(command);
+        //     foreach (ActivityRelation relation in relations)
+        //     {
+        //         Debug.Log("[Karin] Highlight relation: " + relation);
+        //         GameObject edge = relation.VisualObject;
+        //         if (edge != null)
+        //         {
+        //             edge.GetComponent<UEdge>().ChangeColor(relationColor);
+        //             edge.GetComponent<UILineRenderer>().LineThickness = 8;
+        //             relation.IsHighlighted = true;
+        //         }
+        //     }
+        // }
+
+        // private void unhighlightRelation(EXECommand command)
+        // {
+        //     Debug.LogError("[Karin] unhighlight all relations for command: " + command);
+        //     if (command is EXEScope scope)
+        //     {
+        //         if (command is EXEScopeCondition condition)
+        //         {
+        //             foreach (EXECommand subCommand in condition.ElifScopes)
+        //             {
+        //                 unhighlightRelation(subCommand);
+        //             }
+        //             if (condition.ElseScope != null)
+        //             {
+        //                 unhighlightRelation(condition.ElseScope);
+        //             }
+        //         }
+        //         foreach (EXECommand subCommand in scope.Commands)
+        //         {
+        //             unhighlightRelation(subCommand);
+        //         }
+        //     }
+        //     List<ActivityRelation> relations = activityDiagram.GetActivityRelations(command);
+
+        //     if (relations == null || relations.Count == 0)
+        //     {
+        //         Debug.LogError("[Karin] No relations found to unhighlight.");
+        //         return;
+        //     }
+        //     foreach (ActivityRelation relation in relations)
+        //     {
+        //         if (relation.IsHighlighted)
+        //         {
+        //             unhighlightRelation(relation);
+        //         }
+        //     }
+        // }
+
+        private void unhighlightRelation(EXECommand command)
         {
-            Debug.Log("[Karin] Highlight relations from command: " + command);
+            Debug.LogError("[Karin] unhighlight all relations for command: " + command);
+            if (command is EXEScope scope)
+            {
+                Debug.Log("[Karin] unhighlight , is EXEScope");
+                if (command is EXEScopeCondition condition)
+                {
+                    Debug.Log("[Karin] unhighlight , is EXEScopeCondition");
+                    foreach (EXECommand subCommand in condition.ElifScopes)
+                    {
+                        unhighlightRelation(subCommand);
+                    }
+                    if (condition.ElseScope != null)
+                    {
+                        unhighlightRelation(condition.ElseScope);
+                    }
+                }
+                foreach (EXECommand subCommand in scope.Commands)
+                {
+                    unhighlightRelation(subCommand);
+                }
+            }
             List<ActivityRelation> relations = activityDiagram.GetActivityRelations(command);
+
+            if (relations == null || relations.Count == 0)
+            {
+                Debug.LogError("[Karin] No relations found to unhighlight.");
+                return;
+            }
             foreach (ActivityRelation relation in relations)
             {
-                Debug.Log("[Karin] Highlight relation: " + relation);
-                GameObject edge = relation.VisualObject;
-                if (edge != null)
+                Debug.Log("[Karin] unhighlight relation: " + relation.From.ActivityText + " -> " + relation.To.ActivityText);
+                if (relation.IsHighlighted)
                 {
-                    edge.GetComponent<UEdge>().ChangeColor(relationColor);
-                    edge.GetComponent<UILineRenderer>().LineThickness = 8;
+                    unhighlightRelation(relation);
+                }
+                else
+                {
+                    Debug.LogError("[Karin] relation is not highlighted, cannot unhighlight");
                 }
             }
         }
 
-        private void unhiglightRelations(EXECommand command)
+        private void unhighlightRelation(ActivityRelation relation)
         {
-            Debug.Log("[Karin] Unhighlight relations from command: " + command);
-            List<ActivityRelation> relations = activityDiagram.GetActivityRelations(command);
-            foreach (ActivityRelation relation in relations)
+            GameObject edge = relation.VisualObject;
+            if (edge != null)
             {
-                Debug.Log("[Karin] Unhighlight relation: " + relation);
-                GameObject edge = relation.VisualObject;
-                if (edge != null)
-                {
-                    edge.GetComponent<UEdge>().ChangeColor(Color.black);
-                    edge.GetComponent<UILineRenderer>().LineThickness = 4;
-                }
+                Debug.Log("[Karin] Unhighlighting relation");
+                edge.GetComponent<UEdge>().ChangeColor(Color.black);
+                edge.GetComponent<UILineRenderer>().LineThickness = 4;
+                relation.IsHighlighted = false;
+            }
+            else 
+            {
+                Debug.LogError("[Karin] Edge is null, cannot unhighlight relation");
             }
         }
 

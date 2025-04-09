@@ -11,6 +11,8 @@ namespace Visualization.ClassDiagram.Relations
         public readonly ActivityInDiagram From;
         public readonly ActivityInDiagram To;
         public string Label;
+        public bool IsHighlighted = false;
+
         public GameObject VisualObject;
         public ActivityRelation(ActivityInDiagram start, ActivityInDiagram end, string label = "")
         {
