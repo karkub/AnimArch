@@ -18,6 +18,9 @@ namespace AnimArch.Visualization.Diagrams
         public Graph graph;
         public List<ActivityInDiagram> Activities { get; private set; }
         public List<ActivityRelation> Relations { get; private set; }
+        public EXECommand LastCommand { get; set; } = null;
+        public ActivityInDiagram LastHighlightedActivity = null;
+        public ActivityInDiagram FinalActivity = null;
 
         private int activityOffsetX = 500;
         private int activityOffsetY = -150;
@@ -156,7 +159,7 @@ namespace AnimArch.Visualization.Diagrams
 
         public ActivityInDiagram AddFinalActivityInDiagram(int indentationLevelX, int indentationLevelY)
         {
-            ActivityInDiagram finalActivityInDiagram = new ActivityInDiagram
+            FinalActivity = new ActivityInDiagram
             {
                 ActivityText = "Final Activity",
                 ActivityType = ActivityType.Final,
@@ -164,10 +167,10 @@ namespace AnimArch.Visualization.Diagrams
                 IndentationLevelY = indentationLevelY,
                 VisualObject = null
             };
-            Activities.Add(finalActivityInDiagram);
-            GenerateFinalActivity(finalActivityInDiagram);
+            Activities.Add(FinalActivity);
+            GenerateFinalActivity(FinalActivity);
 
-            return finalActivityInDiagram;
+            return FinalActivity;
         }
 
         public ActivityInDiagram AddDecisionActivityInDiagram(int indentationLevelX, int indentationLevelY, EXECommand command) 
@@ -277,59 +280,56 @@ namespace AnimArch.Visualization.Diagrams
             return activities;
         }
 
-        public ActivityRelation GetActivityRelation(EXECommand fromCommand, EXECommand toCommand)
-        {
-            Debug.Log("[Karin] GetActivityRelation: " + fromCommand + " -> " + toCommand);
-            List<ActivityRelation> relations = Relations.FindAll(relation => fromCommand.CommandID.Equals(relation.From.Command?.CommandID) && toCommand.CommandID.Equals(relation.To.Command?.CommandID));
-            Debug.Log("[Karin] GetActivityRelation: " + relations.Count + " relations found");
-            foreach (ActivityRelation relation in relations)
-            {
-                Debug.Log("[Karin] GetActivityRelation: " + relation.From.ActivityText + " -> " + relation.To.ActivityText);
-            }
-            if (relations == null || relations.Count == 0 || relations.Count > 1)
-            {
-                Debug.LogErrorFormat("[Karin] Found {0} relations between {1} and {2}", relations.Count, fromCommand.CommandID, toCommand.CommandID);
-                return null;
-            }
-            return relations[0];
-        }
-        public ActivityRelation GetActivityRelation(ActivityInDiagram fromActivity, EXECommand toCommand)
-        {
-            Debug.Log("[Karin] GetActivityRelation: " + fromActivity + " -> " + toCommand);
-            List<ActivityRelation> relations = Relations.FindAll(relation => fromActivity.Command.CommandID.Equals(relation.From.Command?.CommandID) && toCommand.CommandID.Equals(relation.To.Command?.CommandID));
-            Debug.Log("[Karin] GetActivityRelation: " + relations.Count + " relations found");
-            foreach (ActivityRelation relation in relations)
-            {
-                Debug.Log("[Karin] GetActivityRelation: " + relation.From.ActivityText + " -> " + relation.To.ActivityText);
-            }
-            if (relations == null || relations.Count == 0 || relations.Count > 1)
-            {
-                Debug.LogErrorFormat("[Karin] Found {0} relations between {1} and {2}", relations.Count, fromActivity.Command.CommandID, toCommand.CommandID);
-                return null;
-            }
-            return relations[0];
-        }
-        public ActivityRelation GetActivityRelation(EXECommand fromCommand, ActivityInDiagram toActivity)
-        {
-            Debug.Log("[Karin] GetActivityRelation: " + fromCommand + " -> " + toActivity);
-            List<ActivityRelation> relations = Relations.FindAll(relation => fromCommand.CommandID.Equals(relation.From.Command?.CommandID) && toActivity.Command.CommandID.Equals(relation.To.Command?.CommandID));
-            Debug.Log("[Karin] GetActivityRelation: " + relations.Count + " relations found");
-            foreach (ActivityRelation relation in relations)
-            {
-                Debug.Log("[Karin] GetActivityRelation: " + relation.From.ActivityText + " -> " + relation.To.ActivityText);
-            }
-            if (relations == null || relations.Count == 0 || relations.Count > 1)
-            {
-                Debug.LogErrorFormat("[Karin] Found {0} relations between {1} and {2}", relations.Count, fromCommand.CommandID, toActivity);
-                return null;
-            }
-            return relations[0];
-        }
+        // public ActivityRelation GetActivityRelation(EXECommand fromCommand, EXECommand toCommand)
+        // {
+        //     // Debug.Log("[Karin] GetActivityRelation: " + fromCommand + " -> " + toCommand);
+        //     List<ActivityRelation> relations = Relations.FindAll(relation => fromCommand.CommandID.Equals(relation.From.Command?.CommandID) && toCommand.CommandID.Equals(relation.To.Command?.CommandID));
+        //     // Debug.Log("[Karin] GetActivityRelation: " + relations.Count + " relations found");
+        //     foreach (ActivityRelation relation in relations)
+        //     {
+        //         // Debug.Log("[Karin] GetActivityRelation: " + relation.From.ActivityText + " -> " + relation.To.ActivityText);
+        //     }
+        //     if (relations == null || relations.Count == 0 || relations.Count > 1)
+        //     {
+        //         Debug.LogErrorFormat("[Karin] Found {0} relations between {1} and {2}", relations.Count, fromCommand.CommandID, toCommand.CommandID);
+        //         return null;
+        //     }
+        //     return relations[0];
+        // }
+        // public ActivityRelation GetActivityRelation(ActivityInDiagram fromActivity, EXECommand toCommand)
+        // {
+        //     // Debug.Log("[Karin] GetActivityRelation: " + fromActivity + " -> " + toCommand);
+        //     List<ActivityRelation> relations = Relations.FindAll(relation => fromActivity.Command.CommandID.Equals(relation.From.Command?.CommandID) && toCommand.CommandID.Equals(relation.To.Command?.CommandID));
+        //     // Debug.Log("[Karin] GetActivityRelation: " + relations.Count + " relations found");
+        //     foreach (ActivityRelation relation in relations)
+        //     {
+        //         // Debug.Log("[Karin] GetActivityRelation: " + relation.From.ActivityText + " -> " + relation.To.ActivityText);
+        //     }
+        //     if (relations == null || relations.Count == 0 || relations.Count > 1)
+        //     {
+        //         Debug.LogErrorFormat("[Karin] Found {0} relations between {1} and {2}", relations.Count, fromActivity.Command.CommandID, toCommand.CommandID);
+        //         return null;
+        //     }
+        //     return relations[0];
+        // }
+        // public ActivityRelation GetActivityRelation(EXECommand fromCommand, ActivityInDiagram toActivity)
+        // {
+        //     // Debug.Log("[Karin] GetActivityRelation: " + fromCommand + " -> " + toActivity);
+        //     List<ActivityRelation> relations = Relations.FindAll(relation => fromCommand.CommandID.Equals(relation.From.Command?.CommandID) && toActivity.Command.CommandID.Equals(relation.To.Command?.CommandID));
+        //     // Debug.Log("[Karin] GetActivityRelation: " + relations.Count + " relations found");
+        //     foreach (ActivityRelation relation in relations)
+        //     {
+        //         // Debug.Log("[Karin] GetActivityRelation: " + relation.From.ActivityText + " -> " + relation.To.ActivityText);
+        //     }
+        //     if (relations == null || relations.Count == 0 || relations.Count > 1)
+        //     {
+        //         Debug.LogErrorFormat("[Karin] Found {0} relations between {1} and {2}", relations.Count, fromCommand.CommandID, toActivity);
+        //         return null;
+        //     }
+        //     return relations[0];
+        // }
         public ActivityRelation GetActivityRelation(ActivityInDiagram fromActivity, ActivityInDiagram toActivity)
         {
-            Debug.Log("[Karin] AAAAAAAAAA GetActivityRelation: " + fromActivity.ActivityText + " -> " + toActivity.ActivityText);
-            // List<ActivityRelation> relations = Relations.FindAll(relation => fromActivity.Command.CommandID.Equals(relation.From.Command?.CommandID) && toActivity.Command.CommandID.Equals(relation.To.Command?.CommandID));
-            
             // Check if fromActivity or toActivity is null
             if (fromActivity == null)
             {
@@ -372,7 +372,7 @@ namespace AnimArch.Visualization.Diagrams
                     toActivity.Command.CommandID.Equals(relation.To.Command.CommandID);
             });
 
-            Debug.Log("[Karin] GetActivityRelation: " + relations.Count + " relations found");
+            // Debug.Log("[Karin] GetActivityRelation: " + relations.Count + " relations found");
             // foreach (ActivityRelation relation in relations)
             // {
             //     Debug.Log("[Karin] GetActivityRelation: " + relation.From.ActivityText + " -> " + relation.To.ActivityText);

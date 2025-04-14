@@ -122,5 +122,31 @@ namespace OALProgramControl
                 ElseScope.SetCommandID();
             }
         }
+
+        public override EXECommand FindByCommandID(long CommandID)
+        {
+            EXECommand result = base.FindByCommandID(CommandID);
+            if (result != null)
+            {
+                return result;
+            }
+            foreach (EXEScopeCondition elifScope in ElifScopes)
+            {
+                result = elifScope.FindByCommandID(CommandID);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+            if (ElseScope != null)
+            {
+                result = ElseScope.FindByCommandID(CommandID);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+            return null;
+        }
     }
 }

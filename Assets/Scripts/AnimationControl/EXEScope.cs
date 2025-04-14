@@ -163,26 +163,21 @@ namespace OALProgramControl
 
         public override EXECommand FindByCommandID(long CommandID)
         {
-            Debug.Log($"[Karin] AA FIND SCOPE this.CommandID - {this.CommandID} ==? CommandID - {CommandID}");
             EXECommand result = base.FindByCommandID(CommandID);
             if (result != null)
             {
-                Debug.Log("[Karin] AA EXEScope.FindByCommandID: Found in base: " + CommandID);
                 return result;
             }
             int i = 0;
             foreach (EXECommand command in this.Commands)
             {
-                Debug.Log($"[Karin] AA FIND SCOPE this.Commands[{i}].CommandID - {command.CommandID} ==? CommandID - {CommandID}");
                 result = command.FindByCommandID(CommandID);
                 if (result != null)
                 {
-                    Debug.Log("[Karin] AA EXEScope.FindByCommandID: Found in command: " + CommandID);
                     return result;
                 }
                 i++;
             }
-            Debug.LogError("[Karin] AA EXEScope.FindByCommandID: Not found: " + CommandID);
             return null;
         }
     }

@@ -176,13 +176,10 @@ namespace OALProgramControl
 
         public virtual EXECommand FindByCommandID(long CommandID)
         {
-            Debug.Log($"[Karin] AA FIND this.CommandID - {this.CommandID} ==? CommandID - {CommandID}");
             if (this.CommandID == CommandID)
             {
-                Debug.Log("[Karin] AA EXECommand.FindByCommandID: found " + CommandID);
                 return this;
             }
-            Debug.LogError("[Karin] AA EXECommand.FindByCommandID: not found " + CommandID);
             return null;
         }
     }
