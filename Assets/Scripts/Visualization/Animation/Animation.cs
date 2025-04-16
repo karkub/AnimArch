@@ -583,15 +583,19 @@ namespace Visualization.Animation
             EXECommand lastCommand = activityDiagram.LastCommand;
             if (lastCommand != null && lastCommand.SuperScope.GetType() == typeof(EXEScopeCondition) && command.SuperScope != lastCommand.SuperScope)
             {
-                Debug.Log("[Karin] Transitioning between condition scopes.");
+                Debug.Log($"[Karin] Transitioning between condition scopes - Need to hightlight last merge node. CC:{command.CommandID} LC:{lastCommand.CommandID}");
+                highlightLastMergeNode();
+            }
+            if (lastCommand != null && command.SuperScope.GetType() == typeof(EXEScopeCondition) && command.SuperScope != lastCommand.SuperScope)
+            {
+                Debug.Log("[Karin] Transitioning between condition scopes - From root if to specific elif.");
                 // HighlightElifOrElseBranches(command);
-                
 
-                foreach (EXEScopeCondition previousCondition in ((EXEScopeCondition)lastCommand.SuperScope).PreviousConditions.Reverse())
+                foreach (EXEScopeCondition previousCondition in ((EXEScopeCondition)command.SuperScope).PreviousConditions.Reverse())
                 {
                     highlightActivity(previousCondition);
                 }
-                highlightActivity(lastCommand.SuperScope);
+                highlightActivity(command.SuperScope);
             }
             // Highlight the current command
             Debug.Log("[Karin] Highlighting the current command.");
@@ -603,9 +607,19 @@ namespace Visualization.Animation
         // Highlights the last merge node for conditions
         private void highlightLastMergeNode()
         {
-            Debug.Log("[Karin] Entering HighlightLastMergeNode.");
+            Debug.Log($"[Karin] Entering HighlightLastMergeNode. LC: {activityDiagram.LastCommand?.CommandID} LC.SS: {activityDiagram.LastCommand?.SuperScope?.CommandID}");
 
-            List<ActivityInDiagram> activities = activityDiagram.GetActivitiesInDiagram(activityDiagram.LastCommand.SuperScope);
+            EXECommand releventActivitiesScope = activityDiagram.LastCommand.SuperScope;
+            if (releventActivitiesScope.GetType() == typeof(EXEScopeCondition))
+            {
+                EXEScopeCondition releventActivitiesScopeCondition = (EXEScopeCondition)releventActivitiesScope;
+                if (releventActivitiesScopeCondition.PreviousConditions.Any())
+                {
+                    releventActivitiesScope = releventActivitiesScopeCondition.PreviousConditions.Last();
+                }
+            }
+
+            List<ActivityInDiagram> activities = activityDiagram.GetActivitiesInDiagram(releventActivitiesScope);
             if (activities != null && activities.Count > 0)
             {
                 Debug.Log("[Karin] Found activities for last merge node.");
@@ -794,7 +808,7 @@ namespace Visualization.Animation
         
         private void highlightRelation(ActivityInDiagram fromActivity, ActivityInDiagram toActivity)
         {
-            Debug.Log("[Karin] Highlight relations from activity: " + fromActivity.ActivityText + " to activity: " + toActivity.ActivityText);
+            Debug.Log($"[Karin] Highlight relations from activity: {fromActivity.ActivityText}({fromActivity.Command?.CommandID}) to activity: {toActivity.ActivityText}({toActivity.Command?.CommandID})");
             ActivityRelation relation = activityDiagram.GetActivityRelation(fromActivity, toActivity);
             if (relation == null)
             {
