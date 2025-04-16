@@ -8,8 +8,11 @@ namespace OALProgramControl
 {
     public class EXEScopeCondition : EXEScope
     {
+        /** If this condition is an ELIF, RootCondition points to original IF */
+        public EXEScopeCondition RootCondition { get; private set; }
         public EXEASTNodeBase Condition { get; set; }
-        public List<EXEScopeCondition> ElifScopes { get; private set; }
+        private List<EXEScopeCondition> _ElifScopes { get; set; }
+        public IEnumerable<EXEScopeCondition> ElifScopes => _ElifScopes.Select(el => el);
         public EXEScope ElseScope { get; set; }
         private IEnumerable<EXEScopeCondition> AllConditionedScopes
         {
@@ -28,8 +31,13 @@ namespace OALProgramControl
         public EXEScopeCondition(EXEASTNodeBase Condition, List<EXEScopeCondition> ElifScopes, EXEScope ElseScope) : base()
         {
             this.Condition = Condition;
-            this.ElifScopes = ElifScopes;
+            this._ElifScopes = ElifScopes;
             this.ElseScope = ElseScope;
+
+            foreach (EXEScopeCondition elif in _ElifScopes)
+            {
+                elif.RootCondition = this;
+            }
         }
 
         public override void SetSuperScope(EXEScopeBase SuperScope)
@@ -48,17 +56,6 @@ namespace OALProgramControl
             {
                 this.ElseScope.SetSuperScope(this.GetSuperScope());
             }
-        }
-
-        public void AddElifScope(EXEScopeCondition ElifScope)
-        {
-            if (this.ElifScopes == null)
-            {
-                this.ElifScopes = new List<EXEScopeCondition>();
-            }
-
-            this.ElifScopes.Add(ElifScope);
-            ElifScope.SetSuperScope(this.GetSuperScope());
         }
 
         protected override EXEExecutionResult Execute(OALProgram OALProgram)
@@ -104,7 +101,7 @@ namespace OALProgramControl
             return new EXEScopeCondition
             (
                 Condition.Clone(),
-                ElifScopes?.Select(x => (EXEScopeCondition)x.CreateCloneCustom()).ToList() ?? new List<EXEScopeCondition>(),
+                ElifScopes?.Select(x => (EXEScopeCondition)x.CreateClone()).ToList() ?? new List<EXEScopeCondition>(),
                 ElseScope == null ? null : (EXEScope)ElseScope.CreateClone()
             );
         }

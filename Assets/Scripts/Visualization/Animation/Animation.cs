@@ -488,7 +488,7 @@ namespace Visualization.Animation
             }
             ActivityInDiagram lastActivityIf = lastActivity;
             ActivityInDiagram lastActivityElse = null;
-            if (conditionCommand.ElifScopes.Count > 0)
+            if (conditionCommand.ElifScopes.Count() > 0)
             {
                 foreach (EXEScopeCondition elifBranch in conditionCommand.ElifScopes)
                 {
