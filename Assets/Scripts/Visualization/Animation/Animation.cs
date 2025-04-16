@@ -232,7 +232,14 @@ namespace Visualization.Animation
             yield return TeardownAnimation();
             AnimationIsRunning = false;
         }
+        public string printFunc(EXECommand c)
+                    {
+                        if (c == null) { return string.Empty; }
 
+                        VisitorCommandToString v = new VisitorCommandToString();
+                        c.Accept(v);
+                        return v.GetCommandString();
+                    }
         public IEnumerator AnimateCommand(EXECommand CurrentCommand, AnimationThread AnimationThread, bool Animate = true, bool AnimateNewObjects = true)
         {
             //VisitorCommandToString v = new VisitorCommandToString();
@@ -279,6 +286,9 @@ namespace Visualization.Animation
                 ActivityInDiagram finalActivity =  activityDiagram.AddFinalActivityInDiagram(lastActivity.IndentationLevelX, lastActivity.IndentationLevelY + 1);
                 activityDiagram.AddRelation(lastActivity, finalActivity);
                 activityDiagram.SaveDiagram();
+
+                
+                Debug.LogFormat("[Lukas] Activities register: {0}", string.Join('\n', activityDiagram.Activities.Select(a => $"{a.Command?.CommandID} (Visual Object is NULL {a.VisualObject == null}): {printFunc(a.Command)}")));
             }
             else if (CurrentCommand.GetType() == typeof(EXECommandReturn))
             {
@@ -570,13 +580,19 @@ namespace Visualization.Animation
             }
 
             // Handle transitions between different condition scopes
-            if (activityDiagram.LastCommand != null && activityDiagram.LastCommand.SuperScope.GetType() == typeof(EXEScopeCondition) && command.SuperScope != activityDiagram.LastCommand.SuperScope)
+            EXECommand lastCommand = activityDiagram.LastCommand;
+            if (lastCommand != null && lastCommand.SuperScope.GetType() == typeof(EXEScopeCondition) && command.SuperScope != lastCommand.SuperScope)
             {
                 Debug.Log("[Karin] Transitioning between condition scopes.");
                 // HighlightElifOrElseBranches(command);
-                highlightLastMergeNode();
-            }
+                
 
+                foreach (EXEScopeCondition previousCondition in ((EXEScopeCondition)lastCommand.SuperScope).PreviousConditions.Reverse())
+                {
+                    highlightActivity(previousCondition);
+                }
+                highlightActivity(lastCommand.SuperScope);
+            }
             // Highlight the current command
             Debug.Log("[Karin] Highlighting the current command.");
             highlightActivity(command);

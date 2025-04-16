@@ -8,8 +8,22 @@ namespace OALProgramControl
 {
     public class EXEScopeCondition : EXEScope
     {
-        /** If this condition is an ELIF, RootCondition points to original IF */
-        public EXEScopeCondition RootCondition { get; private set; }
+        /** If this condition is an ELIF, PreviousCondition points to previous ELIF or IF */
+        public EXEScopeCondition PreviousCondition { get; private set; }
+        public IEnumerable<EXEScopeCondition> PreviousConditions
+        {
+            get
+            {
+                if (PreviousCondition != null)
+                {
+                    yield return PreviousCondition;
+                    foreach (EXEScopeCondition previous in PreviousCondition.PreviousConditions)
+                    {
+                        yield return previous;
+                    }
+                }
+            }
+        }
         public EXEASTNodeBase Condition { get; set; }
         private List<EXEScopeCondition> _ElifScopes { get; set; }
         public IEnumerable<EXEScopeCondition> ElifScopes => _ElifScopes.Select(el => el);
@@ -34,9 +48,14 @@ namespace OALProgramControl
             this._ElifScopes = ElifScopes;
             this.ElseScope = ElseScope;
 
-            foreach (EXEScopeCondition elif in _ElifScopes)
+            if (_ElifScopes.Any())
             {
-                elif.RootCondition = this;
+                _ElifScopes.First().PreviousCondition = this;
+            }
+
+            for (int i = 1; i < _ElifScopes.Count; i++)
+            {
+                _ElifScopes[i].PreviousCondition = _ElifScopes[i - 1];
             }
         }
 
