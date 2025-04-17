@@ -568,8 +568,10 @@ namespace Visualization.Animation
         // Handles highlighting for the current command and its scope
         private void HandleCommandHighlighting(EXECommand command)
         {
-            Debug.LogFormat("[Karin] Entering HandleCommandHighlighting with command type: {0}, command id: {1}, superScope type: {2}, superScope id: {3}",
-                command.GetType(), command.CommandID, command.SuperScope.GetType(), command.SuperScope.CommandID);
+            Debug.LogFormat("[Karin] Entering HandleCommandHighlighting with command type: {0}, command id: {1}, superScope type: {2}, superScope id: {3} and with LAST command type: {4}, LAST command id: {5}, LAST superScope type: {6}, LAST superScope id: {7}",
+                command.GetType(), command.CommandID, command.SuperScope.GetType(), command.SuperScope.CommandID,
+                activityDiagram.LastCommand?.GetType(), activityDiagram.LastCommand?.CommandID, activityDiagram.LastCommand?.SuperScope.GetType(), activityDiagram.LastCommand?.SuperScope.CommandID
+            );
 
             // Handle loops (ForEach and While)
             if (command.GetType() == typeof(EXEScopeForEach) || command.GetType() == typeof(EXEScopeLoopWhile))
@@ -581,17 +583,21 @@ namespace Visualization.Animation
 
             // Handle transitions between different condition scopes
             EXECommand lastCommand = activityDiagram.LastCommand;
-            if (lastCommand != null && lastCommand.SuperScope.GetType() == typeof(EXEScopeCondition) && command.SuperScope != lastCommand.SuperScope)
+            
+            // If an IF scope is over, let us highlight the merge
+            if (lastCommand != null && (lastCommand.SuperScope.GetType() == typeof(EXEScopeCondition) || (lastCommand.SuperScope as EXEScope)?.PreviousCondition != null) && command.SuperScope.CommandID != lastCommand.SuperScope.CommandID)
             {
                 Debug.Log($"[Karin] Transitioning between condition scopes - Need to hightlight last merge node. CC:{command.CommandID} LC:{lastCommand.CommandID}");
                 highlightLastMergeNode();
             }
-            if (lastCommand != null && command.SuperScope.GetType() == typeof(EXEScopeCondition) && command.SuperScope != lastCommand.SuperScope)
+
+            // If an IF - ELIF - ELSE is encountered, let us highlight the path through DECISION blocks
+            if (lastCommand != null && (command.SuperScope.GetType() == typeof(EXEScopeCondition) || (command.SuperScope as EXEScope)?.PreviousCondition != null) && command.SuperScope.CommandID != lastCommand.SuperScope.CommandID)
             {
                 Debug.Log("[Karin] Transitioning between condition scopes - From root if to specific elif.");
                 // HighlightElifOrElseBranches(command);
 
-                foreach (EXEScopeCondition previousCondition in ((EXEScopeCondition)command.SuperScope).PreviousConditions.Reverse())
+                foreach (EXEScope previousCondition in ((EXEScope)command.SuperScope).PreviousConditions.Reverse())
                 {
                     highlightActivity(previousCondition);
                 }
@@ -609,17 +615,17 @@ namespace Visualization.Animation
         {
             Debug.Log($"[Karin] Entering HighlightLastMergeNode. LC: {activityDiagram.LastCommand?.CommandID} LC.SS: {activityDiagram.LastCommand?.SuperScope?.CommandID}");
 
-            EXECommand releventActivitiesScope = activityDiagram.LastCommand.SuperScope;
-            if (releventActivitiesScope.GetType() == typeof(EXEScopeCondition))
+            EXECommand relevantActivitiesScope = activityDiagram.LastCommand.SuperScope;
+            if (relevantActivitiesScope.GetType() == typeof(EXEScopeCondition) || (relevantActivitiesScope as EXEScope)?.PreviousCondition != null)
             {
-                EXEScopeCondition releventActivitiesScopeCondition = (EXEScopeCondition)releventActivitiesScope;
-                if (releventActivitiesScopeCondition.PreviousConditions.Any())
+                EXEScope relevantActivitiesScopeCondition = (EXEScope)relevantActivitiesScope;
+                if (relevantActivitiesScopeCondition.PreviousConditions.Any())
                 {
-                    releventActivitiesScope = releventActivitiesScopeCondition.PreviousConditions.Last();
+                    relevantActivitiesScope = relevantActivitiesScopeCondition.PreviousConditions.Last();
                 }
             }
 
-            List<ActivityInDiagram> activities = activityDiagram.GetActivitiesInDiagram(releventActivitiesScope);
+            List<ActivityInDiagram> activities = activityDiagram.GetActivitiesInDiagram(relevantActivitiesScope);
             if (activities != null && activities.Count > 0)
             {
                 Debug.Log("[Karin] Found activities for last merge node.");

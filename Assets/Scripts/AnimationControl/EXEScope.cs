@@ -7,6 +7,23 @@ namespace OALProgramControl
 {
     public class EXEScope : EXEScopeBase
     {
+        /** If this condition is an ELIF, PreviousCondition points to previous ELIF or IF */
+        public EXEScopeCondition PreviousCondition { get; set; }
+        public IEnumerable<EXEScopeCondition> PreviousConditions
+        {
+            get
+            {
+                if (PreviousCondition != null)
+                {
+                    yield return PreviousCondition;
+                    foreach (EXEScopeCondition previous in PreviousCondition.PreviousConditions)
+                    {
+                        yield return previous;
+                    }
+                }
+            }
+        }
+
         public List<EXECommand> Commands { get; protected set; }
         public String OALCode;
 

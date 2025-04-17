@@ -8,26 +8,23 @@ namespace OALProgramControl
 {
     public class EXEScopeCondition : EXEScope
     {
-        /** If this condition is an ELIF, PreviousCondition points to previous ELIF or IF */
-        public EXEScopeCondition PreviousCondition { get; private set; }
-        public IEnumerable<EXEScopeCondition> PreviousConditions
-        {
-            get
-            {
-                if (PreviousCondition != null)
-                {
-                    yield return PreviousCondition;
-                    foreach (EXEScopeCondition previous in PreviousCondition.PreviousConditions)
-                    {
-                        yield return previous;
-                    }
-                }
-            }
-        }
         public EXEASTNodeBase Condition { get; set; }
         private List<EXEScopeCondition> _ElifScopes { get; set; }
         public IEnumerable<EXEScopeCondition> ElifScopes => _ElifScopes.Select(el => el);
-        public EXEScope ElseScope { get; set; }
+
+        private EXEScope _ElseScope { get; set; }
+        public EXEScope ElseScope
+        {
+            get => _ElseScope;
+            set
+            {
+                _ElseScope = value;
+                if (_ElseScope != null)
+                {
+                    _ElseScope.PreviousCondition = _ElifScopes.LastOrDefault() ?? this;
+                }
+            }
+        }
         private IEnumerable<EXEScopeCondition> AllConditionedScopes
         {
             get
