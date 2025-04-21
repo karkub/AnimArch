@@ -20,7 +20,7 @@ namespace AnimArch.Visualization.Diagrams
         public List<ActivityRelation> Relations { get; private set; }
         public EXECommand LastCommand { get; set; } = null;
         public ActivityInDiagram LastHighlightedActivity = null;
-        public ActivityInDiagram FinalActivity = null;
+        public List<ActivityInDiagram> FinalActivities { get; private set; }
 
         private int activityOffsetX = 500;
         private int activityOffsetY = -150;
@@ -29,6 +29,7 @@ namespace AnimArch.Visualization.Diagrams
         {
             Activities = new List<ActivityInDiagram>();
             Relations = new List<ActivityRelation>();
+            FinalActivities = new List<ActivityInDiagram>();
         }
 
         private void Awake()
@@ -67,6 +68,7 @@ namespace AnimArch.Visualization.Diagrams
             }
             Activities = new List<ActivityInDiagram>();
             Relations = new List<ActivityRelation>();
+            FinalActivities = new List<ActivityInDiagram>();
         }
 
         public void LoadDiagram()
@@ -157,17 +159,19 @@ namespace AnimArch.Visualization.Diagrams
             return initialActivityInDiagram;
         }
 
-        public ActivityInDiagram AddFinalActivityInDiagram(int indentationLevelX, int indentationLevelY)
+        public ActivityInDiagram AddFinalActivityInDiagram(int indentationLevelX, int indentationLevelY, EXECommand command = null)
         {
-            FinalActivity = new ActivityInDiagram
+            ActivityInDiagram FinalActivity = new ActivityInDiagram
             {
                 ActivityText = "Final Activity",
                 ActivityType = ActivityType.Final,
                 IndentationLevelX = indentationLevelX,
                 IndentationLevelY = indentationLevelY,
+                Command = command,
                 VisualObject = null
             };
             Activities.Add(FinalActivity);
+            FinalActivities.Add(FinalActivity);
             GenerateFinalActivity(FinalActivity);
 
             return FinalActivity;
@@ -280,6 +284,15 @@ namespace AnimArch.Visualization.Diagrams
             return activities;
         }
 
+        public ActivityInDiagram FindFinalActivity(EXECommand command)
+        {
+            ActivityInDiagram activity = FinalActivities.Find(activity => command.CommandID.Equals(activity.Command?.CommandID));
+            if (activity == null)
+            {
+                activity = Activities.Find(activity => activity.Command == null);
+            }
+            return activity;
+        }
 
         public ActivityRelation GetActivityRelation(ActivityInDiagram fromActivity, ActivityInDiagram toActivity)
         {

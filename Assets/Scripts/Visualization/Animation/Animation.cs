@@ -273,8 +273,11 @@ namespace Visualization.Animation
                 int indentationLevelY = 0;
                 ActivityInDiagram initialActivity = activityDiagram.AddInitialActivityInDiagram(CurrentCommand);
                 ActivityInDiagram lastActivity = animateActivityInDiagram(CurrentCommand, indentationLevelX, indentationLevelY, initialActivity);
-                ActivityInDiagram finalActivity =  activityDiagram.AddFinalActivityInDiagram(lastActivity.IndentationLevelX, lastActivity.IndentationLevelY + 1);
-                activityDiagram.AddRelation(lastActivity, finalActivity);
+                if (activityDiagram.FinalActivities.Count() == 0)
+                {
+                    ActivityInDiagram finalActivity =  activityDiagram.AddFinalActivityInDiagram(lastActivity.IndentationLevelX, lastActivity.IndentationLevelY + 1);
+                    activityDiagram.AddRelation(lastActivity, finalActivity);
+                }
                 activityDiagram.SaveDiagram();
 
                 
@@ -282,7 +285,12 @@ namespace Visualization.Animation
             }
             else if (CurrentCommand.GetType() == typeof(EXECommandReturn))
             {
-                activityDiagram.FinalActivity.Command = CurrentCommand;
+                ActivityInDiagram finalActivity = activityDiagram.FindFinalActivity(CurrentCommand);
+                if (finalActivity.Command == null)
+                {
+                    finalActivity.Command = CurrentCommand;
+                } 
+                handleCommandHighlighting(CurrentCommand);
                 if (ActivityDiagramManager.Instance.ActivityDiagrams.Count() > 1)
                 {
                     activityDiagram.ResetDiagram();
@@ -338,6 +346,13 @@ namespace Visualization.Animation
                     activityDiagram.AddRelation(lastActivity, activity, activityRelationLabel);
                     activityRelationLabel = "";
                     lastActivity = activity;
+
+                    if (originalCommand.GetType() == typeof(EXECommandReturn))
+                    {
+                        ActivityInDiagram finalActivity = activityDiagram.AddFinalActivityInDiagram(indentationLevelX, indentationLevelY + 1, originalCommand);
+                        activityDiagram.AddRelation(lastActivity, finalActivity);
+                        lastActivity = finalActivity;
+                    }
                 }
             }
             else if (originalCommand.GetType() == typeof(EXEScopeMethod)) 
