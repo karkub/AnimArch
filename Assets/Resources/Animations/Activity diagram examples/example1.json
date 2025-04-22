@@ -1,0 +1,37 @@
+{
+    "Code": "create object instance classA of Aa;\nclassA.execute();\n",
+    "AnimationName": "complex_activity",
+    "StartClass": "",
+    "StartMethod": "",
+    "MethodsCodes": [
+        {
+            "Name": "Aa",
+            "Attributes": [
+                "code"
+            ],
+            "Methods": [
+                {
+                    "Name": "execute",
+                    "Parameters": [],
+                    "Code": "create list shapes of Bb;\ncreate object instance Triangle of Bb;\nTriangle.Name=\"Triangle\";\nadd Triangle to shapes;\ncreate object instance Hexagon of Bb;\nHexagon.Name=\"Hexagon\";\nadd Hexagon to shapes;\ncreate object instance Circle of Bb;\nCircle.Name=\"Circle\";\nadd Circle to shapes;\ncreate list colors of Bb;\ncreate object instance Red of Bb;\nRed.Name=\"Red\";\nadd Red to colors;\ncreate object instance Blue of Bb;\nBlue.Name=\"Blue\";\nadd Blue to colors;\nfor each shape in shapes\n\twrite(\"Processing shape:\");\n\twrite(shape.Name);\n\tfor each color in colors\n\t\tif (shape.Name == \"Circle\")\n\t\t\twrite(\"Skipping Circle for coloring.\");\n\t\t\tcontinue;\n\t\tend if;\n\tend for;\nend for;\nwrite(\"Processing complete\");"
+                }
+            ]
+        },
+        {
+            "Name": "Bb",
+            "Attributes": [
+                "Name"
+            ],
+            "Methods": [
+                {
+                    "Name": "calculate",
+                    "Parameters": [
+                        "x",
+                        "y"
+                    ],
+                    "Code": "result = x * y;\nif (result > 100)\n\twrite(\"Large value detected\");\nelif (result > 50)\n\twrite(\"Medium range value\");\nelse\n\twrite(\"Value within expected range\");\n\tif (result == 0)\n\t\twrite(\"Result is zero, check inputs\");\n\telif (result < 0)\n\t\twrite(\"Negative result detected, unexpected input\");\n\telse\n\t\twrite(\"Non-zero positive result\");\n\tend if;\nend if;\nreturn result;"
+                }
+            ]
+        }
+    ]
+}

@@ -13,7 +13,7 @@
                 {
                     "Name": "execute",
                     "Parameters": [],
-                    "Code": "number=10;\nif (number < 3)\nwrite(\"<3\");\nelif (number == 4)\nwrite(\"four\");\nelif (number == 5)\nwrite(\"five\");\nelif (number == 6)\nwrite(\"six\");\nelif (number == 7)\nwrite(\"seven\");\nend if;\nwrite(\"end\");"
+                    "Code": "number = 1;\nwhile (number < 5)\nwrite(\"number is\");\nif (number == 1)\nwrite(\"1, yay!\");\nelse\nwrite(\"not 1\");\nif (number == 2)\nwrite(\"== 2\");\nelif (number == 3)\nwrite(\"== 3\");\ncreate list colors of Bb;\r\ncreate object instance Green of Bb;\r\nGreen.Name=\"Green\"\r\n; add Green to colors;\r\ncreate object instance Red of Bb;\r\nRed.Name=\"Red\";\r\nadd Red to colors;\r\nfor each color in colors\r\nif (color.Name == \"Red\")\n\twrite(\"RED\");\n(else\n\twrite(\"not red but\")\n\twrite(color.Name);)\nend if;\r\nend for;\nelse\nwrite(\"> 3\");\nend if;\nend if;\nnumber = number + 1;\nend while;\nwrite(\"end\");"
                 }
             ]
         },

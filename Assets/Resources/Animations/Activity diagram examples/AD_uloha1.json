@@ -1,0 +1,44 @@
+{
+    "Code": "create object instance klient of Klient;\nobjednavkaUspesna = klient.objednaj();\n",
+    "AnimationName": "spracovanie_objednavky",
+    "StartClass": "SpracovanieObjednavky",
+    "StartMethod": "spracuj",
+    "MethodsCodes": [
+        {
+            "Name": "Klient",
+            "Attributes": [
+                "meno",
+                "email",
+                "adresa"
+            ],
+            "Methods": [
+                {
+                    "Name": "objednaj",
+                    "Parameters": [],
+                    "Code": "create object instance objednavka of Objednavka;\nobjednavka.naSklade = TRUE;\nwrite(\"Spracovanie objednávky začalo\");\nif (objednavka.naSklade == TRUE)\n\twrite(\"Tovar je dostupný\");\nelse\n\twrite(\"Tovar nie je skladom, objednávka zrušená\");\nreturn FALSE;\nend if;\nsposobPlatby = \"Hotovosť\";\nif (sposobPlatby == \"Karta\")\n\tobjednavka.spracovatPlatbu();\nelif (sposobPlatby == \"Prevod\")\n\twrite(\"Čakanie na úhradu\");\n\tobjednavka.spracovatPlatbu();\nend if;\nif (objednavka.jeUhradena)\n\twrite(\"Príprava na odoslanie\");\n\tobjednavka.odoslatObjednavku();\n\twrite(\"Príprava na odoslanie\");\n\tobjednavka.odoslatObjednavku();\nelse\n\twrite(\"Chyba pri platbe, objednávka nie je potvrdená\");\nreturn FALSE;\nend if;\nwrite(\"Objednávka odoslaná\");\nwrite(\"Proces ukončený\");\n return TRUE;"
+                }
+            ]
+        },
+        {
+            "Name": "Objednavka",
+            "Attributes": [
+                "idObjednavky",
+                "sposobPlatby",
+                "jeUhradena",
+                "naSklade"
+            ],
+            "Methods": [
+                {
+                    "Name": "spracovatPlatbu",
+                    "Parameters": [],
+                    "Code": "write(\"Spracovanie platby\");\njeUhradena = TRUE;\nreturn jeUhradena;"
+                },
+                {
+                    "Name": "odoslatObjednavku",
+                    "Parameters": [],
+                    "Code": "write(\"Odoslanie objednávky\");"
+                }
+            ]
+        }
+    ]
+}

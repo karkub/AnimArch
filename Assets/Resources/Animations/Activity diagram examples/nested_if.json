@@ -13,7 +13,7 @@
                 {
                     "Name": "execute",
                     "Parameters": [],
-                    "Code": "number=6;\nif (number < 3)\nwrite(\"<3\");\nelif (number == 6)\nwrite(\"six\");\nwrite(\"six\");\nelse\nwrite(\"else\");\nend if;\nwrite(\"end\");"
+                    "Code": "pripojenie=\"slabé\";\nif (pripojenie == \"silné\")\n\twrite(\"Pripojenie je stabilné.\");\nelif (pripojenie == \"slabé\")\n\twrite(\"Signál je slabý.\");\n(else\n\twrite(\"Žiadne pripojenie.\");\n\tif (pripojenie == \"neznáme\")\n\t\twrite(\"Skontrolujte nastavenia.\");\n\tend if;)\nend if;\nwrite(\"Kontrola dokončená.\");"                
                 }
             ]
         },

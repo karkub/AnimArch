@@ -11,7 +11,7 @@
                 {
                     "Name": "execute",
                     "Parameters": [],
-                    "Code": "number=10;\nif (number < 3)\nwrite(\"<3\");\nelif (number == 4)\nwrite(\"four\");\nelif (number == 5)\nwrite(\"five\");\nelif (number == 6)\nwrite(\"six\");\nelif (number == 7)\nwrite(\"seven\");\nelse\nwrite(\">7\");\nend if;\nwrite(\"end\");"
+                    "Code": "number = 10;\nif (number < 3)\n\twrite(\"<3\");\n\tif (number == 1)\n\t\twrite(\"one\");\n\telif (number == 2)\n\t\twrite(\"two\");\n\tend if;\nend if;\nwrite(\"end\");"
                 }
             ]
         },
@@ -28,7 +28,7 @@
                         "a",
                         "b"
                     ],
-                    "Code": "c = a + b;\nreturn c;"
+                    "Code": "c = a + b;\nif (c > 100)\n\twrite(\"large sum\");\nelif (c > 50)\n\twrite(\"medium sum\");\nelse\n\twrite(\"small sum\");\n\tif (c == 0)\n\t\twrite(\"zero value\");\n\telif (c < 0)\n\t\twrite(\"negative value\");\n\telif (c % 2 == 0)\n\t\twrite(\"even number\");\n\telse\n\t\twrite(\"odd number\");\n\tend if;\nend if;\nreturn c;"
                 }
             ]
         }

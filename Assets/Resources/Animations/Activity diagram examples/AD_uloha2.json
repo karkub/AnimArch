@@ -1,0 +1,48 @@
+{
+    "AnimationName": "spracovanie_objednavok",
+    "StartClass": "",
+    "StartMethod": "",
+    "MethodsCodes": [
+        {
+            "Name": "Sklad",
+            "Attributes": [
+                "adresa",
+                "kapacita",
+                "objednavky"
+            ],
+            "Methods": [
+                {
+                    "Name": "spracujObjednavky",
+                    "Parameters": [],
+                    "Code": "vytvorObjednavky();\nwrite(\"Začiatok spracovania objednávok\");\nfor each objednavka in objednavky\n\twrite(\"Kontrola dostupnosti objednávky\");\nwrite(\"Všetky objednávky spracované\");\n\tif (objednavka.naSklade == TRUE)\n\t\twrite(\"Objednávka na sklade, pokračujeme\");\n\t\tobjednavka.spracovatPlatbu();\n\t\tobjednavka.odoslatObjednavku();\n\telse\n\t\twrite(\"Objednávka nie je na sklade, preskakujem\");\n\tend if;\nend for;\nwrite(\"Všetky objednávky spracované\");"
+            },
+                {
+                    "Name": "vytvorObjednavky",
+                    "Parameters": [],
+                    "Code": "create list objednavky of Objednavka;\ncreate object instance objednavka1 of Objednavka;\nobjednavka1.naSklade = TRUE;\nadd objednavka1 to objednavky;\ncreate object instance objednavka2 of Objednavka;\nobjednavka2.naSklade = FALSE;\nadd objednavka2 to objednavky;\ncreate object instance objednavka3 of Objednavka;\nobjednavka3.naSklade = TRUE;\nadd objednavka3 to objednavky;"
+                }
+            ]
+        },
+        {
+            "Name": "Objednavka",
+            "Attributes": [
+                "idObjednavky",
+                "sposobPlatby",
+                "jeUhradena",
+                "naSklade"
+            ],
+            "Methods": [
+                {
+                    "Name": "spracovatPlatbu",
+                    "Parameters": [],
+                    "Code": "write(\"Spracovanie platby\");\njeUhradena = TRUE;\nreturn jeUhradena;"
+                },
+                {
+                    "Name": "odoslatObjednavku",
+                    "Parameters": [],
+                    "Code": "write(\"Odoslanie objednávky\");"
+                }
+            ]
+        }
+    ]
+}

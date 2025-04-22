@@ -1,0 +1,64 @@
+{
+    "Code": "create object instance klient of Klient;\nklient.objednaj();\n",
+    "AnimationName": "hromadne_spracovanie_objednavok",
+    "StartClass": "Sklad",
+    "StartMethod": "spracujObjednavky",
+    "MethodsCodes": [
+        {
+            "Name": "Klient",
+            "Attributes": [
+                "meno",
+                "email",
+                "adresa"
+            ],
+            "Methods": [
+                {
+                    "Name": "objednaj",
+                    "Parameters": [],
+                    "Code": "create object instance sklad of Sklad;\nsklad.kapacita = 3;\nsklad.vytvorObjednavky();\nsklad.spracujObjednavky();"
+                }
+            ]
+        },
+        {
+            "Name": "Sklad",
+            "Attributes": [
+                "adresa",
+                "kapacita",
+                "objednavky"
+            ],
+            "Methods": [
+                {
+                    "Name": "vytvorObjednavky",
+                    "Parameters": [],
+                    "Code": "create list objednavky of Objednavka;\ncreate object instance objednavka1 of Objednavka;\nobjednavka1.naSklade = TRUE;\nadd objednavka1 to objednavky;\ncreate object instance objednavka2 of Objednavka;\nobjednavka2.naSklade = FALSE;\nadd objednavka2 to objednavky;\ncreate object instance objednavka3 of Objednavka;\nobjednavka3.naSklade = TRUE;\nadd objednavka3 to objednavky;\ncreate object instance objednavka4 of Objednavka;\nobjednavka4.naSklade = TRUE;\nadd objednavka4 to objednavky;\ncreate object instance objednavka5 of Objednavka;\nobjednavka5.naSklade = FALSE;\nadd objednavka5 to objednavky;"
+                },
+                {
+                    "Name": "spracujObjednavky",
+                    "Parameters": [],
+                    "Code": "write(\"Začiatok spracovania objednávok\");\nwhile (kapacita > 0)\n\tfor each objednavka in objednavky\n\t\twrite(\"Kontrola dostupnosti objednávky\");\n\t\tif (objednavka.naSklade == TRUE)\n\t\t\twrite(\"Objednávka na sklade, pokračujeme\");\n\t\t\tobjednavka.spracovatPlatbu();\n\t\t\tobjednavka.odoslatObjednavku();\n\t\t\tkapacita = kapacita - 1;\n\t\t}\n\t\telse\n\t\t\twrite(\"Objednávka nie je na sklade, preskakujem\");end if;\nend for;\nend while;\nwrite(\"Všetky objednávky spracované alebo sklad plný\");"
+                }
+            ]
+        },
+        {
+            "Name": "Objednavka",
+            "Attributes": [
+                "idObjednavky",
+                "sposobPlatby",
+                "jeUhradena",
+                "naSklade"
+            ],
+            "Methods": [
+                {
+                    "Name": "spracovatPlatbu",
+                    "Parameters": [],
+                    "Code": "write(\"Spracovanie platby\");\njeUhradena = TRUE;\nreturn jeUhradena;"
+                },
+                {
+                    "Name": "odoslatObjednavku",
+                    "Parameters": [],
+                    "Code": "write(\"Odoslanie objednávky\");"
+                }
+            ]
+        }
+    ]
+}
