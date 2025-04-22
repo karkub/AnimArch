@@ -19,7 +19,7 @@ namespace AnimArch.Visualization.Diagrams
         public List<ActivityInDiagram> Activities { get; private set; }
         public List<ActivityRelation> Relations { get; private set; }
         public EXECommand LastCommand { get; set; } = null;
-        public ActivityInDiagram LastHighlightedActivity = null;
+        public Stack<ActivityInDiagram> LastHighlightedActivity = new Stack<ActivityInDiagram>();
         public List<ActivityInDiagram> FinalActivities { get; private set; }
 
         private int activityOffsetX = 500;
@@ -272,7 +272,10 @@ namespace AnimArch.Visualization.Diagrams
 
         public void AddRelation(ActivityInDiagram from, ActivityInDiagram to, string labelText="")
         {
-            // Debug.LogFormat("[Karin] AddRelation from {0} to {1}; from[{2}, {3}], to[{4}, {5}]", from.ActivityText, to.ActivityText, from.IndentationLevelX, from.IndentationLevelY, to.IndentationLevelX, to.IndentationLevelY);
+            if (GetActivityRelation(from, to) != null || from.ActivityType == ActivityType.Final)
+            {
+                return;
+            }
             ActivityRelation relation = new ActivityRelation(from, to, labelText);
             relation.GenerateVisualObject(graph);
             Relations.Add(relation);
@@ -354,10 +357,12 @@ namespace AnimArch.Visualization.Diagrams
         public List<ActivityRelation> GetActivityRelations(EXECommand command)
         {
             List<ActivityRelation> relations = Relations.FindAll(relation => command.CommandID.Equals(relation.From.Command?.CommandID));
-            foreach (ActivityRelation relation in relations)
-            {
-                Debug.Log("[Karin] GetActivityRelations: " + relation.From.ActivityText + " -> " + relation.To.ActivityText);
-            }
+            return relations;
+        }
+
+        public List<ActivityRelation> GetActivityRelations(ActivityInDiagram fromActivity)
+        {
+            List<ActivityRelation> relations = Relations.FindAll(relation => relation.From == fromActivity);
             return relations;
         }
 

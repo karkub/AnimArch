@@ -11,6 +11,7 @@ namespace Visualization.ClassDiagram.ComponentsInDiagram
         public int IndentationLevelY = 0;
         public EXECommand Command = null;
         public bool IsHighlighted = false;
+        public bool IsLastInSuperScope = false;
         public GameObject VisualObject;
 
         public ActivityInDiagram() { }
