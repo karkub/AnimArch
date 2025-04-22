@@ -299,41 +299,15 @@ namespace AnimArch.Visualization.Diagrams
 
         public ActivityRelation GetActivityRelation(ActivityInDiagram fromActivity, ActivityInDiagram toActivity)
         {
-            // Check if fromActivity or toActivity is null
-            if (fromActivity == null)
+            if (fromActivity == null || toActivity == null || fromActivity.Command == null || toActivity.Command == null)
             {
-                Debug.LogError("[Karin] fromActivity is null.");
-                return null;
-            }
-            if (toActivity == null)
-            {
-                Debug.LogError("[Karin] toActivity is null.");
                 return null;
             }
 
-            // Check if commands in fromActivity or toActivity are null
-            if (fromActivity.Command == null)
-            {
-                Debug.LogError("[Karin] fromActivity.Command is null.");
-                return null;
-            }
-            if (toActivity.Command == null)
-            {
-                Debug.LogError("[Karin] toActivity.Command is null.");
-                return null;
-            }
-
-            // Find relations
             List<ActivityRelation> relations = Relations.FindAll(relation =>
             {
-                if (relation.From.Command == null)
+                if (relation.From.Command == null || relation.To.Command == null)
                 {
-                    Debug.LogWarning("[Karin] relation.From.Command is null.");
-                    return false;
-                }
-                if (relation.To.Command == null)
-                {
-                    Debug.LogWarning("[Karin] relation.To.Command is null.");
                     return false;
                 }
 
@@ -341,14 +315,8 @@ namespace AnimArch.Visualization.Diagrams
                     toActivity.Command.CommandID.Equals(relation.To.Command.CommandID);
             });
 
-            // Debug.Log("[Karin] GetActivityRelation: " + relations.Count + " relations found");
-            // foreach (ActivityRelation relation in relations)
-            // {
-            //     Debug.Log("[Karin] GetActivityRelation: " + relation.From.ActivityText + " -> " + relation.To.ActivityText);
-            // }
             if (relations == null || relations.Count == 0 || relations.Count > 1)
             {
-                Debug.LogFormat("[Karin] Found {0} relations between {1} and {2}", relations.Count, fromActivity, toActivity);
                 return null;
             }
             return relations[0];

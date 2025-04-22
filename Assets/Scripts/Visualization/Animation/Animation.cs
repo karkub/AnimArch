@@ -243,16 +243,12 @@ namespace Visualization.Animation
             return v.GetCommandString();
         }
         public IEnumerator AnimateCommand(EXECommand CurrentCommand, AnimationThread AnimationThread, bool Animate = true, bool AnimateNewObjects = true)
-        {
-            //VisitorCommandToString v = new VisitorCommandToString();
-            //CurrentCommand.Accept(v);
-            //Debug.Log($"[LR] CommandID: {CurrentCommand.CommandID}, {CurrentCommand.GetType().Name}, {v.GetCommandString()}");
-            
+        {            
             // Karin - Activity Diagram =>
             VisitorCommandToString visitor = new VisitorCommandToString();
             CurrentCommand.Accept(visitor);
             string commandCode = visitor.GetCommandString();
-            Debug.LogErrorFormat("[Karin] ZACIATOK commandCode: {0}, type: {1}, id: {2}, superScope: {3}, superScopeID: {4}, ", commandCode, CurrentCommand.GetType(), CurrentCommand.CommandID, CurrentCommand.SuperScope.GetType(), CurrentCommand.SuperScope.CommandID);
+            Debug.LogFormat("[Karin] ZACIATOK commandCode: {0}, type: {1}, id: {2}, superScope: {3}, superScopeID: {4}, ", commandCode, CurrentCommand.GetType(), CurrentCommand.CommandID, CurrentCommand.SuperScope.GetType(), CurrentCommand.SuperScope.CommandID);
             
             AnimationRequest request = AnimationRequestFactory.Create(CurrentCommand, AnimationThread, Animate, AnimateNewObjects);
             highlightScheduler.Enqueue(request);
@@ -263,7 +259,7 @@ namespace Visualization.Animation
             {
                 CurrentCommand = CurrentCommandCopy;
             }
-           
+
             if (CurrentCommand.GetType() == typeof(EXEScopeMethod))
             {
                 if (ActivityDiagramManager.Instance.ActivityDiagrams.Count() > 0)
@@ -299,7 +295,7 @@ namespace Visualization.Animation
                     ActivityDiagramManager.Instance.ActivityDiagrams.Pop();
                     activityDiagram = ActivityDiagramManager.Instance.ActivityDiagrams.Peek();
                 }
-                ActivityDiagramManager.Instance.PrintDiagamsInStack(); //TODOa
+                // ActivityDiagramManager.Instance.PrintDiagamsInStack(); //TODOa
             }
 
             // Highlight command and handle its specific scope
@@ -316,31 +312,22 @@ namespace Visualization.Animation
 
         private ActivityInDiagram animateActivityInDiagram(EXECommand originalCommand, int indentationLevelX, int indentationLevelY, ActivityInDiagram lastActivity)
         {
-            VisitorCommandToString v = new VisitorCommandToString();
-            originalCommand.Accept(v);
-            string cc = v.GetCommandString();
-            // Debug.LogErrorFormat("[Karin] originalCommand type: {0}, command text: {1}", originalCommand.GetType(), cc);
             if (originalCommand.GetType() != typeof(EXEScopeMethod) && originalCommand.IsDirectlyInCode)
             {
-                // Debug.Log("[Karin] branch 1");
                 if (originalCommand.GetType() == typeof(EXEScopeForEach))
                 {
-                    // Debug.Log("[Karin] EXEScopeForEach branch 1");
                     lastActivity = animateActivityInDiagram((EXEScopeForEach)originalCommand, indentationLevelX, indentationLevelY, lastActivity);
                 }
                 else if (originalCommand.GetType() == typeof(EXEScopeCondition))
                 {
-                    // Debug.Log("[Karin] EXEScopeCondition branch 1");
                     lastActivity = animateActivityInDiagram((EXEScopeCondition)originalCommand, indentationLevelX, indentationLevelY, lastActivity);
                 }
                 else if (originalCommand.GetType() == typeof(EXEScopeLoopWhile))
                 {
-                    // Debug.Log("[Karin] EXEScopeLoopWhile branch 1");
                     lastActivity = animateActivityInDiagram((EXEScopeLoopWhile)originalCommand, indentationLevelX, indentationLevelY, lastActivity);
                 }
                 else 
                 {
-                    // Debug.Log("[Karin] else branch 1"); 
                     VisitorCommandToString visitor = new VisitorCommandToString();
                     originalCommand.Accept(visitor);
                     string commandCode = visitor.GetCommandString();
@@ -359,7 +346,6 @@ namespace Visualization.Animation
             }
             else if (originalCommand.GetType() == typeof(EXEScopeMethod)) 
             {
-                // Debug.Log("[Karin] branch 2");
                 EXEScopeMethod methodScope = (EXEScopeMethod)originalCommand;
                 foreach (EXECommand command in methodScope.Commands)
                 {
@@ -370,27 +356,22 @@ namespace Visualization.Animation
 
                     if (command.GetType() == typeof(EXEScopeMethod))
                     {
-                        // Debug.Log("[Karin] EXEScopeMethod branch 2");
                         lastActivity = animateActivityInDiagram(command, indentationLevelX, indentationLevelY, lastActivity);
                     }
                     else if (command.GetType() == typeof(EXEScopeForEach))
                     {
-                        // Debug.Log("[Karin] EXEScopeForEach branch 2");
                         lastActivity = animateActivityInDiagram((EXEScopeForEach)command, indentationLevelX, lastActivity.IndentationLevelY + 1, lastActivity);
                     }
                     else if (command.GetType() == typeof(EXEScopeLoopWhile))
                     {
-                        // Debug.Log("[Karin] EXEScopeLoopWhile branch 2");
                         lastActivity =  animateActivityInDiagram((EXEScopeLoopWhile)command, indentationLevelX, lastActivity.IndentationLevelY + 1, lastActivity);
                     }
                     else if (command.GetType() == typeof(EXEScopeCondition))
                     {
-                        // Debug.Log("[Karin] EXEScopeCondition branch 2");
                         lastActivity = animateActivityInDiagram((EXEScopeCondition)command, indentationLevelX, lastActivity.IndentationLevelY + 1, lastActivity);
                     }
                     else 
                     {
-                        // Debug.Log("[Karin] else branch 2");
                         lastActivity = animateActivityInDiagram(command, indentationLevelX, lastActivity.IndentationLevelY + 1, lastActivity);
                     }
                 }
@@ -400,7 +381,6 @@ namespace Visualization.Animation
 
         private ActivityInDiagram animateActivityInDiagram(EXEScopeForEach forEachCommand, int indentationLevelX, int indentationLevelY, ActivityInDiagram lastActivity)
         {
-            // Debug.Log("[Karin] Animate command code: forEach");
             ActivityInDiagram mergeActivity = activityDiagram.AddMergeActivityInDiagram(indentationLevelX, indentationLevelY, forEachCommand);
             ActivityInDiagram decisionActivity = activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY + 1, forEachCommand);
             activityDiagram.AddRelation(lastActivity, mergeActivity, this.activityRelationLabel);
@@ -423,7 +403,6 @@ namespace Visualization.Animation
 
         private ActivityInDiagram animateActivityInDiagram(EXEScopeLoopWhile whileCommand, int indentationLevelX, int indentationLevelY, ActivityInDiagram lastActivity)
         {
-            // Debug.Log("[Karin] Animate command code: while");
             VisitorCommandToString visitor = new VisitorCommandToString();
             whileCommand.Condition.Accept(visitor);
             string condition = visitor.GetCommandString();
@@ -448,9 +427,6 @@ namespace Visualization.Animation
 
         private ActivityInDiagram animateActivityInDiagram(EXEScopeCondition conditionCommand, int indentationLevelX, int indentationLevelY, ActivityInDiagram lastActivity, bool elifCommand = false)
         {
-            // Debug.LogError("[Karin] Animate command code: condition");
-            // Debug.LogFormat("[Karin] conditionCommand type: {0}, id: {1}, superScope: {2}, superScopeID: {3}", conditionCommand.GetType(), conditionCommand.CommandID, conditionCommand.SuperScope.GetType(), conditionCommand.SuperScope.CommandID);
-        
             ActivityInDiagram decisionNode = activityDiagram.AddDecisionActivityInDiagram(indentationLevelX, indentationLevelY, conditionCommand);
             activityDiagram.AddRelation(lastActivity, decisionNode, this.activityRelationLabel);
             this.lastDecisionNode = decisionNode;
@@ -462,7 +438,6 @@ namespace Visualization.Animation
             lastActivity = decisionNode;
             foreach (EXECommand ifBranch in conditionCommand.Commands)
             {
-                // Debug.Log("[Karin] Animate command code: if");
                 lastActivity = animateActivityInDiagram(ifBranch, indentationLevelX, lastActivity.IndentationLevelY + 1, lastActivity);
                 this.maxIndentationX = Math.Max(this.maxIndentationX, lastActivity.IndentationLevelX);
                 this.maxIndentationY = Math.Max(this.maxIndentationY, lastActivity.IndentationLevelY);
@@ -482,7 +457,7 @@ namespace Visualization.Animation
                 this.maxIndentationX = Math.Max(this.maxIndentationX, lastActivity.IndentationLevelX);
                 this.maxIndentationY = Math.Max(this.maxIndentationY, lastActivity.IndentationLevelY);
             }
-            
+
             if (conditionCommand.ElseScope != null)
             {
                 this.activityRelationLabel = "else";
@@ -499,7 +474,6 @@ namespace Visualization.Animation
                 lastActivityElse = lastActivity;
             }
 
-            
             if (elifCommand)
             {
                 return lastActivity;
@@ -514,11 +488,9 @@ namespace Visualization.Animation
                 ActivityInDiagram sourceDecisionNode = conditionCommand.ElifScopes.Count() == 0 ? decisionNode : this.lastDecisionNode;
                 activityDiagram.AddRelation(sourceDecisionNode, mergeNode, this.activityRelationLabel);
             }
-
             // Add relation from last activity in else branch to merge node
             if (lastActivityElse != null && lastActivityElse != this.lastMergeNode)
             {
-                // Debug.Log("[Karin] Add relation from last activity in else branch to merge node");
                 ActivityInDiagram targetMergeNode = this.lastMergeNode ?? mergeNode;
                 activityDiagram.AddRelation(lastActivityElse, targetMergeNode);  
             }
@@ -528,12 +500,10 @@ namespace Visualization.Animation
             // Add relation from previous merge node to this merge node
             if (lastActivity.ActivityType == ActivityType.Merge)
             {
-                // Debug.Log("[Karin] Add relation from previous merge node to merge node");
                 activityDiagram.AddRelation(lastActivity, this.lastMergeNode); 
             }
 
             // Add relation from last activity in if branch to merge node
-            // Debug.Log("[Karin] Add relation from last activity in if branch to merge node");
             activityDiagram.AddRelation(lastActivityIf, this.lastMergeNode);
             
             // Add relations from last nodes in elif branches to merge node
@@ -563,7 +533,6 @@ namespace Visualization.Animation
             // Handle loops (ForEach and While)
             if (command.GetType() == typeof(EXEScopeForEach) || command.GetType() == typeof(EXEScopeLoopWhile))
             {
-                Debug.Log("[Karin] Handling loop: EXEScopeForEach or EXEScopeLoopWhile");
                 unhighlightActivity(command);
                 unhighlightRelation(command);
             }
@@ -571,8 +540,6 @@ namespace Visualization.Animation
             // If an IF - ELIF - ELSE is encountered, let us highlight the path through DECISION blocks
             if (lastCommand != null && (command.SuperScope.GetType() == typeof(EXEScopeCondition) || (command.SuperScope as EXEScope)?.PreviousCondition != null) && command.SuperScope.CommandID != lastCommand.SuperScope.CommandID)
             {
-                Debug.Log("[Karin] Transitioning between condition scopes - From root if to specific elif.");
-
                 foreach (EXEScope previousCondition in ((EXEScope)command.SuperScope).PreviousConditions.Reverse())
                 {
                     highlightActivity(previousCondition);
@@ -581,9 +548,7 @@ namespace Visualization.Animation
             }
 
             // Highlight the current command
-            Debug.Log("[Karin] Highlighting the current command.");
             highlightActivity(command);
-
         }
 
         private void highlightLastMergeNode(EXECommand command)
@@ -601,11 +566,9 @@ namespace Visualization.Animation
             List<ActivityInDiagram> activities = activityDiagram.GetActivitiesInDiagram(relevantActivitiesScope);
             if (activities != null && activities.Count > 0)
             {
-                Debug.Log("[Karin] Found activities for last merge node.");
                 ActivityInDiagram activity = activities.Find(a => a.ActivityType == ActivityType.Merge);
                 if (activity == null)
                 {
-                    // Debug.Log("[Karin] No merge activity found for last merge node.");
                     return;
                 }
                 highlightActivityAndRelation(activity);
@@ -626,12 +589,10 @@ namespace Visualization.Animation
             {
                 highlightActivityAndRelation(mergeNode);
             }
-
         }
 
         private void highlightActivity(EXECommand command)
         {
-            Debug.LogFormat("[Karin] highlightActivity; command type = {0}, command id = {1} ", command.GetType(), command.CommandID);
             List<ActivityInDiagram> activities = activityDiagram.GetActivitiesInDiagram(command);
     
             if (activities == null || activities.Count == 0)
@@ -653,11 +614,10 @@ namespace Visualization.Animation
                     highlightActivityAndRelation(activity);
                 }
             } 
-            else  // highlight initial / final / classic 
+            else 
             {
                 highlightActivityAndRelation(activities[0]);
             }
-
         }
 
         private void highlightActivityAndRelation(ActivityInDiagram activity)
@@ -689,7 +649,7 @@ namespace Visualization.Animation
                 highlightLastMergeNode(activity.Command);
             }
         }
-
+        
         private void highlightRelation(ActivityInDiagram fromActivity, ActivityInDiagram toActivity)
         {
             ActivityRelation relation = activityDiagram.GetActivityRelation(fromActivity, toActivity);
@@ -697,6 +657,7 @@ namespace Visualization.Animation
             {
                 return;
             }
+
             GameObject edge = relation.VisualObject;
             if (edge != null)
             {
