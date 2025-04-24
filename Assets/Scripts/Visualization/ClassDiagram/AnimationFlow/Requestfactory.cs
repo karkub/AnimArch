@@ -8,7 +8,8 @@ namespace Visualization.Animation
     {
         public static AnimationRequest Create(EXECommand command, AnimationThread thread, bool animate, bool animateNewObjects)
         {
-            if (command.GetType() == typeof(EXECommandCall)) {
+            if (command.GetType() == typeof(EXECommandCall))
+            {
                 return new AnimationCallFunctionRequest(command, thread, animate, animateNewObjects);
             }
             else if (command.GetType() == typeof(EXECommandReturn))
@@ -43,6 +44,11 @@ namespace Visualization.Animation
             {
                 return new AnimationMethodScopeRequest(command, thread, animate, animateNewObjects);
             }
+            return CreateDefault(command, thread, animate, animateNewObjects);
+        }
+
+        public static AnimationRequest CreateDefault(EXECommand command, AnimationThread thread, bool animate, bool animateNewObjects)
+        {
             return new AnimationNullRequest(command, thread, animate, animateNewObjects);
         }
     }

@@ -254,6 +254,11 @@ namespace Visualization.Animation
             highlightScheduler.Enqueue(request);
             yield return new WaitUntil(() => request.IsDone());
 
+            // This ensures some pause in the activity diagram
+            request = AnimationRequestFactory.CreateDefault(CurrentCommand, AnimationThread, Animate, AnimateNewObjects);
+            highlightScheduler.Enqueue(request);
+            yield return new WaitUntil(() => request.IsDone());
+
             EXECommand CurrentCommandCopy = CurrentCommand.GetCurrentMethodScope().MethodDefinition.ExecutableCode.FindByCommandID(CurrentCommand.CommandID);
             if (CurrentCommandCopy != null)
             {
