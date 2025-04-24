@@ -228,6 +228,9 @@ namespace Visualization.Animation
 
             SetupAnimation(startMethod, MethodExecutableCode);
 
+            DiagramPool.Instance.ClassDiagram.graph.gameObject.SetActive(false);
+            DiagramPool.Instance.ObjectDiagram.graph.gameObject.SetActive(false);
+
             AnimationThread SuperThread = new AnimationThread(currentProgramInstance.CommandStack, currentProgramInstance, this);
             yield return StartCoroutine(SuperThread.Start());
 
