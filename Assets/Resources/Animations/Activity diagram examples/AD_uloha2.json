@@ -14,12 +14,7 @@
                 {
                     "Name": "spracujObjednavky",
                     "Parameters": [],
-                    "Code": "vytvorObjednavky();\nwrite(\"Začiatok spracovania objednávok\");\nfor each objednavka in objednavky\n\twrite(\"Kontrola dostupnosti objednávky\");\nwrite(\"Všetky objednávky spracované\");\n\tif (objednavka.naSklade == TRUE)\n\t\twrite(\"Objednávka na sklade, pokračujeme\");\n\t\tobjednavka.spracovatPlatbu();\n\t\tobjednavka.odoslatObjednavku();\n\telse\n\t\twrite(\"Objednávka nie je na sklade, preskakujem\");\n\tend if;\nend for;\nwrite(\"Všetky objednávky spracované\");"
-            },
-                {
-                    "Name": "vytvorObjednavky",
-                    "Parameters": [],
-                    "Code": "create list objednavky of Objednavka;\ncreate object instance objednavka1 of Objednavka;\nobjednavka1.naSklade = TRUE;\nadd objednavka1 to objednavky;\ncreate object instance objednavka2 of Objednavka;\nobjednavka2.naSklade = FALSE;\nadd objednavka2 to objednavky;\ncreate object instance objednavka3 of Objednavka;\nobjednavka3.naSklade = TRUE;\nadd objednavka3 to objednavky;"
+                    "Code": "create object instance objednavka1 of Objednavka;\nobjednavka1.naSklade = TRUE;\ncreate object instance objednavka2 of Objednavka;\nobjednavka2.naSklade = FALSE;\ncreate object instance objednavka3 of Objednavka;\nobjednavka3.naSklade = TRUE;\ncreate list objednavky of Objednavka;\nadd objednavka1 to objednavky;\nadd objednavka2 to objednavky;\nadd objednavka3 to objednavky;\nwrite(\"Začiatok spracovania objednávok\");\nfor each objednavka in objednavky\n\twrite(\"Kontrola dostupnosti objednávky\");\n\tif (objednavka.naSklade)\n\t\twrite(\"Objednávka na sklade, odosielam\");\n\t\tobjednavka.odoslatObjednavku();\n\telse\n\t\twrite(\"Objednávka nie je na sklade, preskakujem\");\n\tend if;\nend for;\nwrite(\"Všetky objednávky boli spracované\");"
                 }
             ]
         },

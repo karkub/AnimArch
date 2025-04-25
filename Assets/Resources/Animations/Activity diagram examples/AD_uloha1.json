@@ -15,7 +15,7 @@
                 {
                     "Name": "objednaj",
                     "Parameters": [],
-                    "Code": "create object instance objednavka of Objednavka;\nobjednavka.naSklade = TRUE;\nwrite(\"Spracovanie objednávky začalo\");\nif (objednavka.naSklade == TRUE)\n\twrite(\"Tovar je dostupný\");\nelse\n\twrite(\"Tovar nie je skladom, objednávka zrušená\");\nreturn FALSE;\nend if;\nsposobPlatby = \"Hotovosť\";\nif (sposobPlatby == \"Karta\")\n\tobjednavka.spracovatPlatbu();\nelif (sposobPlatby == \"Prevod\")\n\twrite(\"Čakanie na úhradu\");\n\tobjednavka.spracovatPlatbu();\nend if;\nif (objednavka.jeUhradena)\n\twrite(\"Príprava na odoslanie\");\n\tobjednavka.odoslatObjednavku();\n\twrite(\"Príprava na odoslanie\");\n\tobjednavka.odoslatObjednavku();\nelse\n\twrite(\"Chyba pri platbe, objednávka nie je potvrdená\");\nreturn FALSE;\nend if;\nwrite(\"Objednávka odoslaná\");\nwrite(\"Proces ukončený\");\n return TRUE;"
+                    "Code": "create object instance objednavka of Objednavka;\nobjednavka.naSklade = TRUE;\nwrite(\"Spracovanie objednávky začalo\");\nif (objednavka.naSklade)\n\twrite(\"Tovar je dostupný\");\nelse\n\twrite(\"Tovar nie je skladom, objednávka zrušená\");\nreturn FALSE;\nend if;\nsposobPlatby = \"Karta\";\nif (sposobPlatby == \"Karta\")\n\tobjednavka.jeUhradena = TRUE;\nelif (sposobPlatby == \"Prevod\")\n\twrite(\"Čakanie na úhradu\");\n\tobjednavka.jeUhradena = TRUE;\nend if;\nif (objednavka.jeUhradena)\n\tobjednavka.odoslatObjednavku();\nelse\n\twrite(\"Chyba pri platbe, objednávka je zrušená\");\nreturn FALSE;\nend if;\nwrite(\"Objednávka bola odoslaná\");\nreturn TRUE;"                
                 }
             ]
         },
@@ -28,11 +28,6 @@
                 "naSklade"
             ],
             "Methods": [
-                {
-                    "Name": "spracovatPlatbu",
-                    "Parameters": [],
-                    "Code": "write(\"Spracovanie platby\");\njeUhradena = TRUE;\nreturn jeUhradena;"
-                },
                 {
                     "Name": "odoslatObjednavku",
                     "Parameters": [],
