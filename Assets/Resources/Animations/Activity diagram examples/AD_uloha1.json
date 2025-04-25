@@ -1,0 +1,39 @@
+{
+    "Code": "create object instance klient of Klient;\nobjednavkaUspesna = klient.objednaj();\n",
+    "AnimationName": "spracovanie_objednavky",
+    "StartClass": "SpracovanieObjednavky",
+    "StartMethod": "spracuj",
+    "MethodsCodes": [
+        {
+            "Name": "Klient",
+            "Attributes": [
+                "meno",
+                "email",
+                "adresa"
+            ],
+            "Methods": [
+                {
+                    "Name": "objednaj",
+                    "Parameters": [],
+                    "Code": "create object instance objednavka of Objednavka;\nobjednavka.naSklade = TRUE;\nwrite(\"Spracovanie objednávky začalo\");\nif (objednavka.naSklade)\n\twrite(\"Tovar je dostupný\");\nelse\n\twrite(\"Tovar nie je skladom, objednávka zrušená\");\nreturn FALSE;\nend if;\nsposobPlatby = \"Karta\";\nif (sposobPlatby == \"Karta\")\n\tobjednavka.jeUhradena = TRUE;\nelif (sposobPlatby == \"Prevod\")\n\twrite(\"Čakanie na úhradu\");\n\tobjednavka.jeUhradena = TRUE;\nend if;\nif (objednavka.jeUhradena)\n\tobjednavka.odoslatObjednavku();\nelse\n\twrite(\"Chyba pri platbe, objednávka je zrušená\");\nreturn FALSE;\nend if;\nwrite(\"Objednávka bola odoslaná\");\nreturn TRUE;"                
+                }
+            ]
+        },
+        {
+            "Name": "Objednavka",
+            "Attributes": [
+                "idObjednavky",
+                "sposobPlatby",
+                "jeUhradena",
+                "naSklade"
+            ],
+            "Methods": [
+                {
+                    "Name": "odoslatObjednavku",
+                    "Parameters": [],
+                    "Code": "write(\"Odoslanie objednávky\");"
+                }
+            ]
+        }
+    ]
+}

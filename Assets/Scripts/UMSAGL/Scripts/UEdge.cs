@@ -178,8 +178,16 @@ namespace UMSAGL.Scripts
             }
             
             var labelTransform = transform.Find("Label");
-            var labelPosition = Vector2.Lerp(first, second, 0.5f);
-            labelTransform.localPosition = new Vector3(labelPosition.x + 30, labelPosition.y + 20, labelTransform.localPosition.z); 
+            if (Mathf.Abs(second.x - first.x) > Mathf.Abs(second.y - first.y))
+            {
+                var labelPosition = Vector2.Lerp(first, second, 0.5f); // horizontal vector, set label position more to the right
+                labelTransform.localPosition = new Vector3(labelPosition.x + 35, labelPosition.y + 25, labelTransform.localPosition.z);
+            }
+            else
+            {
+                var labelPosition = Vector2.Lerp(first, second, 0.1f); // vertical vector, set label position more to the top
+                labelTransform.localPosition = new Vector3(labelPosition.x + 30, labelPosition.y, labelTransform.localPosition.z);
+            }
         }
 
         private (Vector2 first, Vector2 second) GetMaxDistancePoints()

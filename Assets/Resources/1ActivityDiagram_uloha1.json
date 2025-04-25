@@ -1,0 +1,144 @@
+{
+    "classes": [
+        {
+            "Name": "Klient",
+            "Id": "klient-001",
+            "Left": 50.0,
+            "Right": 0.0,
+            "Top": 50.0,
+            "Bottom": 0.0,
+            "Attributes": [
+                {
+                    "Type": "string",
+                    "Name": "meno",
+                    "Id": "klient-attr-001"
+                },
+                {
+                    "Type": "string",
+                    "Name": "email",
+                    "Id": "klient-attr-002"
+                },
+                {
+                    "Type": "string",
+                    "Name": "adresa",
+                    "Id": "klient-attr-003"
+                }
+            ],
+            "Methods": [
+                {
+                    "Id": "klient-meth-000",
+                    "Name": "objednaj",
+                    "ReturnValue": "bool",
+                    "arguments": []
+                }
+            ]
+        },
+        {
+            "Name": "Objednavka",
+            "Id": "objednavka-001",
+            "Left": 250.0,
+            "Right": 0.0,
+            "Top": 50.0,
+            "Bottom": 0.0,
+            "Attributes": [
+                {
+                    "Type": "int",
+                    "Name": "idObjednavky",
+                    "Id": "objednavka-attr-001"
+                },
+                {
+                    "Type": "string",
+                    "Name": "sposobPlatby",
+                    "Id": "objednavka-attr-002"
+                },
+                {
+                    "Type": "bool",
+                    "Name": "jeUhradena",
+                    "Id": "objednavka-attr-003"
+                },
+                {
+                    "Type": "bool",
+                    "Name": "naSklade",
+                    "Id": "objednavka-attr-004"
+                }
+            ],
+            "Methods": [
+                {
+                    "Id": "objednavka-meth-000",
+                    "Name": "skontrolovatDostupnost",
+                    "ReturnValue": "bool",
+                    "arguments": []
+                },
+                {
+                    "Id": "objednavka-meth-001",
+                    "Name": "spracovatPlatbu",
+                    "ReturnValue": "bool",
+                    "arguments": []
+                },
+                {
+                    "Id": "objednavka-meth-002",
+                    "Name": "odoslatObjednavku",
+                    "ReturnValue": "void",
+                    "arguments": []
+                }
+            ]
+        },
+        {
+            "Name": "Sklad",
+            "Id": "sklad-001",
+            "Left": 250.0,
+            "Right": 0.0,
+            "Top": -70.0,
+            "Bottom": 0.0,
+            "Attributes": [
+                {
+                    "Type": "string",
+                    "Name": "adresa",
+                    "Id": "sklad-attr-001"
+                },
+                {
+                    "Type": "int",
+                    "Name": "kapacita",
+                    "Id": "sklad-attr-002"
+                },
+                {
+                    "Type": "Objednavka[]",
+                    "Name": "objednavky",
+                    "Id": "sklad-attr-003"
+                }
+            ],
+            "Methods": [
+                {
+                    "Id": "sklad-meth-000",
+                    "Name": "spracujObjednavky",
+                    "ReturnValue": "void",
+                    "arguments": []
+                },
+                {
+                    "Id": "sklad-meth-001",
+                    "Name": "vytvorObjednavky",
+                    "ReturnValue": "void",
+                    "arguments": []
+                }
+            ]
+        }
+    ],
+    "relations": [
+        {
+            "ConnectorXmiId": "rel-001",
+            "SourceModelName": "Klient",
+            "TargetModelName": "Objednavka",
+            "PropertiesEaType": "Association",
+            "PropertiesDirection": "Klient -> Objednavka",
+            "OALName": "vytvaraObjednavku"
+        },
+        {
+            "ConnectorXmiId": "rel-002",
+            "SourceModelName": "Sklad",
+            "TargetModelName": "Objednavka",
+            "PropertiesEaType": "Association",
+            "PropertiesDirection": "Sklad -> Objednavka",
+            "OALName": "spracovava"
+        }
+    ]
+}

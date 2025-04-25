@@ -7,6 +7,8 @@ namespace OALProgramControl
 {
     public abstract class EXECommand
     {
+        public long CommandID { get; private set; }
+
         public bool IsActive { get; set; } = false;
         public bool IsDirectlyInCode { get; set; } = false;
         public static EXEScopeNull NullScope = EXEScopeNull.GetInstance();
@@ -93,6 +95,7 @@ namespace OALProgramControl
 
             // Shared behaviour of cloning goes here
             copy.IsDirectlyInCode = IsDirectlyInCode;
+            copy.CommandID = CommandID;
 
             return copy;
         }
@@ -141,6 +144,20 @@ namespace OALProgramControl
             }
 
             return executionResult.IsSuccess;
+        }
+
+        public virtual void SetCommandID()
+        {
+            CommandID = EXEScopeMethod.CommandIDSeed++;
+        }
+
+        public virtual EXECommand FindByCommandID(long CommandID)
+        {
+            if (this.CommandID == CommandID)
+            {
+                return this;
+            }
+            return null;
         }
     }
 }

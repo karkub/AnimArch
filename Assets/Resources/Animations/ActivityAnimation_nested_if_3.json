@@ -1,0 +1,36 @@
+{
+    "AnimationName": "ActivityAnimation_nested_if_3",
+    "MethodsCodes": [
+        {
+            "Name": "Aa",
+            "SuperClass": "",
+            "Attributes": [
+                "code"
+            ],
+            "Methods": [
+                {
+                    "Name": "execute",
+                    "Parameters": [],
+                    "Code": "number=3;\nif (number < 3)\nwrite(\"<3\");\nelif (number == 4)\nwrite(\"four\");\nelif (number == 5)\nwrite(\"five\");\nelif (number == 6)\nwrite(\"six\");\nelif (number == 7)\nwrite(\"seven\");\nelse\nwrite(\">7\");\nend if;\nwrite(\"end\");"
+                }
+            ]
+        },
+        {
+            "Name": "Bb",
+            "SuperClass": "",
+            "Attributes": [
+                "Name"
+            ],
+            "Methods": [
+                {
+                    "Name": "calculate",
+                    "Parameters": [
+                        "a",
+                        "b"
+                    ],
+                    "Code": "c = a + b;\nreturn c;"
+                }
+            ]
+        }
+    ]
+}

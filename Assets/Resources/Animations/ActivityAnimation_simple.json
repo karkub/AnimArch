@@ -1,0 +1,35 @@
+{
+    "Code": "create object instance classA of Aa;\nclassA.execute();\n",
+    "AnimationName": "activity",
+    "StartClass": "",
+    "StartMethod": "",
+    "MethodsCodes": [
+        {
+            "Name": "Aa",
+            "Attributes": [
+                "code"
+            ],
+            "Methods": [
+                {
+                    "Name": "execute",
+                    "Parameters": [],
+                    "Code": "text=\"Hello World!\";\nwrite(text);"
+                }
+            ]
+        },
+        {
+            "Name": "Bb",
+            "Attributes": [],
+            "Methods": [
+                {
+                    "Name": "calculate",
+                    "Parameters": [
+                        "a",
+                        "b"
+                    ],
+                    "Code": "c=a+b;\nreturn c;"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,42 @@
+{
+    "Code": "create object instance classA of Aa;\nclassA.execute();\n",
+    "AnimationName": "activity",
+    "StartClass": "",
+    "StartMethod": "",
+    "MethodsCodes": [
+        {
+            "Name": "Aa",
+            "Attributes": [
+                "code"
+            ],
+            "Methods": [
+                {
+                    "Name": "execute",
+                    "Parameters": [],
+                    "Code": "farby = vytvorPole();\nfor each farba in farby\nwrite(\"Táto farba je: \");\nwrite(farba.Name);\nend for;\nwrite(\"Hotovo!\");"
+                },
+                {
+                    "Name": "vytvorPole",
+                    "Parameters": [],
+                    "Code": "create list farby of Bb;\ncreate object instance Zelena of Bb;\nZelena.Name=\"Zelená\"\n; add Zelena to farby;\ncreate object instance Cervena of Bb;\nCervena.Name=\"Červená\";\nadd Cervena to farby;\nreturn farby;"
+                }
+            ]
+        },
+        {
+            "Name": "Bb",
+            "Attributes": [
+                "Name"
+            ],
+            "Methods": [
+                {
+                    "Name": "calculate",
+                    "Parameters": [
+                        "a",
+                        "b"
+                    ],
+                    "Code": "c = a + b;\nreturn c;"
+                }
+            ]
+        }
+    ]
+}

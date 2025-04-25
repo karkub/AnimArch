@@ -19,7 +19,7 @@ namespace OALProgramControl
         {
             this.LocalVariables = new List<EXEVariable>();
         }
-        
+
         public abstract Dictionary<string, string> AllDeclaredVariables();
        
         public abstract EXEExecutionResult AddVariable(EXEVariable variable);

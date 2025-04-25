@@ -13,7 +13,7 @@
                 {
                     "Name": "execute",
                     "Parameters": [],
-                    "Code": "a=5;\nif (a > 2)\n\twrite(\"a > 2\");\n(else\n\twrite(\"a < 2\");\n\twrite(\":(\");)\nend if;"
+                    "Code": "a=1;\nif (a > 2)\n\twrite(\"a > 2\");\nend if;\nwrite(\"end\");"
                 }
             ]
         },

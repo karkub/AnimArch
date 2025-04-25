@@ -11,6 +11,8 @@ namespace Visualization.ClassDiagram.Relations
         public readonly ActivityInDiagram From;
         public readonly ActivityInDiagram To;
         public string Label;
+        public bool IsHighlighted = false;
+
         public GameObject VisualObject;
         public ActivityRelation(ActivityInDiagram start, ActivityInDiagram end, string label = "")
         {
@@ -23,14 +25,12 @@ namespace Visualization.ClassDiagram.Relations
         {
             if (From.VisualObject == null || To.VisualObject == null)
             {
-                Debug.LogError("[Karin] From or To VisualObject is null");
                 return;
             }
 
             VisualObject = graph.AddEdge(From.VisualObject, To.VisualObject, DiagramPool.Instance.activityFlowPrefab);
             if (VisualObject == null)
             {
-                Debug.LogError("[Karin] Failed to create visual object for relation");
                 return;
             } 
             var label = VisualObject.transform.Find("Label/Text");

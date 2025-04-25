@@ -13,7 +13,7 @@
                 {
                     "Name": "execute",
                     "Parameters": [],
-                    "Code": "text=\"ahoj\";\na=5;\nb=3;\ncreate object instance classB of Bb;\nc=classB.calculate(a,b);\nd=1;\ne=4;\nf=classB.calculate(d,e);\n"
+                    "Code": "a=5;\ncreate object instance classB of Bb;\nb=classB.calculate(a,a);\nwrite(\"b = \");\nwrite(b);\nc=2;\nd=classB.calculate(a,b);\nwrite(\"d = \");\nwrite(d);"
                 }
             ]
         },

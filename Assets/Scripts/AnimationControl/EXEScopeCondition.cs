@@ -9,8 +9,22 @@ namespace OALProgramControl
     public class EXEScopeCondition : EXEScope
     {
         public EXEASTNodeBase Condition { get; set; }
-        public List<EXEScopeCondition> ElifScopes { get; private set; }
-        public EXEScope ElseScope { get; set; }
+        private List<EXEScopeCondition> _ElifScopes { get; set; }
+        public IEnumerable<EXEScopeCondition> ElifScopes => _ElifScopes.Select(el => el);
+
+        private EXEScope _ElseScope { get; set; }
+        public EXEScope ElseScope
+        {
+            get => _ElseScope;
+            set
+            {
+                _ElseScope = value;
+                if (_ElseScope != null)
+                {
+                    _ElseScope.PreviousCondition = _ElifScopes.LastOrDefault() ?? this;
+                }
+            }
+        }
         private IEnumerable<EXEScopeCondition> AllConditionedScopes
         {
             get
@@ -28,8 +42,18 @@ namespace OALProgramControl
         public EXEScopeCondition(EXEASTNodeBase Condition, List<EXEScopeCondition> ElifScopes, EXEScope ElseScope) : base()
         {
             this.Condition = Condition;
-            this.ElifScopes = ElifScopes;
+            this._ElifScopes = ElifScopes;
             this.ElseScope = ElseScope;
+
+            if (_ElifScopes.Any())
+            {
+                _ElifScopes.First().PreviousCondition = this;
+            }
+
+            for (int i = 1; i < _ElifScopes.Count; i++)
+            {
+                _ElifScopes[i].PreviousCondition = _ElifScopes[i - 1];
+            }
         }
 
         public override void SetSuperScope(EXEScopeBase SuperScope)
@@ -48,17 +72,6 @@ namespace OALProgramControl
             {
                 this.ElseScope.SetSuperScope(this.GetSuperScope());
             }
-        }
-
-        public void AddElifScope(EXEScopeCondition ElifScope)
-        {
-            if (this.ElifScopes == null)
-            {
-                this.ElifScopes = new List<EXEScopeCondition>();
-            }
-
-            this.ElifScopes.Add(ElifScope);
-            ElifScope.SetSuperScope(this.GetSuperScope());
         }
 
         protected override EXEExecutionResult Execute(OALProgram OALProgram)
@@ -104,9 +117,49 @@ namespace OALProgramControl
             return new EXEScopeCondition
             (
                 Condition.Clone(),
-                ElifScopes?.Select(x => (EXEScopeCondition)x.CreateCloneCustom()).ToList() ?? new List<EXEScopeCondition>(),
+                ElifScopes?.Select(x => (EXEScopeCondition)x.CreateClone()).ToList() ?? new List<EXEScopeCondition>(),
                 ElseScope == null ? null : (EXEScope)ElseScope.CreateClone()
             );
+        }
+
+        public override void SetCommandID()
+        {
+            base.SetCommandID();
+            foreach (EXECommand command in ElifScopes)
+            {
+                command.SetCommandID();
+            }
+            
+            if (ElseScope != null)
+            {
+                ElseScope.SetCommandID();
+            }
+        }
+
+        public override EXECommand FindByCommandID(long CommandID)
+        {
+            EXECommand result = base.FindByCommandID(CommandID);
+            if (result != null)
+            {
+                return result;
+            }
+            foreach (EXEScopeCondition elifScope in ElifScopes)
+            {
+                result = elifScope.FindByCommandID(CommandID);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+            if (ElseScope != null)
+            {
+                result = ElseScope.FindByCommandID(CommandID);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+            return null;
         }
     }
 }

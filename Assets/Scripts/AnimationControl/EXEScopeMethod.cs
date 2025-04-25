@@ -6,14 +6,22 @@ namespace OALProgramControl
 {
     public class EXEScopeMethod : EXEScope
     {
+        public static long CommandIDSeed { get; set; } = 1;
+
         public CDMethod MethodDefinition;
         public IReturnCollector MethodCallOrigin;
         public EXEValueBase OwningObject;
 
-        public EXEScopeMethod() : this(null)
+        public static EXEScopeMethod Create() => Create(null);
+        public static EXEScopeMethod Create(CDMethod methodDefinition = null)
         {
+            EXEScopeMethod method = new EXEScopeMethod(methodDefinition);
+            method.SetCommandID();
+            return method;
         }
-        public EXEScopeMethod(CDMethod methodDefinition) : base()
+
+        protected EXEScopeMethod() : this(null) { }
+        protected EXEScopeMethod(CDMethod methodDefinition) : base()
         {
             this.MethodDefinition = methodDefinition;
             this.MethodCallOrigin = null;
@@ -38,7 +46,10 @@ namespace OALProgramControl
         }
         protected override EXEExecutionResult Execute(OALProgram OALProgram)
         {
-            AddCommandsToStack(new List<EXECommand>() { new EXECommandReturn(null)});
+            EXECommand returnCommand = new EXECommandReturn(null);
+            returnCommand.SetCommandID();
+
+            AddCommandsToStack(new List<EXECommand>() { returnCommand });
             AddCommandsToStack(this.Commands);
             return Success();
         }
@@ -48,6 +59,14 @@ namespace OALProgramControl
             v.VisitExeScopeMethod(this);
         }
 
+        public override void AddCommand(EXECommand Command)
+        {
+            base.AddCommand(Command);
+            if (Command.CommandID <= 0)
+            {
+                Command.SetCommandID();
+            }
+        }
         protected override EXEScope CreateDuplicateScope()
         {
             return new EXEScopeMethod(this.MethodDefinition);

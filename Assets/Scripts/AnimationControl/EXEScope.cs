@@ -7,6 +7,23 @@ namespace OALProgramControl
 {
     public class EXEScope : EXEScopeBase
     {
+        /** If this condition is an ELIF, PreviousCondition points to previous ELIF or IF */
+        public EXEScopeCondition PreviousCondition { get; set; }
+        public IEnumerable<EXEScopeCondition> PreviousConditions
+        {
+            get
+            {
+                if (PreviousCondition != null)
+                {
+                    yield return PreviousCondition;
+                    foreach (EXEScopeCondition previous in PreviousCondition.PreviousConditions)
+                    {
+                        yield return previous;
+                    }
+                }
+            }
+        }
+
         public List<EXECommand> Commands { get; protected set; }
         public String OALCode;
 
@@ -98,7 +115,7 @@ namespace OALProgramControl
             return result;
         }
 
-        public void AddCommand(EXECommand Command)
+        public virtual void AddCommand(EXECommand Command)
         {
             this.Commands.Add(Command);
             Command.SetSuperScope(this);
@@ -150,6 +167,35 @@ namespace OALProgramControl
         protected virtual EXEScope CreateDuplicateScope()
         {
             return new EXEScope();
+        }
+
+        public override void SetCommandID()
+        {
+            base.SetCommandID();
+            foreach (EXECommand command in Commands)
+            {
+                command.SetCommandID();
+            }
+        }
+
+        public override EXECommand FindByCommandID(long CommandID)
+        {
+            EXECommand result = base.FindByCommandID(CommandID);
+            if (result != null)
+            {
+                return result;
+            }
+            int i = 0;
+            foreach (EXECommand command in this.Commands)
+            {
+                result = command.FindByCommandID(CommandID);
+                if (result != null)
+                {
+                    return result;
+                }
+                i++;
+            }
+            return null;
         }
     }
 }

@@ -1,0 +1,36 @@
+{
+    "AnimationName": "ActivityAnimation_nested_if_10",
+    "MethodsCodes": [
+        {
+            "Name": "Aa",
+            "SuperClass": "",
+            "Attributes": [
+                "code"
+            ],
+            "Methods": [
+                {
+                    "Name": "execute",
+                    "Parameters": [],
+                    "Code": "number = 9;\nif (number < 3)\n\twrite(\"<3\");\n\tif (number == 1)\n\t\twrite(\"one\");\n\telif (number == 2)\n\t\twrite(\"two\");\n\tend if;\nelif (number >= 4 and number <= 9)\n\tif (number == 4)\n\t\twrite(\"four\");\n\telif (number == 6)\n\t\twrite(\"six\");\n\telif (number == 7)\n\t\twrite(\"seven\");\n\telif (number == 8)\n\t\twrite(\"eight\");\n\telse\n\t\tif (number == 5)\n\t\t\twrite(\"five\");\n\t\telif (number == 9)\n\t\t\twrite(\"nine\");\n\t\tend if;\n\tend if;\nelse\n\twrite(\">9\");\n\tif (number == 10)\n\t\twrite(\"ten\");\n\telif (number > 10 and number < 20)\n\t\twrite(\"between ten and twenty\");\n\telse\n\t\twrite(\"greater than twenty\");\n\tend if;\nend if;\nwrite(\"end\");"
+                }
+            ]
+        },
+        {
+            "Name": "Bb",
+            "SuperClass": "",
+            "Attributes": [
+                "Name"
+            ],
+            "Methods": [
+                {
+                    "Name": "calculate",
+                    "Parameters": [
+                        "a",
+                        "b"
+                    ],
+                    "Code": "c = a + b;\nif (c > 100)\n\twrite(\"large sum\");\nelif (c > 50)\n\twrite(\"medium sum\");\nelse\n\twrite(\"small sum\");\n\tif (c == 0)\n\t\twrite(\"zero value\");\n\telif (c < 0)\n\t\twrite(\"negative value\");\n\telif (c % 2 == 0)\n\t\twrite(\"even number\");\n\telse\n\t\twrite(\"odd number\");\n\tend if;\nend if;\nreturn c;"
+                }
+            ]
+        }
+    ]
+}

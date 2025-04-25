@@ -1,0 +1,43 @@
+{
+    "AnimationName": "spracovanie_objednavok",
+    "StartClass": "",
+    "StartMethod": "",
+    "MethodsCodes": [
+        {
+            "Name": "Sklad",
+            "Attributes": [
+                "adresa",
+                "kapacita",
+                "objednavky"
+            ],
+            "Methods": [
+                {
+                    "Name": "spracujObjednavky",
+                    "Parameters": [],
+                    "Code": "create object instance objednavka1 of Objednavka;\nobjednavka1.naSklade = TRUE;\ncreate object instance objednavka2 of Objednavka;\nobjednavka2.naSklade = FALSE;\ncreate object instance objednavka3 of Objednavka;\nobjednavka3.naSklade = TRUE;\ncreate list objednavky of Objednavka;\nadd objednavka1 to objednavky;\nadd objednavka2 to objednavky;\nadd objednavka3 to objednavky;\nwrite(\"Začiatok spracovania objednávok\");\nfor each objednavka in objednavky\n\twrite(\"Kontrola dostupnosti objednávky\");\n\tif (objednavka.naSklade)\n\t\twrite(\"Objednávka na sklade, odosielam\");\n\t\tobjednavka.odoslatObjednavku();\n\telse\n\t\twrite(\"Objednávka nie je na sklade, preskakujem\");\n\tend if;\nend for;\nwrite(\"Všetky objednávky boli spracované\");"
+                }
+            ]
+        },
+        {
+            "Name": "Objednavka",
+            "Attributes": [
+                "idObjednavky",
+                "sposobPlatby",
+                "jeUhradena",
+                "naSklade"
+            ],
+            "Methods": [
+                {
+                    "Name": "spracovatPlatbu",
+                    "Parameters": [],
+                    "Code": "write(\"Spracovanie platby\");\njeUhradena = TRUE;\nreturn jeUhradena;"
+                },
+                {
+                    "Name": "odoslatObjednavku",
+                    "Parameters": [],
+                    "Code": "write(\"Odoslanie objednávky\");"
+                }
+            ]
+        }
+    ]
+}
