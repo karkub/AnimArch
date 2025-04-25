@@ -28,6 +28,15 @@ namespace AnimArch.Visualization.Diagrams
             }
         }
 
+        public void ClearDiagrams()
+        {
+            while (ActivityDiagrams.Count > 0)
+            {
+                ActivityDiagram activityDiagram = ActivityDiagrams.Pop();
+                activityDiagram.ClearDiagram();
+            }
+        }
+
         public void PrintDiagamsInStack()
         {
             Debug.LogFormat("[Karin] ~~~~~ Print All Activity Diagrams, count: {0}", ActivityDiagrams.Count);

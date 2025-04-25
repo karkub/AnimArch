@@ -1,3 +1,4 @@
+using AnimArch.Visualization.Diagrams;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Visualization.Animation;
@@ -40,6 +41,7 @@ namespace Visualization.UI
         private void OnPlayBtnClicked()
         {
             Animation.Animation.Instance.StartAnimation();
+            ActivityDiagramManager.Instance.ClearDiagrams();
         }
         private void OnStopBtnClicked()
         {
