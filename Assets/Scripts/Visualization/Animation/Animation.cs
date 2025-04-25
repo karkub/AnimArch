@@ -228,6 +228,9 @@ namespace Visualization.Animation
 
             SetupAnimation(startMethod, MethodExecutableCode);
 
+            DiagramPool.Instance.ClassDiagram.graph.gameObject.SetActive(false);
+            DiagramPool.Instance.ObjectDiagram.graph.gameObject.SetActive(false);
+
             AnimationThread SuperThread = new AnimationThread(currentProgramInstance.CommandStack, currentProgramInstance, this);
             yield return StartCoroutine(SuperThread.Start());
 
@@ -251,6 +254,11 @@ namespace Visualization.Animation
             Debug.LogFormat("[Karin] ZACIATOK commandCode: {0}, type: {1}, id: {2}, superScope: {3}, superScopeID: {4}, ", commandCode, CurrentCommand.GetType(), CurrentCommand.CommandID, CurrentCommand.SuperScope.GetType(), CurrentCommand.SuperScope.CommandID);
             
             AnimationRequest request = AnimationRequestFactory.Create(CurrentCommand, AnimationThread, Animate, AnimateNewObjects);
+            highlightScheduler.Enqueue(request);
+            yield return new WaitUntil(() => request.IsDone());
+
+            // This ensures some pause in the activity diagram
+            request = AnimationRequestFactory.CreateDefault(CurrentCommand, AnimationThread, Animate, AnimateNewObjects);
             highlightScheduler.Enqueue(request);
             yield return new WaitUntil(() => request.IsDone());
 

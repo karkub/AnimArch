@@ -176,12 +176,12 @@ namespace AnimArch.Visualization.Diagrams
             Object.VisualObject = node;
 
             // Create Edge towards class
-            GameObject InterGraphLine = CreateInterGraphLine(Object.Class.VisualObject, Object.VisualObject);
+            /*GameObject InterGraphLine = CreateInterGraphLine(Object.Class.VisualObject, Object.VisualObject);
             InterGraphLine.GetComponent<InterGraphRelation>().Initialize(Object, Object.Class);
             DiagramPool.Instance.RelationsClassToObject.Add
             (
                 InterGraphLine.GetComponent<InterGraphRelation>()
-            );
+            );*/
             // InterGraphLine.GetComponent<InterGraphRelation>().Hide();
         }
 
