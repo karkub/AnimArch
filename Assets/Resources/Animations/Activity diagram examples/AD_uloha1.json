@@ -15,7 +15,7 @@
                 {
                     "Name": "objednaj",
                     "Parameters": [],
-                    "Code": "create object instance objednavka of Objednavka;\nobjednavka.naSklade = TRUE;\nwrite(\"Spracovanie objednávky začalo\");\nif (objednavka.naSklade)\n\twrite(\"Tovar je dostupný\");\nelse\n\twrite(\"Tovar nie je skladom, objednávka zrušená\");\nreturn FALSE;\nend if;\nsposobPlatby = \"Karta\";\nif (sposobPlatby == \"Karta\")\n\tobjednavka.jeUhradena = TRUE;\nelif (sposobPlatby == \"Prevod\")\n\twrite(\"Čakanie na úhradu\");\n\tobjednavka.jeUhradena = TRUE;\nend if;\nif (objednavka.jeUhradena)\n\tobjednavka.odoslatObjednavku();\nelse\n\twrite(\"Chyba pri platbe, objednávka je zrušená\");\nreturn FALSE;\nend if;\nwrite(\"Objednávka bola odoslaná\");\nreturn TRUE;"                
+                    "Code": "create object instance objednavka of Objednavka;\nobjednavka.naSklade = TRUE;\nwrite(\"Spracovanie objednávky začalo\");\nif (objednavka.naSklade)\n\twrite(\"Tovar je dostupný\");\nelse\n\twrite(\"Tovar nie je skladom, automaticky sa objedná od dodávateľa\");\n\twrite(\"Objednávka je zrušená\");\nreturn FALSE;\nend if;\nsposobPlatby = \"Karta\";\nif (sposobPlatby == \"Karta\")\n\tobjednavka.jeUhradena = TRUE;\nelif (sposobPlatby == \"Prevod\")\n\twrite(\"Čakanie na úhradu\");\n\tobjednavka.jeUhradena = TRUE;\nend if;\nif (objednavka.jeUhradena)\n\tobjednavka.odoslatObjednavku();\nelse\n\twrite(\"Chyba pri platbe, objednávka je zrušená\");\nreturn FALSE;\nend if;\nwrite(\"Objednávka bola odoslaná\");\nreturn TRUE;"                
                 }
             ]
         },
