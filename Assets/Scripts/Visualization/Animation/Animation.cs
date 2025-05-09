@@ -244,12 +244,7 @@ namespace Visualization.Animation
         }
         public IEnumerator AnimateCommand(EXECommand CurrentCommand, AnimationThread AnimationThread, bool Animate = true, bool AnimateNewObjects = true)
         {            
-            // Karin - Activity Diagram =>
-            VisitorCommandToString visitor = new VisitorCommandToString();
-            CurrentCommand.Accept(visitor);
-            string commandCode = visitor.GetCommandString();
-            Debug.LogFormat("[Karin] ZACIATOK commandCode: {0}, type: {1}, id: {2}, superScope: {3}, superScopeID: {4}, ", commandCode, CurrentCommand.GetType(), CurrentCommand.CommandID, CurrentCommand.SuperScope.GetType(), CurrentCommand.SuperScope.CommandID);
-            
+            // Karin - Activity Diagram =>            
             AnimationRequest request = AnimationRequestFactory.Create(CurrentCommand, AnimationThread, Animate, AnimateNewObjects);
             highlightScheduler.Enqueue(request);
             yield return new WaitUntil(() => request.IsDone());
@@ -277,9 +272,6 @@ namespace Visualization.Animation
                     activityDiagram.AddRelation(lastActivity, finalActivity);
                 }
                 activityDiagram.SaveDiagram();
-
-                
-                Debug.LogFormat("[Lukas] Activities register: {0}", string.Join('\n', activityDiagram.Activities.Select(a => $"{a.Command?.CommandID} (Visual Object is NULL {a.VisualObject == null}): {printFunc(a.Command)}")));
             }
             else if (CurrentCommand.GetType() == typeof(EXECommandReturn))
             {
@@ -295,7 +287,6 @@ namespace Visualization.Animation
                     ActivityDiagramManager.Instance.ActivityDiagrams.Pop();
                     activityDiagram = ActivityDiagramManager.Instance.ActivityDiagrams.Peek();
                 }
-                // ActivityDiagramManager.Instance.PrintDiagamsInStack(); //TODOa
             }
 
             // Highlight command and handle its specific scope
@@ -488,6 +479,7 @@ namespace Visualization.Animation
                 ActivityInDiagram sourceDecisionNode = conditionCommand.ElifScopes.Count() == 0 ? decisionNode : this.lastDecisionNode;
                 activityDiagram.AddRelation(sourceDecisionNode, mergeNode, this.activityRelationLabel);
             }
+            
             // Add relation from last activity in else branch to merge node
             if (lastActivityElse != null && lastActivityElse != this.lastMergeNode)
             {
