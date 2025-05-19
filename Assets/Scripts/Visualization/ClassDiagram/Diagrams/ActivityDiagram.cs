@@ -338,7 +338,7 @@ namespace AnimArch.Visualization.Diagrams
         {
             foreach (ActivityInDiagram Activity in Activities)
             {
-                Debug.LogFormat("[Karin] {0}, CommandId = {4}, SuperScope = {5}, SuperScopeID = {6}", Activity.ActivityText, Activity.Command?.CommandID, Activity.Command?.SuperScope, Activity.Command?.SuperScope.CommandID);
+                Debug.LogFormat("[Karin] {0}, CommandId = {1}, SuperScope = {2}, SuperScopeID = {3}", Activity.ActivityText, Activity.Command?.CommandID, Activity.Command?.SuperScope, Activity.Command?.SuperScope.CommandID);
             }
         }
 
